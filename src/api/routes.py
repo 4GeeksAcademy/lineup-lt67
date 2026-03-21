@@ -20,3 +20,12 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@api.route('/administrador', methods=['GET'])
+def administrador():
+
+    response_body = {
+        "message": "MENSAJE DE ADMIN GET"
+    }
+
+    return jsonify(response_body), 200
