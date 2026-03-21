@@ -36,11 +36,11 @@ def get_clients():
 @api.route('/clients/<int:client_id>', methods=['GET'])
 def get_client(client_id):
 
-    client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one_or_none().serialize()
+    client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one_or_none()
     if not client:
         return jsonify({"msg": "Cliente no encontrado"}), 404
 
-    return jsonify(client), 200
+    return jsonify(client.serialize()), 200
 
 
 @api.route('/clients', methods=['POST'])
@@ -70,7 +70,10 @@ def create_client():
     )
     db.session.add(new_client)
     db.session.commit()
-    return jsonify(new_client.serialize()), 201
+    return jsonify({
+        'msg': 'Cliente añadido con exito',
+        'cliente': new_client.serialize() 
+    }), 201
 
 @api.route('/clients/<int:client_id>', methods=['PUT'])
 def update_client(client_id):
@@ -92,4 +95,19 @@ def update_client(client_id):
     return jsonify({
         'msg': 'Cliente modificado con exito',
         'body': client.serialize()
+    }), 200
+
+@api.route('/clients/<int:client_id>', methods=['DELETE'])
+def eliminar_cliente(client_id):
+    client = db.session.get(Client, client_id)
+
+    if not client:
+        return jsonify({"msg": "Cliente no encontrado"}), 404
+
+    db.session.delete(client)
+    db.session.commit()
+
+    return jsonify({
+    "msg": "Cliente eliminado",
+    "id": client_id
     }), 200
