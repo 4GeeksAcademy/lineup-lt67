@@ -33,3 +33,15 @@ class Administrador(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+    
+class Tipo(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+   models nombre: Mapped[str] = mapped_column(String(100), nullable=False)
+    descripcion: Mapped[str] = mapped_column(String(250), nullable=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "descripcion": self.descripcion
+        }
