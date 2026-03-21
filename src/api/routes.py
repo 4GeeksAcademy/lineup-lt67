@@ -21,7 +21,6 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
-
 @api.route('/administrador', methods=['GET'])
 def administrador():
 
