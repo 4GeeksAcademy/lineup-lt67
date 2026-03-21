@@ -30,14 +30,21 @@ def get_clients():
     all_clients = list(map(lambda client: client.serialize(), all_clients))
     print(all_clients)
 
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
     return jsonify(all_clients), 200
 
+
+@api.route('/clients/<int:client_id>', methods=['GET'])
+def get_client(client_id):
+
+    client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one_or_none().serialize()
+    if not client:
+        return jsonify({"msg": "Cliente no encontrado"}), 404
+
+    return jsonify(client), 200
+
+
 @api.route('/clients', methods=['POST'])
-def post_client():
+def create_client():
 
     all_clients = list(db.session.execute(select(Client)).scalars().all())
     all_clients = list(map(lambda client: client.serialize(), all_clients))
@@ -45,20 +52,44 @@ def post_client():
 
     body = request.get_json()
     if body is None:
-        return jsonify({"error": "Request body can't be empty"}), 400
+        return jsonify({"msg": "Request body can't be empty"}), 400
     if not body.get("email"):
-        return jsonify({"error": "An Email is required"}), 400
+        return jsonify({"msg": "An Email is required"}), 400
     if not body.get("password"):
-        return jsonify({"error": "A password is required"}), 400
+        return jsonify({"msg": "A password is required"}), 400
 
     client = db.session.execute(select(Client).where(Client.email == body['email'])).scalar_one_or_none()
     if client:
-        return jsonify({"error": "There is already an account with this Email"}), 400
+        return jsonify({"msg": "There is already an account with this Email"}), 400
 
     new_client = Client(
+        full_name=body["full_name"],
         email=body["email"],
-        password=body["password"]
+        password=body["password"],
+        is_active=True
     )
     db.session.add(new_client)
     db.session.commit()
     return jsonify(new_client.serialize()), 201
+
+@api.route('/clients/<int:client_id>', methods=['PUT'])
+def update_client(client_id):
+
+    client = db.session.get(Client, client_id)
+    if not client:
+        return jsonify({"msg": "Cliente no encontrado"}), 404
+
+    body = request.get_json()
+
+    if 'full_name' in body:
+        client.full_name = body['full_name']
+
+    if 'email' in body:
+        client.email = body['email']
+
+    db.session.commit()
+
+    return jsonify({
+        'msg': 'Cliente modificado con exito',
+        'body': client.serialize()
+    }), 200
