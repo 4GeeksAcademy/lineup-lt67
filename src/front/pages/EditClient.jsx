@@ -1,29 +1,27 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
-export const ClientForm = () => {
+export const EditClient = (props) => {
 
-    const navigate = useNavigate()
-
+    const { id } = useParams()
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
 
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState("");
-
+    const [date, setDate] = useState('')
+    const navigate = useNavigate()
 
     function handleSubmit(e) {
         e.preventDefault();
-        const backendUrl = import.meta.env.VITE_BACKEND_URL
 
         const data = {
             'full_name': fullName,
             'email': email,
-            'password': password
         }
 
-        fetch(`${backendUrl}/api/clients`,{
-            method: 'POST',
+        fetch(`${backendUrl}/api/clients/${id}`,{
+            method: 'PUT',
             headers: {
                 "Content-Type": 'application/json'
             },
@@ -35,10 +33,32 @@ export const ClientForm = () => {
 
     }
 
+    function deleteClient() {
+
+        fetch(`${backendUrl}/api/clients/${id}`,{method: 'DELETE'})
+        .then((resp) => {
+            console.log(resp)
+            navigate('/clients')
+        })
+
+        /*navigate('/clients')*/
+    }
+
+    useEffect(() => {
+        fetch(`${backendUrl}/api/clients/${id}`)
+        .then((resp) => resp.json())
+        .then((data) => {
+            console.log(data)
+            setFullName(data.full_name)
+            setEmail(data.email)
+            setDate(data.created_at)
+        })
+    }, [])
+
     return (
-        <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
+        <div className="container d-flex justify-content-center align-items-center vh-50">
             <div className="card p-4 shadow" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4">Crear nuevo usuario</h3>
+                <h3 className="text-center mb-4">Editar usuario</h3>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
@@ -53,7 +73,6 @@ export const ClientForm = () => {
                         />
                     </div>
 
-
                     <div className="mb-3">
                         <label className="form-label">Email</label>
                         <input
@@ -66,22 +85,25 @@ export const ClientForm = () => {
                         />
                     </div>
 
+
                     <div className="mb-3">
-                        <label className="form-label">Password</label>
+                        <label className="form-label">Fecha de creacion</label>
                         <input
-                        type="password"
+                        type="text"
                         className="form-control"
-                        placeholder="Enter password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
+                        placeholder="Fecha de creacion"
+                        value={date}
+                        disabled
                         />
                     </div>
 
                     <button type="submit" className="btn btn-primary w-100">
-                        Crear
+                        Editar
                     </button>
                 </form>
+                <button onClick={deleteClient} className="btn btn-danger w-100">
+                        Borrar usuario
+                </button>
             </div>
         </div>
     )
