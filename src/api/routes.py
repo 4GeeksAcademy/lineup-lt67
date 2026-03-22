@@ -24,8 +24,7 @@ def handle_hello():
     return jsonify(response_body), 200
 
 @api.route('/administrador', methods=['GET'])
-def get_administrador():
-
+def get_administradores():
     admins = Administrador.query.all()
     result = list(map(lambda admin: admin.serialize(), admins))
 
