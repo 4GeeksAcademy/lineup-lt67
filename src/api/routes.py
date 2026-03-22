@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+from .models import Administrador
 
 api = Blueprint('api', __name__)
 
@@ -22,10 +23,8 @@ def handle_hello():
     return jsonify(response_body), 200
 
 @api.route('/administrador', methods=['GET'])
-def administrador():
+def get_administradores():
+    admins = Administrador.query.all()
+    result = list(map(lambda admin: admin.serialize(), admins))
 
-    response_body = {
-        "message": "MENSAJE DE ADMIN GET"
-    }
-
-    return jsonify(response_body), 200
+    return jsonify(result), 200
