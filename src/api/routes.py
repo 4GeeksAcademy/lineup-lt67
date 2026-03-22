@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Client
+from api.models import db, User, Client, Administrador
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -22,6 +22,14 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+@api.route('/administrador', methods=['GET'])
+def administrador():
+
+    response_body = {
+        "message": "MENSAJE DE ADMIN GET"
+    }
+
+    return jsonify(response_body), 200
 
 @api.route('/clients', methods=['GET'])
 def get_clients():
