@@ -101,9 +101,6 @@ export const EditClient = (props) => {
                         Editar
                     </button>
                 </form>
-                <button onClick={deleteClient} className="btn btn-danger w-100">
-                        Borrar usuario
-                </button>
             </div>
         </div>
     )
