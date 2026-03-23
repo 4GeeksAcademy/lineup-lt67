@@ -40,6 +40,12 @@ export const Administradores = () => {
                     <div className="container d-flex justify-content-between align-items-center my-2 border" key={admin.id}>
                         <p>{admin.name}</p>
                         <p>{admin.email}</p>
+                        <Link to={`/administradores/${admin.id}`}>
+                            <button type="button" className="btn btn-primary">Ver detalle</button>
+                        </Link>
+                        <Link to={`/administradores/edit/${admin.id}`}>
+                            <button type="button" className="btn btn-primary">Editar</button>
+                        </Link>
                     </div>
                 )
             }))}
