@@ -30,6 +30,47 @@ def get_administradores():
 
     return jsonify(result), 200
 
+@api.route('/administrador', methods=['POST'])
+def create_administrador():
+    body = request.get_json()
+
+    name = body.get("name")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not email or not password:
+        return jsonify({"msg": "Faltan campos"}), 400
+
+    admin_existente = Administrador.query.filter_by(email=email).first()
+    if admin_existente:
+        return jsonify({"msg": "El administrador ya existe"}), 400
+
+    new_admin = Administrador(
+        name=name,
+        email=email,
+        password=password,
+        is_active=True
+    )
+
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify(new_admin.serialize()), 201
+
+@api.route('/administrador/<int:id>', methods=['DELETE'])
+def delete_administrador(id):
+    admin = Administrador.query.get(id)
+
+    if not admin:
+        return jsonify({"msg": "Administrador no encontrado"}), 404
+
+    db.session.delete(admin)
+    db.session.commit()
+
+    return jsonify({"msg": "Administrador eliminado"}), 200
+
+
+
 @api.route('/clients', methods=['GET'])
 def get_clients():
 
