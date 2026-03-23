@@ -21,6 +21,16 @@ export const Clientes = () => {
         })
     }
 
+    function deleteClient(id) {
+
+        fetch(`${backendUrl}/api/clients/${id}`,{method: 'DELETE'})
+        .then((resp) => {
+            console.log(resp)
+            getClients()
+        })
+
+    }
+
     useEffect(() =>{
         getClients()
     },[])
@@ -39,9 +49,18 @@ export const Clientes = () => {
                 return(
                     <div className="container d-flex justify-content-between align-items-center my-2 border" key={client.id}>
                         <p>{client.full_name}</p>
-                        <Link to={`${client.id}`}>
-                            <button type="button" className="btn btn-primary">Editar Cliente</button>
-                        </Link>
+                        <div>
+                            <Link to={`${client.id}`}>
+                                <button type="button" className="btn btn-primary mx-2">Ver Cliente</button>
+                            </Link>
+                            <Link to={`edit/${client.id}`}>
+                                <button type="button" className="btn btn-primary">Editar Cliente</button>
+                            </Link>
+                            <Link to={'/clients'}>
+                                <button onClick={() => deleteClient(client.id)} className="btn btn-danger"> Borrar usuario</button>
+                            </Link>
+                            
+                        </div>
                     </div>
                 )
             }))}

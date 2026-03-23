@@ -19,6 +19,7 @@ import {Administradores} from "./pages/Administradores";
 import { AdminForm } from "./pages/AdminForm";
 import { EditAdmin } from "./pages/EditAdmin";
 import { AdminDetail } from "./pages/AdminDetail"
+import { ClientDetail } from "./pages/ClientDetail";
 
 
 export const router = createBrowserRouter(
@@ -38,7 +39,8 @@ export const router = createBrowserRouter(
         <Route path="/demo" element={<Demo />} />
         <Route path="/clients" element={<Clientes />} />
         <Route path="/add_client" element={<ClientForm />} />
-        <Route path="/clients/:id" element={ <EditClient />} />
+        <Route path="/clients/:id" element={ <ClientDetail />} />
+        <Route path="/clients/edit/:id" element={ <EditClient />} />
         <Route path="/tipos" element={<Tipos />} />
         <Route path="/add_tipo" element={<TipoForm />} />
         <Route path="/tipos/:id" element={ <EditTipo />} />
