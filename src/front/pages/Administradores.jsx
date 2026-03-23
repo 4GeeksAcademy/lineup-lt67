@@ -29,6 +29,9 @@ export const Administradores = () => {
         <div className="container-fluid mx-4">
             <div className="container d-flex justify-content-between align-items-center mb-3">
                 <h2>Administradores</h2>
+                <Link to="/add_admin">
+                    <button type="button" className="btn btn-primary">Nuevo Administrador</button>
+                </Link>
             </div>
             {store.administradores.length === 0 ? 
             (<h4>No hay administradores</h4>) :

@@ -13,7 +13,8 @@ export const initialStore=()=>{
         background: null,
       }
     ],
-    clients: []
+    clients: [],
+    administradores: [] 
   }
 }
 
@@ -42,6 +43,13 @@ export default function storeReducer(store, action = {}) {
         ...store,
         clients: action.payload
       };
+
+    case 'set_administradores':
+      return {
+        ...store,
+        administradores: action.payload
+      }
+    
     default:
       throw Error('Unknown action.');
   }    

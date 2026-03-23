@@ -15,6 +15,8 @@ import { EditClient } from "./pages/EditClient";
 import { Tipos } from "./pages/Tipos";
 import { TipoForm } from "./pages/TipoForm";
 import { EditTipo } from "./pages/EditTipo";
+import {Administradores} from "./pages/Administradores";
+import { AdminForm } from "./pages/AdminForm";
 
 
 export const router = createBrowserRouter(
@@ -38,6 +40,8 @@ export const router = createBrowserRouter(
         <Route path="/tipos" element={<Tipos />} />
         <Route path="/add_tipo" element={<TipoForm />} />
         <Route path="/tipos/:id" element={ <EditTipo />} />
+        <Route path="/administradores" element={<Administradores />} />
+        <Route path="/add_admin" element={<AdminForm />} />
       </Route>
     )
 );
