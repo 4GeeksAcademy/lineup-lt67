@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Client, Administrador
+from api.models import db, User, Client, Administrador, Tipo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -117,4 +117,87 @@ def eliminar_cliente(client_id):
     return jsonify({
     "msg": "Cliente eliminado",
     "id": client_id
+    }), 200
+
+@api.route('/tipos', methods=['GET'])
+def get_tipos():
+
+    all_tipos = list(db.session.execute(select(Tipo)).scalars().all())
+    all_tipos = list(map(lambda tipo: tipo.serialize(), all_tipos))
+
+    return jsonify(all_tipos), 200
+
+
+@api.route('/tipos/<int:tipo_id>', methods=['GET'])
+def get_tipo(tipo_id):
+
+    tipo = db.session.execute(select(Tipo).where(Tipo.id == tipo_id)).scalar_one_or_none()
+    if not tipo:
+        return jsonify({"msg": "Tipo no encontrado"}), 404
+
+    return jsonify(tipo.serialize()), 200
+
+
+@api.route('/tipos', methods=['POST'])
+def create_tipo():
+
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+    if not body.get("nombre"):
+        return jsonify({"msg": "El nombre es requerido"}), 400
+
+    new_tipo = Tipo(
+        nombre=body["nombre"].strip(),
+        descripcion=(body.get("descripcion") or "").strip() or None
+    )
+    db.session.add(new_tipo)
+    db.session.commit()
+    return jsonify({
+        'msg': 'Tipo añadido con exito',
+        'tipo': new_tipo.serialize()
+    }), 201
+
+
+@api.route('/tipos/<int:tipo_id>', methods=['PUT'])
+def update_tipo(tipo_id):
+
+    tipo = db.session.get(Tipo, tipo_id)
+    if not tipo:
+        return jsonify({"msg": "Tipo no encontrado"}), 404
+
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+
+    if 'nombre' in body:
+        nombre = (body.get('nombre') or '').strip()
+        if not nombre:
+            return jsonify({"msg": "El nombre no puede estar vacio"}), 400
+        tipo.nombre = nombre
+
+    if 'descripcion' in body:
+        tipo.descripcion = (body.get('descripcion') or '').strip() or None
+
+    db.session.commit()
+
+    return jsonify({
+        'msg': 'Tipo modificado con exito',
+        'body': tipo.serialize()
+    }), 200
+
+
+@api.route('/tipos/<int:tipo_id>', methods=['DELETE'])
+def delete_tipo(tipo_id):
+    tipo = db.session.get(Tipo, tipo_id)
+
+    if not tipo:
+        return jsonify({"msg": "Tipo no encontrado"}), 404
+
+    db.session.delete(tipo)
+    db.session.commit()
+
+    return jsonify({
+    "msg": "Tipo eliminado",
+    "id": tipo_id
     }), 200
