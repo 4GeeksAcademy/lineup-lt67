@@ -57,17 +57,37 @@ def create_administrador():
 
     return jsonify(new_admin.serialize()), 201
 
-@api.route('/administrador/<int:id>', methods=['DELETE'])
-def delete_administrador(id):
+@api.route('/administrador/<int:id>', methods=['GET'])
+def get_administrador(id):
     admin = Administrador.query.get(id)
-
     if not admin:
-        return jsonify({"msg": "Administrador no encontrado"}), 404
+        return jsonify({"message": "Admin no encontrado"}), 404
+    return jsonify(admin.serialize()), 200
 
+
+@api.route('/administrador/<int:id>', methods=['PUT'])
+def editar_administrador(id):
+    admin = Administrador.query.get(id)
+    if not admin:
+        return jsonify({"message": "Admin no encontrado"}), 404
+    
+    body = request.get_json()
+    admin.name = body.get("name", admin.name)
+    admin.email = body.get("email", admin.email)
+    
+    db.session.commit()
+    return jsonify(admin.serialize()), 200
+
+
+@api.route('/administrador/<int:id>', methods=['DELETE'])
+def borrar_administrador(id):
+    admin = Administrador.query.get(id)
+    if not admin:
+        return jsonify({"message": "Admin no encontrado"}), 404
+    
     db.session.delete(admin)
     db.session.commit()
-
-    return jsonify({"msg": "Administrador eliminado"}), 200
+    return jsonify({"message": "Admin borrado"}), 200
 
 
 
