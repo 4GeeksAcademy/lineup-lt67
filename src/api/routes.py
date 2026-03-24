@@ -353,25 +353,54 @@ def update_ticket(ticket_id):
     if nuevo_estado not in estados_validos:
         return jsonify({"msg": "Estado inválido"}), 400
     
+    if ticket.estado in ["atendido", "cancelado"]:
+        return jsonify({"msg": "No se puede modificar un ticket cerrado"}), 400
+    
+    if nuevo_estado == "cancelado":
+        ticket.estado = "cancelado"
+    elif nuevo_estado == "en_atencion":
+        primer_ticket = db.session.execute(
+            select(Ticket)
+            .where(
+                Ticket.id_sucursal == ticket.id_sucursal,
+                Ticket.estado == "esperando"
+            )
+            .order_by(Ticket.posicion)
+        ).scalars().first()
+
+        if not primer_ticket or primer_ticket.id != ticket.id:
+            return jsonify({
+                "msg": "Solo el primer ticket puede pasar a en_atencion"
+            }), 400
+
+        ticket.estado = "en_atencion"
+    elif nuevo_estado == "atendido":
+
+        if ticket.estado != "en_atencion":
+            return jsonify({
+                "msg": "Solo un ticket en atención puede finalizarse"
+            }), 400
+
+        ticket.estado = "atendido"
 
     db.session.commit()
 
     return jsonify({
-        'msg': 'Cliente modificado con exito',
-        'body': client.serialize()
+        'msg': 'Estado actualizado',
+        'body': ticket.serialize()
     }), 200
 
-@api.route('/clients/<int:client_id>', methods=['DELETE'])
-def delete_ticket(client_id):
-    client = db.session.get(Client, client_id)
+@api.route('/tickets/<int:ticket_id>', methods=['DELETE'])
+def delete_ticket(ticket_id):
+    ticket = db.session.get(Ticket, ticket_id)
 
-    if not client:
-        return jsonify({"msg": "Cliente no encontrado"}), 404
+    if not ticket:
+        return jsonify({"msg": "Ticket no encontrado"}), 404
 
-    db.session.delete(client)
+    db.session.delete(ticket)
     db.session.commit()
 
     return jsonify({
-    "msg": "Cliente eliminado",
-    "id": client_id
+    "msg": "Ticket eliminado",
+    "id": ticket_id
     }), 200
