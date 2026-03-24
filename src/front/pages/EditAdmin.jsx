@@ -44,6 +44,7 @@ export const EditAdmin = () => {
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
             <div className="card p-4 shadow" style={{ width: "22rem" }}>
+                <button onClick={() => navigate('/administradores')} className="btn-close position-absolute top-0 end-0 m-2"/>
                 <h3 className="text-center mb-4">Editar administrador</h3>
 
                 <form onSubmit={handleSubmit}>

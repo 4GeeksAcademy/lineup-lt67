@@ -20,10 +20,7 @@ export const AdminDetail = () => {
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
             <div className="card p-4 shadow position-relative" style={{ width: "22rem" }}>
-                <button
-                    onClick={() => navigate('/administradores')}
-                    className="btn-close position-absolute top-0 end-0 m-2"
-                />
+                <button onClick={() => navigate('/administradores')} className="btn-close position-absolute top-0 end-0 m-2"/>
                 <h3 className="text-center mb-4">Detalle administrador</h3>
 
                 <p><strong>ID:</strong> {admin.id}</p>
