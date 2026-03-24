@@ -17,6 +17,15 @@ export const Tipos = () => {
             .catch((error) => console.error(error));
     }
 
+    function deleteTipo(id) {
+        if (!window.confirm("¿Estás seguro de que quieres eliminar este tipo?")) return;
+        fetch(`${backendUrl}/api/tipos/${id}`, { method: "DELETE" })
+            .then((resp) => {
+                if (resp.ok) getTipos();
+            })
+            .catch((error) => console.error(error));
+    }
+
     useEffect(() => {
         getTipos();
     }, []);
@@ -38,9 +47,23 @@ export const Tipos = () => {
                                 <p className="m-0 fw-bold">{tipo.nombre}</p>
                                 <p className="m-0 text-muted">{tipo.descripcion || "Sin descripcion"}</p>
                             </div>
-                            <Link to={`${tipo.id}`}>
+                            <div className="d-flex gap-2">
+                                <Link to={`${tipo.id}`}>
+                            
+                                <button type="button" className="btn btn-primary">Detalle</button>
+                            </Link>
+                            <Link to={`edit/${tipo.id}`}>
+                            
                                 <button type="button" className="btn btn-primary">Editar Tipo</button>
                             </Link>
+                            <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={() => deleteTipo(tipo.id)}
+                                >
+                                    Eliminar
+                                </button>
+                            </div>
                         </div>
                     );
                 }))}
