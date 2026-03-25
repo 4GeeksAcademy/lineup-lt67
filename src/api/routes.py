@@ -2,10 +2,11 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Client, Administrador, Tipo
+from api.models import db, User, Client, Administrador, Tipo, Establecimiento
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from .models import Administrador
 
 api = Blueprint('api', __name__)
@@ -262,3 +263,123 @@ def delete_tipo(tipo_id):
     "msg": "Tipo eliminado",
     "id": tipo_id
     }), 200
+
+@api.route("/establecimientos", methods=["GET"])
+def get_establecimientos():
+    stmt = select(Establecimiento).options(joinedload(Establecimiento.tipo))
+    rows = list(db.session.execute(stmt).unique().scalars().all())
+    return jsonify([e.serialize() for e in rows]), 200
+
+
+@api.route("/establecimientos/<int:establecimiento_id>", methods=["GET"])
+def get_establecimiento(establecimiento_id):
+    stmt = (
+        select(Establecimiento)
+        .where(Establecimiento.id == establecimiento_id)
+        .options(joinedload(Establecimiento.tipo))
+    )
+    est = db.session.execute(stmt).unique().scalar_one_or_none()
+    if not est:
+        return jsonify({"msg": "Establecimiento no encontrado"}), 404
+    return jsonify(est.serialize()), 200
+
+
+@api.route("/establecimientos", methods=["POST"])
+def create_establecimiento():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+    if not body.get("nombre"):
+        return jsonify({"msg": "El nombre es requerido"}), 400
+    if body.get("tipo_id") is None:
+        return jsonify({"msg": "El tipo es requerido"}), 400
+    if not body.get("clave"):
+        return jsonify({"msg": "La clave es requerida"}), 400
+
+    tipo = db.session.get(Tipo, int(body["tipo_id"]))
+    if not tipo:
+        return jsonify({"msg": "Tipo no encontrado"}), 404
+
+    total = body.get("total_sucursales")
+    if total is None:
+        total = 0
+    try:
+        total = int(total)
+    except (TypeError, ValueError):
+        return jsonify({"msg": "total_sucursales debe ser un numero entero"}), 400
+
+    nuevo = Establecimiento(
+        nombre=body["nombre"].strip(),
+        tipo_id=tipo.id,
+        total_sucursales=total,
+        clave=body["clave"].strip(),
+        logo=(body.get("logo") or "").strip() or None,
+    )
+    db.session.add(nuevo)
+    db.session.commit()
+    db.session.refresh(nuevo)
+    nuevo = db.session.execute(
+        select(Establecimiento)
+        .where(Establecimiento.id == nuevo.id)
+        .options(joinedload(Establecimiento.tipo))
+    ).unique().scalar_one()
+    return jsonify({"msg": "Establecimiento añadido con exito", "establecimiento": nuevo.serialize()}), 201
+
+
+@api.route("/establecimientos/<int:establecimiento_id>", methods=["PUT"])
+def update_establecimiento(establecimiento_id):
+    est = db.session.get(Establecimiento, establecimiento_id)
+    if not est:
+        return jsonify({"msg": "Establecimiento no encontrado"}), 404
+
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+
+    if "nombre" in body:
+        nombre = (body.get("nombre") or "").strip()
+        if not nombre:
+            return jsonify({"msg": "El nombre no puede estar vacio"}), 400
+        est.nombre = nombre
+
+    if "tipo_id" in body:
+        tid = body.get("tipo_id")
+        if tid is None:
+            return jsonify({"msg": "tipo_id no puede ser nulo"}), 400
+        tipo = db.session.get(Tipo, int(tid))
+        if not tipo:
+            return jsonify({"msg": "Tipo no encontrado"}), 404
+        est.tipo_id = tipo.id
+
+    if "total_sucursales" in body:
+        try:
+            est.total_sucursales = int(body["total_sucursales"])
+        except (TypeError, ValueError):
+            return jsonify({"msg": "total_sucursales debe ser un numero entero"}), 400
+
+    if "clave" in body:
+        clave = (body.get("clave") or "").strip()
+        if not clave:
+            return jsonify({"msg": "La clave no puede estar vacia"}), 400
+        est.clave = clave
+
+    if "logo" in body:
+        est.logo = (body.get("logo") or "").strip() or None
+
+    db.session.commit()
+    est = db.session.execute(
+        select(Establecimiento)
+        .where(Establecimiento.id == establecimiento_id)
+        .options(joinedload(Establecimiento.tipo))
+    ).unique().scalar_one()
+    return jsonify({"msg": "Establecimiento modificado con exito", "body": est.serialize()}), 200
+
+
+@api.route("/establecimientos/<int:establecimiento_id>", methods=["DELETE"])
+def delete_establecimiento(establecimiento_id):
+    est = db.session.get(Establecimiento, establecimiento_id)
+    if not est:
+        return jsonify({"msg": "Establecimiento no encontrado"}), 404
+    db.session.delete(est)
+    db.session.commit()
+    return jsonify({"msg": "Establecimiento eliminado", "id": establecimiento_id}), 200
