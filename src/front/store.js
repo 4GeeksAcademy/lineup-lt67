@@ -14,7 +14,8 @@ export const initialStore=()=>{
       }
     ],
     clients: [],
-    administradores: [] 
+    administradores: [],
+    tickets: [] 
   }
 }
 
@@ -48,6 +49,12 @@ export default function storeReducer(store, action = {}) {
       return {
         ...store,
         administradores: action.payload
+      }
+
+    case 'set_tickets':
+      return {
+        ...store,
+        tickets: action.payload
       }
     
     default:

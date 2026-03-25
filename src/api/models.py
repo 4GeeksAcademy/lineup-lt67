@@ -4,6 +4,7 @@ from typing import List, Optional
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import List
 
 db = SQLAlchemy()
 
@@ -58,12 +59,12 @@ class Client(db.Model):
     full_name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
+    tickets: Mapped[List["Ticket"]] = relationship(back_populates="client")
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
     )
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-
 
     def serialize(self):
         return {
@@ -105,7 +106,7 @@ class Sucursal(db.Model):
     capacidad: Mapped[int] = mapped_column(nullable=False)
 
     establecimiento = relationship('Establecimiento', backref='sucursales')
-
+    tickets: Mapped[List["Ticket"]] = relationship(back_populates="sucursal")
     def serialize(self):
         return {
             "id": self.id,
@@ -116,3 +117,27 @@ class Sucursal(db.Model):
             "capacidad": self.capacidad
         }
 
+
+class Ticket(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"))
+    id_sucursal: Mapped[int] = mapped_column(ForeignKey("sucursal.id"))
+    estado: Mapped[str] = mapped_column(String(120), nullable=False)
+    posicion: Mapped[int] = mapped_column(Integer, nullable=False)
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(timezone.utc)
+    )
+    client: Mapped["Client"] = relationship(back_populates="tickets")
+    sucursal: Mapped["Sucursal"] = relationship(back_populates="tickets")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_cliente": self.client_id,
+            "id_sucursal": self.id_sucursal,
+            "estado": self.estado,
+            "posicion": self.posicion,
+            "created_at": self.created_at.isoformat()
+        }

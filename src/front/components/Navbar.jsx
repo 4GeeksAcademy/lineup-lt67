@@ -21,6 +21,9 @@ export const Navbar = () => {
 					<Link to="/administradores" className="me-2">
 						<button className="btn btn-outline-success">Admins</button>
 					</Link>
+					<Link to="/tickets" className="me-2">
+						<button className="btn btn-outline-success">Tickets</button>
+					</Link>
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>
