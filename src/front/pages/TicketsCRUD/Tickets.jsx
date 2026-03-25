@@ -39,7 +39,7 @@ export const Tickets = () => {
         <div className="container-fluid mx-4">
             <div className="container d-flex justify-content-between align-items-center mb-3">
                 <h2>Tickets</h2>
-                <Link to="/add_ticket">
+                <Link to="/add_tickets">
                     <button type="button" className="btn btn-primary">Nuevo Ticket</button>
                 </Link>
             </div>

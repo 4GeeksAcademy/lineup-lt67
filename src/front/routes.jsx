@@ -21,6 +21,12 @@ import { AdminForm } from "./pages/AdminForm";
 import { EditAdmin } from "./pages/EditAdmin";
 import { AdminDetail } from "./pages/AdminDetail"
 import { ClientDetail } from "./pages/ClientDetail";
+import { Establecimientos } from "./pages/Establecimientos";
+import { EstablecimientoForm } from "./pages/EstablecimientoForm";
+import { EditEstablecimiento } from "./pages/EditEstablecimiento";
+import { EstablecimientoDetail } from "./pages/EstablecimientoDetail";
+import { SucursalForm } from "./pages/SucursalForm";
+import { SucursalEdit } from "./pages/SucursalEdit"
 
 import { Tickets } from "./pages/TicketsCRUD/Tickets";
 import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
@@ -55,7 +61,12 @@ export const router = createBrowserRouter(
         <Route path="/add_admin" element={<AdminForm />} />
         <Route path="/administradores/:id" element={<AdminDetail />} />
         <Route path="/administradores/edit/:id" element={<EditAdmin />} />
-
+        <Route path="/establecimientos" element={<Establecimientos />} />
+        <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
+        <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+        <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
+        <Route path="/sucursal/nueva" element={<SucursalForm />} />
+        <Route path="/sucursal/:id" element={<SucursalEdit />} />
         <Route path="/tickets" element={<Tickets />} />
         <Route path="/add_tickets" element={<TicketForm />} />
         <Route path="/tickets/:id" element={<TicketDetail />} />

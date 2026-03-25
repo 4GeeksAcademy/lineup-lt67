@@ -9,7 +9,9 @@ export const TicketForm = () => {
 
     const [idCliente, setidCliente] = useState('')
     const [listaClientes, setListaClientes] = useState([])
-    const [listaSucursacles, setListaSucursacles] = useState([])
+    const [idEstablecimiento, setidEstablecimiento] = useState('')
+    const [listaEstablecimientos, setListaEstablecimientos] = useState([])
+    const [listaSucursales, setListaSucursales] = useState([])
     const [idSucursal, setidSucursal] = useState('')
 
 
@@ -35,6 +37,24 @@ export const TicketForm = () => {
 
     }
 
+    function handleEstablecimiento(e){
+        setidEstablecimiento(e.target.value)
+
+
+        fetch(backendUrl + "/api/establecimientos/"+ e.target.value + "/sucursales")
+        .then((response) => {
+            if (!response.ok){
+                throw new Error(response.status)
+            }
+            return response.json()
+        })
+        .then((data) => {
+            //dispatch({ type: "set_clients_list", payload: data })
+            setListaSucursales(data)
+            console.log(data)
+        })
+    }
+
     useEffect(() => {
         fetch(backendUrl + "/api/clients")
         .then((response) => {
@@ -47,6 +67,19 @@ export const TicketForm = () => {
             //dispatch({ type: "set_clients_list", payload: data })
             setListaClientes(data)
             console.log(listaClientes)
+        })
+
+        fetch(backendUrl + "/api/establecimientos")
+        .then((response) => {
+            if (!response.ok){
+                throw new Error(response.status)
+            }
+            return response.json()
+        })
+        .then((data) => {
+            //dispatch({ type: "set_clients_list", payload: data })
+            setListaEstablecimientos(data)
+            console.log(listaEstablecimientos)
         })
     }
     ,[])
@@ -62,22 +95,30 @@ export const TicketForm = () => {
                         <select className='form-select' value={idCliente} onChange={(e) => setidCliente(e.target.value)}>
                             <option selected>Seleccione cliente</option>
                             {listaClientes.map((cliente) => {
-                                return <option value={cliente.id}>{cliente.full_name}</option>
+                                return <option value={cliente.id} key={cliente.id}>{cliente.full_name} </option>
                             })}
                         </select>
                     </div>
 
 
                     <div className="mb-3">
+                        <label className="form-label">Establecimiento</label>
+                        <select defaultValue='' className='form-select' value={idEstablecimiento} onChange={handleEstablecimiento}>
+                            <option value="" disabled>Elige un establecimiento</option>
+                            {listaEstablecimientos.map((establecimiento) => {
+                                return <option value={establecimiento.id} key={establecimiento.id}>{establecimiento.nombre} </option>
+                            })}
+                        </select>
+                    </div>
+
+                    <div className="mb-3">
                         <label className="form-label">Sucursal</label>
-                        <input
-                        type="number"
-                        className="form-control"
-                        placeholder="Numero Sucursal"
-                        value={idSucursal}
-                        onChange={(e) => setidSucursal(e.target.value)}
-                        required
-                        />
+                        <select defaultValue='' className='form-select' value={idSucursal} onChange={(e) => setidSucursal(e.target.value)}>
+                            <option value="" disabled>Elige una sucursal</option>
+                            {listaSucursales.map((sucursal) => {
+                                return <option value={sucursal.id} key={sucursal.id}>{sucursal.nombre}</option>
+                            })}
+                        </select>
                     </div>
 
                     <button type="submit" className="btn btn-primary w-100">
