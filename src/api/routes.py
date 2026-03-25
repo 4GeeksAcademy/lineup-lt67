@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Client, Administrador, Tipo, Establecimiento
+from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -383,3 +383,58 @@ def delete_establecimiento(establecimiento_id):
     db.session.delete(est)
     db.session.commit()
     return jsonify({"msg": "Establecimiento eliminado", "id": establecimiento_id}), 200
+
+@api.route('/sucursal', methods=['GET'])
+def get_sucursales():
+    sucursales = Sucursal.query.all()
+    result = list(map(lambda s: s.serialize(), sucursales))
+    return jsonify(result), 200
+
+@api.route('/sucursal/<int:id>', methods=['GET'])
+def get_sucursal(id):
+    sucursal = Sucursal.query.get(id)
+    if not sucursal:
+        return jsonify({"message": "Sucursal no encontrada"}), 404
+    return jsonify(sucursal.serialize()), 200
+
+@api.route('/sucursal', methods=['POST'])
+def crear_sucursal():
+    body = request.get_json()
+    if not body.get("nombre") or not body.get("id_establecimiento"):
+        return jsonify({"message": "Faltan datos"}), 400
+
+    nueva_sucursal = Sucursal(
+        id_establecimiento=body["id_establecimiento"],
+        nombre=body["nombre"],
+        fila_activa=body.get("fila_activa", False),
+        tiempo_por_cliente=body["tiempo_por_cliente"],
+        capacidad=body["capacidad"]
+    )
+    db.session.add(nueva_sucursal)
+    db.session.commit()
+    return jsonify(nueva_sucursal.serialize()), 201
+
+@api.route('/sucursal/<int:id>', methods=['PUT'])
+def editar_sucursal(id):
+    sucursal = Sucursal.query.get(id)
+    if not sucursal:
+        return jsonify({"message": "Sucursal no encontrada"}), 404
+
+    body = request.get_json()
+    sucursal.nombre = body.get("nombre", sucursal.nombre)
+    sucursal.fila_activa = body.get("fila_activa", sucursal.fila_activa)
+    sucursal.tiempo_por_cliente = body.get("tiempo_por_cliente", sucursal.tiempo_por_cliente)
+    sucursal.capacidad = body.get("capacidad", sucursal.capacidad)
+
+    db.session.commit()
+    return jsonify(sucursal.serialize()), 200
+
+@api.route('/sucursal/<int:id>', methods=['DELETE'])
+def borrar_sucursal(id):
+    sucursal = Sucursal.query.get(id)
+    if not sucursal:
+        return jsonify({"message": "Sucursal no encontrada"}), 404
+
+    db.session.delete(sucursal)
+    db.session.commit()
+    return jsonify({"message": "Sucursal borrada"}), 200
