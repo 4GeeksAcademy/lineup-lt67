@@ -22,6 +22,11 @@ import { EditAdmin } from "./pages/EditAdmin";
 import { AdminDetail } from "./pages/AdminDetail"
 import { ClientDetail } from "./pages/ClientDetail";
 
+import { Tickets } from "./pages/TicketsCRUD/Tickets";
+import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
+import { TicketDetail } from "./pages/TicketsCRUD/TicketDetail";
+import { TicketEdit } from "./pages/TicketsCRUD/TicketEdit";
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -50,6 +55,11 @@ export const router = createBrowserRouter(
         <Route path="/add_admin" element={<AdminForm />} />
         <Route path="/administradores/:id" element={<AdminDetail />} />
         <Route path="/administradores/edit/:id" element={<EditAdmin />} />
+
+        <Route path="/tickets" element={<Tickets />} />
+        <Route path="/add_tickets" element={<TicketForm />} />
+        <Route path="/tickets/:id" element={<TicketDetail />} />
+        <Route path="/tickets/edit/:id" element={<TicketEdit />} />
       </Route>
     )
 );
