@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, Boolean, DateTime, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 db = SQLAlchemy()
 
@@ -65,4 +65,34 @@ class Client(db.Model):
             "full_name": self.full_name,
             "email": self.email,
             "created_at": self.created_at.isoformat()
+        }
+    
+class Establecimiento(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(120), nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre
+        }
+
+class Sucursal(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    id_establecimiento: Mapped[int] = mapped_column(ForeignKey('establecimiento.id'), nullable=False)
+    nombre: Mapped[str] = mapped_column(String(120), nullable=False)
+    fila_activa: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False)
+    capacidad: Mapped[int] = mapped_column(nullable=False)
+
+    establecimiento = relationship('Establecimiento', backref='sucursales')
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_establecimiento": self.id_establecimiento,
+            "nombre": self.nombre,
+            "fila_activa": self.fila_activa,
+            "tiempo_por_cliente": self.tiempo_por_cliente,
+            "capacidad": self.capacidad
         }
