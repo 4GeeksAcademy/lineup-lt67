@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 export const EstablecimientoDetail = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -8,7 +8,9 @@ export const EstablecimientoDetail = () => {
     const [totalSucursales, setTotalSucursales] = useState("");
     const [clave, setClave] = useState("");
     const [logo, setLogo] = useState("");
+    const [sucursales, setSucursales] = useState([]);
     const { id } = useParams();
+    
 
     useEffect(() => {
         fetch(`${backendUrl}/api/establecimientos/${id}`)
@@ -32,6 +34,11 @@ export const EstablecimientoDetail = () => {
                 setClave("");
                 setLogo("");
             });
+
+            fetch(`${backendUrl}/api/establecimientos/${id}/sucursales`)
+                .then((resp) => resp.json())
+                .then((data) => setSucursales(data))
+                
     }, [backendUrl, id]);
 
     return (
@@ -67,6 +74,38 @@ export const EstablecimientoDetail = () => {
                         <p className="text-muted">Sin logo</p>
                     )}
                 </div>
+
+                {/* AQUI ESTA LA LISTA DE SUCURSALES */}
+
+                <div className="container mt-4">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h3>Sucursales</h3>
+                        <Link to={`/sucursal/nueva?id_establecimiento=${id}`}>
+                            <button className="btn btn-primary">Nueva Sucursal</button>
+                        </Link>
+                    </div>
+                    {sucursales.length === 0 ? (
+                        <p>No hay sucursales</p>
+                    ) : (
+                        sucursales.map((s) => (
+                            <div className="container d-flex justify-content-between align-items-center my-2 border p-2" key={s.id}>
+                                <div>
+                                    <p className="m-0 fw-bold">{s.nombre}</p>
+                                    <p className="m-0 text-muted small">
+                                        Capacidad: {s.capacidad} · Tiempo por cliente: {s.tiempo_por_cliente} min · Fila activa: {s.fila_activa ? "Sí" : "No"}
+                                    </p>
+                                </div>
+                                <div className="d-flex gap-2">
+                                    <Link to={`/sucursal/${s.id}`}>
+                                        <button className="btn btn-primary">Editar</button>
+                                    </Link>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+
             </div>
         </div>
     );

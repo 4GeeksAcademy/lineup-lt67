@@ -397,6 +397,12 @@ def get_sucursal(id):
         return jsonify({"message": "Sucursal no encontrada"}), 404
     return jsonify(sucursal.serialize()), 200
 
+@api.route('/establecimientos/<int:id>/sucursales', methods=['GET'])
+def get_sucursales_por_establecimiento(id):
+    sucursales = Sucursal.query.filter_by(id_establecimiento=id).all()
+    result = list(map(lambda s: s.serialize(), sucursales))
+    return jsonify(result), 200
+
 @api.route('/sucursal', methods=['POST'])
 def crear_sucursal():
     body = request.get_json()
