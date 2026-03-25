@@ -21,6 +21,10 @@ import { AdminForm } from "./pages/AdminForm";
 import { EditAdmin } from "./pages/EditAdmin";
 import { AdminDetail } from "./pages/AdminDetail"
 import { ClientDetail } from "./pages/ClientDetail";
+import { Establecimientos } from "./pages/Establecimientos";
+import { EstablecimientoForm } from "./pages/EstablecimientoForm";
+import { EditEstablecimiento } from "./pages/EditEstablecimiento";
+import { EstablecimientoDetail } from "./pages/EstablecimientoDetail";
 
 
 export const router = createBrowserRouter(
@@ -50,6 +54,10 @@ export const router = createBrowserRouter(
         <Route path="/add_admin" element={<AdminForm />} />
         <Route path="/administradores/:id" element={<AdminDetail />} />
         <Route path="/administradores/edit/:id" element={<EditAdmin />} />
+        <Route path="/establecimientos" element={<Establecimientos />} />
+        <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
+        <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+        <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
       </Route>
     )
 );

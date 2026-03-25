@@ -15,6 +15,9 @@ export const Navbar = () => {
 					<Link to="/tipos" className="me-2">
 						<button className="btn btn-outline-success">Tipos</button>
 					</Link>
+					<Link to="/establecimientos" className="me-2">
+						<button className="btn btn-outline-secondary">Establecimientos</button>
+					</Link>
 					<Link to="/administradores" className="me-2">
 						<button className="btn btn-outline-success">Admins</button>
 					</Link>
