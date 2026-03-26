@@ -33,6 +33,11 @@ import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
 import { TicketDetail } from "./pages/TicketsCRUD/TicketDetail";
 import { TicketEdit } from "./pages/TicketsCRUD/TicketEdit";
 
+import { Servicios } from "./pages/ServiciosCRUD/Servicios";
+import { ServicioForm } from "./pages/ServiciosCRUD/ServicioForm";
+import { ServicioDetail } from "./pages/ServiciosCRUD/ServicioDetail";
+import { ServicioEdit } from "./pages/ServiciosCRUD/ServicioEdit";
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -71,6 +76,11 @@ export const router = createBrowserRouter(
         <Route path="/add_tickets" element={<TicketForm />} />
         <Route path="/tickets/:id" element={<TicketDetail />} />
         <Route path="/tickets/edit/:id" element={<TicketEdit />} />
+
+        <Route path="/servicios" element={<Servicios />} />
+        <Route path="/add_servicios" element={<ServicioForm />} />
+        <Route path="/servicios/:id" element={<ServicioDetail />} />
+        <Route path="/servicio/edit/:id" element={<ServicioEdit />} />
       </Route>
     )
 );
