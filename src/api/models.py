@@ -172,3 +172,20 @@ class Favorito(db.Model):
             "establecimiento_nombre": est.nombre if est else None,
             "created_at": self.created_at.isoformat(),
         }
+
+class Liner(db.Model):
+    __tablename__ = "liner"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    liner_nombre: Mapped[str] = mapped_column(String(100), nullable=False)
+    liner_email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    liner_password: Mapped[str] = mapped_column(nullable=False)
+    liner_foto: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nombre": self.liner_nombre,
+            "email": self.liner_email,
+            "foto": self.liner_foto,
+        }
