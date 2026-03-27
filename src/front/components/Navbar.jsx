@@ -24,6 +24,9 @@ export const Navbar = () => {
 					<Link to="/tickets" className="me-2">
 						<button className="btn btn-outline-success">Tickets</button>
 					</Link>
+					<Link to="/servicios" className="me-2">
+						<button className="btn btn-outline-success">Servicios</button>
+					</Link>
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>

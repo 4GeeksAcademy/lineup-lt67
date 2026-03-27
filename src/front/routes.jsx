@@ -80,7 +80,7 @@ export const router = createBrowserRouter(
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/add_servicios" element={<ServicioForm />} />
         <Route path="/servicios/:id" element={<ServicioDetail />} />
-        <Route path="/servicio/edit/:id" element={<ServicioEdit />} />
+        <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
       </Route>
     )
 );

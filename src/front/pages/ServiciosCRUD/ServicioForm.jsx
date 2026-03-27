@@ -7,12 +7,12 @@ export const ServicioForm = () => {
     const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-    const [idCliente, setidCliente] = useState('')
     const [listaClientes, setListaClientes] = useState([])
-    const [idEstablecimiento, setidEstablecimiento] = useState('')
-    const [listaEstablecimientos, setListaEstablecimientos] = useState([])
-    const [listaSucursales, setListaSucursales] = useState([])
-    const [idSucursal, setidSucursal] = useState('')
+    const [idCliente, setIdCliente] = useState('')
+    const [descripcion, setDescripcion] = useState('')
+    const [lugar, setLugar] = useState('')
+    const [urgencia, setUrgencia] = useState('')
+    const [estado, setEstado] = useState('')
 
 
     function handleSubmit(e) {
@@ -21,10 +21,13 @@ export const ServicioForm = () => {
 
         const data = {
             'client_id': idCliente,
-            'id_sucursal': idSucursal,
+            'descripcion': descripcion,
+            'lugar': lugar,
+            'urgencia': urgencia,
+            'estado': estado
         }
 
-        fetch(`${backendUrl}/api/tickets`,{
+        fetch(`${backendUrl}/api/servicios`,{
             method: 'POST',
             headers: {
                 "Content-Type": 'application/json'
@@ -32,12 +35,12 @@ export const ServicioForm = () => {
             body: JSON.stringify(data)
         })
         .then((resp) => {
-            if (resp.ok) navigate('/tickets')
+            if (resp.ok) navigate('/servicios')
         })
 
     }
 
-    function handleEstablecimiento(e){
+    /* function handleEstablecimiento(e){
         setidEstablecimiento(e.target.value)
 
 
@@ -53,7 +56,7 @@ export const ServicioForm = () => {
             setListaSucursales(data)
             console.log(data)
         })
-    }
+    } */
 
     useEffect(() => {
         fetch(backendUrl + "/api/clients")
@@ -64,35 +67,22 @@ export const ServicioForm = () => {
             return response.json()
         })
         .then((data) => {
-            //dispatch({ type: "set_clients_list", payload: data })
             setListaClientes(data)
             console.log(listaClientes)
         })
 
-        fetch(backendUrl + "/api/establecimientos")
-        .then((response) => {
-            if (!response.ok){
-                throw new Error(response.status)
-            }
-            return response.json()
-        })
-        .then((data) => {
-            //dispatch({ type: "set_clients_list", payload: data })
-            setListaEstablecimientos(data)
-            console.log(listaEstablecimientos)
-        })
     }
     ,[])
 
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
             <div className="card p-4 shadow" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4">Crear nuevo ticket</h3>
+                <h3 className="text-center mb-4">Crear nuevo servicio</h3>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label className="form-label">Cliente</label>
-                        <select className='form-select' value={idCliente} onChange={(e) => setidCliente(e.target.value)}>
+                        <select className='form-select' value={idCliente} onChange={(e) => setIdCliente(e.target.value)}>
                             <option selected>Seleccione cliente</option>
                             {listaClientes.map((cliente) => {
                                 return <option value={cliente.id} key={cliente.id}>{cliente.full_name} </option>
@@ -102,22 +92,46 @@ export const ServicioForm = () => {
 
 
                     <div className="mb-3">
-                        <label className="form-label">Establecimiento</label>
-                        <select defaultValue='' className='form-select' value={idEstablecimiento} onChange={handleEstablecimiento}>
-                            <option value="" disabled>Elige un establecimiento</option>
-                            {listaEstablecimientos.map((establecimiento) => {
-                                return <option value={establecimiento.id} key={establecimiento.id}>{establecimiento.nombre} </option>
-                            })}
+                        <label className="form-label">Descripcion</label>
+                        <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Describa el servicio"
+                        value={descripcion}
+                        onChange={(e) => setDescripcion(e.target.value)}
+                        required
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Lugar</label>
+                        <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Describa el servicio"
+                        value={lugar}
+                        onChange={(e) => setLugar(e.target.value)}
+                        required
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Urgencia</label>
+                        <select defaultValue='' className='form-select' value={urgencia} onChange={(e) => setUrgencia(e.target.value)}>
+                            <option value="" disabled>Elige una opcion</option>
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
                         </select>
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Sucursal</label>
-                        <select defaultValue='' className='form-select' value={idSucursal} onChange={(e) => setidSucursal(e.target.value)}>
-                            <option value="" disabled>Elige una sucursal</option>
-                            {listaSucursales.map((sucursal) => {
-                                return <option value={sucursal.id} key={sucursal.id}>{sucursal.nombre}</option>
-                            })}
+                        <label className="form-label">Estado</label>
+                        <select defaultValue='' className='form-select' value={estado} onChange={(e) => setEstado(e.target.value)}>
+                            <option value="" disabled>Elige una opcion</option>
+                            <option value="abierto">Abierto</option>
+                            <option value="en_proceso">en_proceso</option>
+                            <option value="finalizado">finalizado</option>
                         </select>
                     </div>
 

@@ -50,7 +50,6 @@ export const Servicios = () => {
                 return(
                     <div className="container d-flex justify-content-between align-items-center my-2 border" key={servicio.id}>
                         <p>Id Cliente: {servicio.id_cliente}</p>
-                        <p>Descripcion: {servicio.id_sucursal}</p>
                         <p>lugar: {servicio.lugar}</p>
                         <p>urgencia: {servicio.urgencia}</p>
                         <p>estado: {servicio.estado}</p>
