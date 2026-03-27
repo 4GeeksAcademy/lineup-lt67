@@ -12,6 +12,9 @@ export const Navbar = () => {
 					<Link to="/clients" className="me-2">
 						<button className="btn btn-outline-primary">Clientes</button>
 					</Link>
+					<Link to="/clients/login" className="me-2">
+						<button className="btn btn-outline-dark">Login Cliente</button>
+					</Link>
 					<Link to="/tipos" className="me-2">
 						<button className="btn btn-outline-success">Tipos</button>
 					</Link>
@@ -23,6 +26,9 @@ export const Navbar = () => {
 					</Link>
 					<Link to="/tickets" className="me-2">
 						<button className="btn btn-outline-success">Tickets</button>
+					</Link>
+					<Link to="/favoritos" className="me-2">
+						<button className="btn btn-outline-danger">Favoritos</button>
 					</Link>
 					<Link to="/servicios" className="me-2">
 						<button className="btn btn-outline-success">Servicios</button>

@@ -12,6 +12,7 @@ import { Demo } from "./pages/Demo";
 import { Clientes } from "./pages/Clientes";
 import { ClientForm } from "./pages/ClientForm";
 import { EditClient } from "./pages/EditClient";
+import { ClientLogin } from "./pages/ClientLogin";
 import { Tipos } from "./pages/Tipos";
 import { TipoForm } from "./pages/TipoForm";
 import { EditTipo } from "./pages/EditTipo";
@@ -27,6 +28,7 @@ import { EditEstablecimiento } from "./pages/EditEstablecimiento";
 import { EstablecimientoDetail } from "./pages/EstablecimientoDetail";
 import { SucursalForm } from "./pages/SucursalForm";
 import { SucursalEdit } from "./pages/SucursalEdit"
+import { Favoritos } from "./pages/Favoritos";
 
 import { Tickets } from "./pages/TicketsCRUD/Tickets";
 import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
@@ -55,6 +57,7 @@ export const router = createBrowserRouter(
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
         <Route path="/clients" element={<Clientes />} />
+        <Route path="/clients/login" element={<ClientLogin />} />
         <Route path="/add_client" element={<ClientForm />} />
         <Route path="/clients/:id" element={ <ClientDetail />} />
         <Route path="/clients/edit/:id" element={ <EditClient />} />
@@ -72,6 +75,7 @@ export const router = createBrowserRouter(
         <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
         <Route path="/sucursal/nueva" element={<SucursalForm />} />
         <Route path="/sucursal/:id" element={<SucursalEdit />} />
+        <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/tickets" element={<Tickets />} />
         <Route path="/add_tickets" element={<TicketForm />} />
         <Route path="/tickets/:id" element={<TicketDetail />} />

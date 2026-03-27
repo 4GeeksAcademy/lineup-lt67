@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Servicio
+from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select, and_, func
@@ -143,6 +143,31 @@ def create_client():
         'msg': 'Cliente añadido con exito',
         'cliente': new_client.serialize() 
     }), 201
+
+@api.route('/clients/login', methods=['POST'])
+def login_client():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+
+    email = (body.get("email") or "").strip()
+    password = body.get("password")
+
+    if not email or not password:
+        return jsonify({"msg": "Email y password son requeridos"}), 400
+
+    client = db.session.execute(
+        select(Client).where(Client.email == email)
+    ).scalar_one_or_none()
+
+    if not client or client.password != password:
+        return jsonify({"msg": "Credenciales invalidas"}), 401
+
+    return jsonify({
+        "msg": "Login exitoso",
+        "client": client.serialize()
+    }), 200
+
 
 @api.route('/clients/<int:client_id>', methods=['PUT'])
 def update_client(client_id):
@@ -583,6 +608,84 @@ def delete_ticket(ticket_id):
     return jsonify({
     "msg": "Ticket eliminado",
     "id": ticket_id
+    }), 200
+
+@api.route('/clients/<int:client_id>/favoritos', methods=['GET'])
+def get_favoritos(client_id):
+    client = db.session.get(Client, client_id)
+    if not client:
+        return jsonify({"msg": "Cliente no encontrado"}), 404
+
+    stmt = (
+        select(Favorito)
+        .where(Favorito.client_id == client_id)
+        .options(
+            joinedload(Favorito.sucursal).joinedload(Sucursal.establecimiento)
+        )
+    )
+    favoritos = list(db.session.execute(stmt).scalars().all())
+    return jsonify([f.serialize() for f in favoritos]), 200
+
+
+@api.route('/clients/<int:client_id>/favoritos', methods=['POST'])
+def create_favorito(client_id):
+    client = db.session.get(Client, client_id)
+    if not client:
+        return jsonify({"msg": "Cliente no encontrado"}), 404
+
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+    if not body.get("id_sucursal"):
+        return jsonify({"msg": "Es necesario especificar id_sucursal"}), 400
+
+    sucursal = db.session.get(Sucursal, body["id_sucursal"])
+    if not sucursal:
+        return jsonify({"msg": "Sucursal no encontrada"}), 404
+
+    existente = db.session.execute(
+        select(Favorito).where(
+            Favorito.client_id == client_id,
+            Favorito.id_sucursal == sucursal.id,
+        )
+    ).scalar_one_or_none()
+    if existente:
+        return jsonify({"msg": "Ya existe este favorito para el cliente"}), 400
+
+    fav = Favorito(client_id=client_id, id_sucursal=sucursal.id)
+    db.session.add(fav)
+    db.session.commit()
+
+    fav = db.session.execute(
+        select(Favorito)
+        .where(Favorito.id == fav.id)
+        .options(joinedload(Favorito.sucursal).joinedload(Sucursal.establecimiento))
+    ).scalar_one()
+
+    return jsonify({
+        "msg": "Favorito creado con exito",
+        "favorito": fav.serialize()
+    }), 201
+
+
+@api.route('/clients/<int:client_id>/favoritos/<int:favorito_id>', methods=['DELETE'])
+def delete_favorito(client_id, favorito_id):
+    fav = db.session.execute(
+        select(Favorito).where(
+            Favorito.id == favorito_id,
+            Favorito.client_id == client_id,
+        )
+    ).scalar_one_or_none()
+
+    if not fav:
+        return jsonify({"msg": "Favorito no encontrado"}), 404
+
+    db.session.delete(fav)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Favorito eliminado",
+        "id": favorito_id
     }), 200
 
 @api.route('/servicios', methods=['GET'])
