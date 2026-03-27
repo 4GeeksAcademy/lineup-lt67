@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito
+from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select, and_, func
@@ -687,3 +687,92 @@ def delete_favorito(client_id, favorito_id):
         "msg": "Favorito eliminado",
         "id": favorito_id
     }), 200
+
+@api.route('/servicios', methods=['GET'])
+def get_servicios():
+
+    servicios = db.session.execute(
+        select(Servicio)
+    ).scalars().all()
+
+    return jsonify([s.serialize() for s in servicios]), 200
+
+@api.route('/servicios/<int:servicio_id>', methods=['GET'])
+def get_servicio(servicio_id):
+
+    servicio = db.session.get(Servicio, servicio_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    return jsonify(servicio.serialize()), 200
+
+@api.route('/servicios', methods=['POST'])
+def create_servicio():
+
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    required_fields = ["client_id", "descripcion", "lugar", "urgencia"]
+
+    for field in required_fields:
+        if field not in body:
+            return jsonify({"msg": f"Falta {field}"}), 400
+
+    servicio = Servicio(
+        client_id=body["client_id"],
+        descripcion=body["descripcion"],
+        lugar=body["lugar"],
+        urgencia=body["urgencia"],
+        estado="abierto"
+    )
+
+    db.session.add(servicio)
+    db.session.commit()
+
+    return jsonify(servicio.serialize()), 201
+
+@api.route('/servicios/<int:servicio_id>', methods=['PUT'])
+def update_servicio(servicio_id):
+
+    servicio = db.session.get(Servicio, servicio_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    # actualización parcial
+    if "descripcion" in body:
+        servicio.descripcion = body["descripcion"]
+
+    if "lugar" in body:
+        servicio.lugar = body["lugar"]
+
+    if "urgencia" in body:
+        servicio.urgencia = body["urgencia"]
+
+    if "estado" in body:
+        servicio.estado = body["estado"]
+
+    db.session.commit()
+
+    return jsonify(servicio.serialize()), 200
+
+@api.route('/servicios/<int:servicio_id>', methods=['DELETE'])
+def delete_servicio(servicio_id):
+
+    servicio = db.session.get(Servicio, servicio_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    db.session.delete(servicio)
+    db.session.commit()
+
+    return jsonify({"msg": "Servicio eliminado"}), 200
