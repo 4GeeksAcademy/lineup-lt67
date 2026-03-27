@@ -2,9 +2,8 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, Integer
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
 
 db = SQLAlchemy()
 
@@ -60,6 +59,7 @@ class Client(db.Model):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     tickets: Mapped[List["Ticket"]] = relationship(back_populates="client")
+    favoritos: Mapped[List["Favorito"]] = relationship(back_populates="client")
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
@@ -107,6 +107,7 @@ class Sucursal(db.Model):
 
     establecimiento = relationship('Establecimiento', backref='sucursales')
     tickets: Mapped[List["Ticket"]] = relationship(back_populates="sucursal")
+    favoritos: Mapped[List["Favorito"]] = relationship(back_populates="sucursal")
     def serialize(self):
         return {
             "id": self.id,
@@ -140,4 +141,34 @@ class Ticket(db.Model):
             "estado": self.estado,
             "posicion": self.posicion,
             "created_at": self.created_at.isoformat()
+        }
+
+class Favorito(db.Model):
+    __tablename__ = "favorito"
+    __table_args__ = (
+        UniqueConstraint("client_id", "id_sucursal", name="uq_favorito_client_sucursal"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"), nullable=False)
+    id_sucursal: Mapped[int] = mapped_column(ForeignKey("sucursal.id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    client: Mapped["Client"] = relationship(back_populates="favoritos")
+    sucursal: Mapped["Sucursal"] = relationship(back_populates="favoritos")
+
+    def serialize(self):
+        est = self.sucursal.establecimiento if self.sucursal else None
+        return {
+            "id": self.id,
+            "client_id": self.client_id,
+            "id_sucursal": self.id_sucursal,
+            "sucursal_nombre": self.sucursal.nombre if self.sucursal else None,
+            "id_establecimiento": est.id if est else None,
+            "establecimiento_nombre": est.nombre if est else None,
+            "created_at": self.created_at.isoformat(),
         }
