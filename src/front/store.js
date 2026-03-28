@@ -15,7 +15,8 @@ export const initialStore=()=>{
     ],
     clients: [],
     administradores: [],
-    tickets: [] 
+    tickets: [], 
+    liners: []
   }
 }
 
@@ -62,6 +63,12 @@ export default function storeReducer(store, action = {}) {
         ...store,
         authAdmin: action.payload
       }
+
+    case 'set_liners_list':
+      return {
+        ...store,
+        liners: action.payload
+      };
 
     default:
       throw Error('Unknown action.');

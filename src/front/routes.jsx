@@ -42,6 +42,11 @@ import { ServicioForm } from "./pages/ServiciosCRUD/ServicioForm";
 import { ServicioDetail } from "./pages/ServiciosCRUD/ServicioDetail";
 import { ServicioEdit } from "./pages/ServiciosCRUD/ServicioEdit";
 
+import { Liners } from "./pages/Liners"
+import { AddLiner } from "./pages/AddLiner"
+import { EditLiner } from "./pages/EditLiner"
+import { LinerDetail } from "./pages/LinerDetail"
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -61,34 +66,39 @@ export const router = createBrowserRouter(
         <Route path="/clients/login" element={<ClientLogin />} />
         <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-
         <Route element={<ProtectedRoute />}>
-          <Route path="/clients" element={<Clientes />} />
-          <Route path="/add_client" element={<ClientForm />} />
-          <Route path="/clients/:id" element={ <ClientDetail />} />
-          <Route path="/clients/edit/:id" element={ <EditClient />} />
-          <Route path="/tipos" element={<Tipos />} />
-          <Route path="/add_tipo" element={<TipoForm />} />
-          <Route path="/tipos/:id" element={ <TipoDetail />} />
-          <Route path="/tipos/edit/:id" element={ <EditTipo />} />
-          <Route path="/administradores" element={<Administradores />} />
-          <Route path="/add_admin" element={<AdminForm />} />
-          <Route path="/administradores/:id" element={<AdminDetail />} />
-          <Route path="/administradores/edit/:id" element={<EditAdmin />} />
-          <Route path="/establecimientos" element={<Establecimientos />} />
-          <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
-          <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
-          <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
-          <Route path="/sucursal/nueva" element={<SucursalForm />} />
-          <Route path="/sucursal/:id" element={<SucursalEdit />} />
-          <Route path="/tickets" element={<Tickets />} />
-          <Route path="/add_tickets" element={<TicketForm />} />
-          <Route path="/tickets/:id" element={<TicketDetail />} />
-          <Route path="/tickets/edit/:id" element={<TicketEdit />} />
-          <Route path="/servicios" element={<Servicios />} />
-          <Route path="/add_servicios" element={<ServicioForm />} />
-          <Route path="/servicios/:id" element={<ServicioDetail />} />
-          <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
+        <Route path="/clients" element={<Clientes />} />
+        <Route path="/add_client" element={<ClientForm />} />
+        <Route path="/clients/:id" element={ <ClientDetail />} />
+        <Route path="/clients/edit/:id" element={ <EditClient />} />
+        <Route path="/tipos" element={<Tipos />} />
+        <Route path="/add_tipo" element={<TipoForm />} />
+        <Route path="/tipos/:id" element={ <TipoDetail />} />
+        <Route path="/tipos/edit/:id" element={ <EditTipo />} />
+        <Route path="/administradores" element={<Administradores />} />
+        <Route path="/add_admin" element={<AdminForm />} />
+        <Route path="/administradores/:id" element={<AdminDetail />} />
+        <Route path="/administradores/edit/:id" element={<EditAdmin />} />
+        <Route path="/establecimientos" element={<Establecimientos />} />
+        <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
+        <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+        <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
+        <Route path="/sucursal/nueva" element={<SucursalForm />} />
+        <Route path="/sucursal/:id" element={<SucursalEdit />} />
+        <Route path="/tickets" element={<Tickets />} />
+        <Route path="/add_tickets" element={<TicketForm />} />
+        <Route path="/tickets/:id" element={<TicketDetail />} />
+        <Route path="/tickets/edit/:id" element={<TicketEdit />} />
+        <Route path="/servicios" element={<Servicios />} />
+        <Route path="/add_servicios" element={<ServicioForm />} />
+        <Route path="/servicios/:id" element={<ServicioDetail />} />
+        <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
+
+        <Route path="/liners" element={<Liners />} />
+        <Route path="/add_liner" element={<AddLiner />} />
+        <Route path="/liners/:id" element={<LinerDetail />} />
+        <Route path="/liners/edit/:id" element={<EditLiner />} />
+
         </Route>
       </Route>
     )
