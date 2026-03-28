@@ -29,11 +29,18 @@ import { EstablecimientoDetail } from "./pages/EstablecimientoDetail";
 import { SucursalForm } from "./pages/SucursalForm";
 import { SucursalEdit } from "./pages/SucursalEdit"
 import { Favoritos } from "./pages/Favoritos";
+import { AdminLogin } from "./pages/AdminLogin";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import { Tickets } from "./pages/TicketsCRUD/Tickets";
 import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
 import { TicketDetail } from "./pages/TicketsCRUD/TicketDetail";
 import { TicketEdit } from "./pages/TicketsCRUD/TicketEdit";
+
+import { Servicios } from "./pages/ServiciosCRUD/Servicios";
+import { ServicioForm } from "./pages/ServiciosCRUD/ServicioForm";
+import { ServicioDetail } from "./pages/ServiciosCRUD/ServicioDetail";
+import { ServicioEdit } from "./pages/ServiciosCRUD/ServicioEdit";
 
 import { Liners } from "./pages/Liners"
 import { AddLiner } from "./pages/AddLiner"
@@ -56,8 +63,11 @@ export const router = createBrowserRouter(
         <Route path= "/" element={<Home />} />
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
-        <Route path="/clients" element={<Clientes />} />
         <Route path="/clients/login" element={<ClientLogin />} />
+        <Route path="/favoritos" element={<Favoritos />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route element={<ProtectedRoute />}>
+        <Route path="/clients" element={<Clientes />} />
         <Route path="/add_client" element={<ClientForm />} />
         <Route path="/clients/:id" element={ <ClientDetail />} />
         <Route path="/clients/edit/:id" element={ <EditClient />} />
@@ -75,15 +85,21 @@ export const router = createBrowserRouter(
         <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
         <Route path="/sucursal/nueva" element={<SucursalForm />} />
         <Route path="/sucursal/:id" element={<SucursalEdit />} />
-        <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/tickets" element={<Tickets />} />
         <Route path="/add_tickets" element={<TicketForm />} />
         <Route path="/tickets/:id" element={<TicketDetail />} />
         <Route path="/tickets/edit/:id" element={<TicketEdit />} />
+        <Route path="/servicios" element={<Servicios />} />
+        <Route path="/add_servicios" element={<ServicioForm />} />
+        <Route path="/servicios/:id" element={<ServicioDetail />} />
+        <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
+
         <Route path="/liners" element={<Liners />} />
         <Route path="/add_liner" element={<AddLiner />} />
         <Route path="/liners/:id" element={<LinerDetail />} />
         <Route path="/liners/edit/:id" element={<EditLiner />} />
+
+        </Route>
       </Route>
     )
 );

@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, Integer, UniqueConstraint
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, Integer, UniqueConstraint, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 db = SQLAlchemy()
@@ -60,6 +60,7 @@ class Client(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     tickets: Mapped[List["Ticket"]] = relationship(back_populates="client")
     favoritos: Mapped[List["Favorito"]] = relationship(back_populates="client")
+    servicios: Mapped[List["Servicio"]] = relationship(back_populates="client")
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
@@ -173,6 +174,86 @@ class Favorito(db.Model):
             "created_at": self.created_at.isoformat(),
         }
 
+class Servicio(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"))
+    descripcion: Mapped[str] = mapped_column(String(255), nullable=False)
+    lugar: Mapped[str] = mapped_column(String(255), nullable=False)
+    urgencia: Mapped[str] = mapped_column(String(50), nullable=False)
+    estado: Mapped[str] = mapped_column(String(50), nullable=False, default='abierto')
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(timezone.utc)
+    )
+    client: Mapped["Client"] = relationship(back_populates="servicios")
+
+    """ propuestas: Mapped[list["Propuesta"]] = relationship(
+        back_populates="servicio",
+        cascade="all, delete-orphan"
+    ) """
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_cliente": self.client_id,
+            "descripcion": self.descripcion,
+            "lugar": self.lugar,
+            "urgencia": self.urgencia,
+            "estado": self.estado,
+            "created_at": self.created_at.isoformat()
+        }
+
+""" class Propuesta(db.Model):
+    __tablename__ = "propuestas"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    servicio_id: Mapped[int] = mapped_column(
+        ForeignKey("servicios.id"),
+        nullable=False
+    )
+
+    liner_id: Mapped[int] = mapped_column(
+        ForeignKey("liner.id"),
+        nullable=False
+    )
+
+    precio: Mapped[float] = mapped_column(Float, nullable=False)
+
+    mensaje: Mapped[str] = mapped_column(String(255), nullable=True)
+
+    estado: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default="pendiente"
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    #Relaciones
+    servicio: Mapped["Servicio"] = relationship(back_populates="propuestas")
+    liner: Mapped["Liner"] = relationship(back_populates="propuestas")
+
+    __table_args__ = (
+    UniqueConstraint('servicio_id', 'liner_id'),
+    )
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "servicio_id": self.servicio_id,
+            "liner_id": self.liner_id,
+            "precio": self.precio,
+            "mensaje": self.mensaje,
+            "estado": self.estado,
+            "created_at": self.created_at.isoformat()
+        } """
+
+
 class Liner(db.Model):
     __tablename__ = "liner"
 
@@ -186,6 +267,7 @@ class Liner(db.Model):
         return {
             "id": self.id,
             "nombre": self.liner_nombre,
-            "email": self.liner_email,
-            "foto": self.liner_foto,
+            "email": self.liner_email
         }
+
+    

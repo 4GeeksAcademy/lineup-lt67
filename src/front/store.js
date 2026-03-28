@@ -58,12 +58,18 @@ export default function storeReducer(store, action = {}) {
         tickets: action.payload
       }
 
+    case 'set_auth_admin':
+      return {
+        ...store,
+        authAdmin: action.payload
+      }
+
     case 'set_liners_list':
       return {
         ...store,
         liners: action.payload
-    };
-    
+      };
+
     default:
       throw Error('Unknown action.');
   }    
