@@ -7,26 +7,24 @@ export const PropuestaEdit = () => {
     const { id } = useParams()
     const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-    const [idCliente, setIdCliente] = useState('')
-    const [descripcion, setDescripcion] = useState('')
-    const [lugar, setLugar] = useState('')
-    const [urgencia, setUrgencia] = useState('')
+    const [idServicio, setIdServicio] = useState('')
+    const [idLiner, setIdLiner] = useState('')
+    const [mensaje, setMensaje] = useState('')
+    const [precio, setPrecio] = useState('')
     const [estado, setEstado] = useState('')
     const [date, setDate] = useState('')
-    const [idServicio, setIdServicio] = useState('')
     const navigate = useNavigate()
 
     function handleSubmit(e) {
         e.preventDefault();
 
         const data = {
-            'descripcion': descripcion,
-            'lugar': lugar,
-            'urgencia': urgencia,
+            'mensaje': mensaje,
+            'precio': precio,
             'estado': estado
         }
 
-        fetch(`${backendUrl}/api/servicios/${id}`,{
+        fetch(`${backendUrl}/api/propuestas/${id}`,{
             method: 'PUT',
             headers: {
                 "Content-Type": 'application/json'
@@ -34,20 +32,19 @@ export const PropuestaEdit = () => {
             body: JSON.stringify(data)
         })
         .then((resp) => {
-            if (resp.ok) navigate('/servicios')
+            if (resp.ok) navigate('/propuestas')
         })
 
     }
 
     useEffect(() => {
-        fetch(`${backendUrl}/api/servicios/${id}`)
+        fetch(`${backendUrl}/api/propuestas/${id}`)
         .then((resp) => resp.json())
         .then((data) => {
-            setIdServicio(data.id)
-            setIdCliente(data.id_cliente)
-            setDescripcion(data.descripcion)
-            setLugar(data.lugar)
-            setUrgencia(data.urgencia)
+            setIdServicio(data.servicio_id)
+            setIdLiner(data.liner_id)
+            setMensaje(data.mensaje)
+            setPrecio(data.precio)
             setEstado(data.estado)
             setDate(data.created_at)
         })
@@ -56,7 +53,7 @@ export const PropuestaEdit = () => {
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50">
             <div className="card p-4 shadow" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4">Editar servicio</h3>
+                <h3 className="text-center mb-4">Editar propuesta</h3>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
@@ -64,65 +61,54 @@ export const PropuestaEdit = () => {
                         <input
                         type="fullName"
                         className="form-control"
-                        placeholder="Enter full name"
+                        placeholder="servicio"
                         value={idServicio}
                         disabled
                         />
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Id Cliente</label>
+                        <label className="form-label">Id Liner</label>
                         <input
                         type="email"
                         className="form-control"
-                        placeholder="Enter email"
-                        value={idCliente}
+                        placeholder="liner"
+                        value={idLiner}
                         disabled
                         />
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Descripcion</label>
+                        <label className="form-label">Mensaje</label>
                         <input
                         type="fullName"
                         className="form-control"
-                        placeholder="Enter full name"
-                        value={descripcion}
-                        onChange={(e) => setDescripcion(e.target.value)}
+                        placeholder="mensaje"
+                        value={mensaje}
+                        onChange={(e) => setMensaje(e.target.value)}
                         required
                         />
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">lugar</label>
+                        <label className="form-label">Precio</label>
                         <input
                         type="fullName"
                         className="form-control"
-                        placeholder="Enter full name"
-                        value={lugar}
-                        onChange={(e) => setLugar(e.target.value)}
+                        placeholder="precio"
+                        value={precio}
+                        onChange={(e) => setPrecio(e.target.value)}
                         required
                         />
                     </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">urgencia</label>
-                        <input
-                        type="fullName"
-                        className="form-control"
-                        placeholder="Enter full name"
-                        value={urgencia}
-                        onChange={(e) => setUrgencia(e.target.value)}
-                        required
-                        />
-                    </div>
 
                     <div className="mb-3">
                         <label className="form-label">Estado</label>
                         <input
                         type="fullName"
                         className="form-control"
-                        placeholder="Enter full name"
+                        placeholder="estado"
                         value={estado}
                         onChange={(e) => setEstado(e.target.value)}
                         required
