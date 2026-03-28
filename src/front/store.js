@@ -56,7 +56,13 @@ export default function storeReducer(store, action = {}) {
         ...store,
         tickets: action.payload
       }
-    
+
+    case 'set_auth_admin':
+      return {
+        ...store,
+        authAdmin: action.payload
+      }
+
     default:
       throw Error('Unknown action.');
   }    

@@ -29,6 +29,8 @@ import { EstablecimientoDetail } from "./pages/EstablecimientoDetail";
 import { SucursalForm } from "./pages/SucursalForm";
 import { SucursalEdit } from "./pages/SucursalEdit"
 import { Favoritos } from "./pages/Favoritos";
+import { AdminLogin } from "./pages/AdminLogin";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import { Tickets } from "./pages/TicketsCRUD/Tickets";
 import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
@@ -56,35 +58,38 @@ export const router = createBrowserRouter(
         <Route path= "/" element={<Home />} />
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
-        <Route path="/clients" element={<Clientes />} />
         <Route path="/clients/login" element={<ClientLogin />} />
-        <Route path="/add_client" element={<ClientForm />} />
-        <Route path="/clients/:id" element={ <ClientDetail />} />
-        <Route path="/clients/edit/:id" element={ <EditClient />} />
-        <Route path="/tipos" element={<Tipos />} />
-        <Route path="/add_tipo" element={<TipoForm />} />
-        <Route path="/tipos/:id" element={ <TipoDetail />} />
-        <Route path="/tipos/edit/:id" element={ <EditTipo />} />
-        <Route path="/administradores" element={<Administradores />} />
-        <Route path="/add_admin" element={<AdminForm />} />
-        <Route path="/administradores/:id" element={<AdminDetail />} />
-        <Route path="/administradores/edit/:id" element={<EditAdmin />} />
-        <Route path="/establecimientos" element={<Establecimientos />} />
-        <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
-        <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
-        <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
-        <Route path="/sucursal/nueva" element={<SucursalForm />} />
-        <Route path="/sucursal/:id" element={<SucursalEdit />} />
         <Route path="/favoritos" element={<Favoritos />} />
-        <Route path="/tickets" element={<Tickets />} />
-        <Route path="/add_tickets" element={<TicketForm />} />
-        <Route path="/tickets/:id" element={<TicketDetail />} />
-        <Route path="/tickets/edit/:id" element={<TicketEdit />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
 
-        <Route path="/servicios" element={<Servicios />} />
-        <Route path="/add_servicios" element={<ServicioForm />} />
-        <Route path="/servicios/:id" element={<ServicioDetail />} />
-        <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/clients" element={<Clientes />} />
+          <Route path="/add_client" element={<ClientForm />} />
+          <Route path="/clients/:id" element={ <ClientDetail />} />
+          <Route path="/clients/edit/:id" element={ <EditClient />} />
+          <Route path="/tipos" element={<Tipos />} />
+          <Route path="/add_tipo" element={<TipoForm />} />
+          <Route path="/tipos/:id" element={ <TipoDetail />} />
+          <Route path="/tipos/edit/:id" element={ <EditTipo />} />
+          <Route path="/administradores" element={<Administradores />} />
+          <Route path="/add_admin" element={<AdminForm />} />
+          <Route path="/administradores/:id" element={<AdminDetail />} />
+          <Route path="/administradores/edit/:id" element={<EditAdmin />} />
+          <Route path="/establecimientos" element={<Establecimientos />} />
+          <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
+          <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+          <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
+          <Route path="/sucursal/nueva" element={<SucursalForm />} />
+          <Route path="/sucursal/:id" element={<SucursalEdit />} />
+          <Route path="/tickets" element={<Tickets />} />
+          <Route path="/add_tickets" element={<TicketForm />} />
+          <Route path="/tickets/:id" element={<TicketDetail />} />
+          <Route path="/tickets/edit/:id" element={<TicketEdit />} />
+          <Route path="/servicios" element={<Servicios />} />
+          <Route path="/add_servicios" element={<ServicioForm />} />
+          <Route path="/servicios/:id" element={<ServicioDetail />} />
+          <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
+        </Route>
       </Route>
     )
 );
