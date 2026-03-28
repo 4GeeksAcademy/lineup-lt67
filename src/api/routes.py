@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -57,6 +58,33 @@ def create_administrador():
     db.session.commit()
 
     return jsonify(new_admin.serialize()), 201
+
+@api.route('/administrador/login', methods=['POST'])
+def login_administrador():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+
+    email = (body.get("email") or "").strip()
+    password = body.get("password")
+
+    if not email or not password:
+        return jsonify({"msg": "Email y password son requeridos"}), 400
+
+    admin = db.session.execute(
+        select(Administrador).where(Administrador.email == email)
+    ).scalar_one_or_none()
+
+    if not admin or admin.password != password:
+        return jsonify({"msg": "Credenciales invalidas"}), 401
+    
+    access_token = create_access_token(identity=admin.id)
+
+    return jsonify({
+        "msg": "Login exitoso",
+        "access_token": access_token,
+        "admin": admin.serialize()
+    }), 200
 
 @api.route('/administrador/<int:id>', methods=['GET'])
 def get_administrador(id):
