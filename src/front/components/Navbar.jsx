@@ -30,6 +30,9 @@ export const Navbar = () => {
 					<Link to="/favoritos" className="me-2">
 						<button className="btn btn-outline-danger">Favoritos</button>
 					</Link>
+					<Link to="/liners" className="me-2">
+						<button className="btn btn-outline-primary">Liners</button>
+					</Link>
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>

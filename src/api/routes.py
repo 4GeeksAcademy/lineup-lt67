@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito
+from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Liner
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select, and_, func
@@ -687,3 +687,76 @@ def delete_favorito(client_id, favorito_id):
         "msg": "Favorito eliminado",
         "id": favorito_id
     }), 200
+
+@api.route('/liners', methods=['GET'])
+def get_liners():
+
+    liners = Liner.query.all()
+    result = list(map(lambda liner: liner.serialize(), liners))
+
+    return jsonify(result), 200
+
+
+@api.route('/liners/<int:liner_id>', methods=['GET'])
+def get_liner(liner_id):
+
+    liner = db.session.execute(select(Liner).where(Liner.id == liner_id)).scalar_one_or_none()
+    if not liner:
+        return jsonify({"msg": "Liner no encontrado"}), 404
+
+    return jsonify(liner.serialize()), 200
+
+@api.route('/liners', methods=['POST'])
+def create_liner():
+    body = request.get_json()
+    print("BODY RECIBIDO", body)
+
+    name = body.get("liner_nombre")
+    email = body.get("liner_email")
+    password = body.get("liner_password")
+
+    if not name or not email or not password:
+        return jsonify({"msg": "Faltan campos"}), 400
+
+    liner_existente = Liner.query.filter_by(liner_email=email).first()
+    if liner_existente:
+        return jsonify({"msg": "El liner ya existe"}), 400
+
+    new_liner = Liner(
+        liner_nombre=name,
+        liner_email=email,
+        liner_password=password
+    )
+
+    db.session.add(new_liner)
+    db.session.commit()
+
+    return jsonify(new_liner.serialize()), 201
+
+@api.route('/liners/<int:liner_id>', methods=['PUT'])
+def update_liner(liner_id):
+    liner = db.session.get(Liner, liner_id)
+    if not liner:
+        return jsonify({"msg": "Liner no encontrado"}), 404
+
+    body = request.get_json()
+    if body is None:
+        return jsonify({"msg": "Request body can't be empty"}), 400
+
+    liner.liner_nombre = body.get("liner_nombre", liner.liner_nombre)
+    liner.liner_email = body.get("liner_email", liner.liner_email)
+    liner.liner_foto = body.get("liner_foto", liner.liner_foto)
+
+    db.session.commit()
+    return jsonify(liner.serialize()), 200
+
+
+@api.route('/liners/<int:liner_id>', methods=['DELETE'])
+def delete_liner(liner_id):
+    liner = db.session.get(Liner, liner_id)
+    if not liner:
+        return jsonify({"msg": "Liner no encontrado"}), 404
+
+    db.session.delete(liner)
+    db.session.commit()
+    return jsonify({"msg": "Liner eliminado", "id": liner_id}), 200

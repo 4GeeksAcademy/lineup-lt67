@@ -35,6 +35,11 @@ import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
 import { TicketDetail } from "./pages/TicketsCRUD/TicketDetail";
 import { TicketEdit } from "./pages/TicketsCRUD/TicketEdit";
 
+import { Liners } from "./pages/Liners"
+import { AddLiner } from "./pages/AddLiner"
+import { EditLiner } from "./pages/EditLiner"
+import { LinerDetail } from "./pages/LinerDetail"
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -75,6 +80,10 @@ export const router = createBrowserRouter(
         <Route path="/add_tickets" element={<TicketForm />} />
         <Route path="/tickets/:id" element={<TicketDetail />} />
         <Route path="/tickets/edit/:id" element={<TicketEdit />} />
+        <Route path="/liners" element={<Liners />} />
+        <Route path="/add_liner" element={<AddLiner />} />
+        <Route path="/liners/:id" element={<LinerDetail />} />
+        <Route path="/liners/edit/:id" element={<EditLiner />} />
       </Route>
     )
 );
