@@ -180,18 +180,18 @@ class Servicio(db.Model):
     descripcion: Mapped[str] = mapped_column(String(255), nullable=False)
     lugar: Mapped[str] = mapped_column(String(255), nullable=False)
     urgencia: Mapped[str] = mapped_column(String(50), nullable=False)
+    precio_propuesto: Mapped[float] = mapped_column(Float, nullable=True)
     estado: Mapped[str] = mapped_column(String(50), nullable=False, default='abierto')
-    
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
     )
     client: Mapped["Client"] = relationship(back_populates="servicios")
 
-    """ propuestas: Mapped[list["Propuesta"]] = relationship(
+    propuestas: Mapped[list["Propuesta"]] = relationship(
         back_populates="servicio",
         cascade="all, delete-orphan"
-    ) """
+    )
 
     def serialize(self):
         return {
@@ -204,13 +204,13 @@ class Servicio(db.Model):
             "created_at": self.created_at.isoformat()
         }
 
-""" class Propuesta(db.Model):
+class Propuesta(db.Model):
     __tablename__ = "propuestas"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
     servicio_id: Mapped[int] = mapped_column(
-        ForeignKey("servicios.id"),
+        ForeignKey("servicio.id"),
         nullable=False
     )
 
@@ -231,7 +231,7 @@ class Servicio(db.Model):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.now(timezone.utc)
     )
 
     #Relaciones
@@ -251,7 +251,7 @@ class Servicio(db.Model):
             "mensaje": self.mensaje,
             "estado": self.estado,
             "created_at": self.created_at.isoformat()
-        } """
+        }
 
 
 class Liner(db.Model):
@@ -262,6 +262,11 @@ class Liner(db.Model):
     liner_email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     liner_password: Mapped[str] = mapped_column(nullable=False)
     liner_foto: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+
+    propuestas: Mapped[list["Propuesta"]] = relationship(
+        back_populates="liner",
+        cascade="all, delete-orphan"
+    )
 
     def serialize(self):
         return {
