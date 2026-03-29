@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const ClientLogin = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
+    const { dispatch } = useGlobalReducer();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -25,8 +27,12 @@ export const ClientLogin = () => {
                 if (!resp.ok) {
                     throw new Error(data.msg || "No fue posible iniciar sesión");
                 }
+                localStorage.setItem("tokenClient", data.access_token);
                 localStorage.setItem("loggedClient", JSON.stringify(data.client));
-                navigate("/favoritos");
+
+                dispatch({ type: "set_auth_client", payload: true });
+
+                navigate("/client/home");
             })
             .catch((err) => {
                 setError(err.message);

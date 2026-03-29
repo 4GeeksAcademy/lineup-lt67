@@ -32,6 +32,7 @@ import { Favoritos } from "./pages/Favoritos";
 import { AdminLogin } from "./pages/AdminLogin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { EstablecimientoLogin } from "./pages/EstablecimientoLogin"
+import { ProtectedRouteClient } from "./components/ProtectedRouteClient";
 
 import { Tickets } from "./pages/TicketsCRUD/Tickets";
 import { TicketForm } from "./pages/TicketsCRUD/TicketForm";
@@ -70,8 +71,7 @@ export const router = createBrowserRouter(
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
         <Route path="/clients/login" element={<ClientLogin />} />
-        <Route path="/establecimiento/login" element={<EstablecimientoLogin
-         />} />
+        <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />
         <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route element={<ProtectedRoute />}>
@@ -109,6 +109,10 @@ export const router = createBrowserRouter(
 
           
 
+        </Route>
+
+        <Route element={<ProtectedRouteClient />}>
+            <Route path="/client/home" element={<Home />} />
         </Route>
 
         <Route path="/propuestas" element={<Propuestas />} />

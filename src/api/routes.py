@@ -175,6 +175,7 @@ def create_client():
 @api.route('/clients/login', methods=['POST'])
 def login_client():
     body = request.get_json()
+
     if body is None:
         return jsonify({"msg": "Request body can't be empty"}), 400
 
@@ -191,8 +192,15 @@ def login_client():
     if not client or client.password != password:
         return jsonify({"msg": "Credenciales invalidas"}), 401
 
+    # generar token con rol
+    access_token = create_access_token(identity={
+        "id": client.id,
+        "role": "cliente"
+    })
+
     return jsonify({
         "msg": "Login exitoso",
+        "access_token": access_token,
         "client": client.serialize()
     }), 200
 
