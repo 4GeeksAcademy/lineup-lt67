@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -193,10 +193,10 @@ def login_client():
         return jsonify({"msg": "Credenciales invalidas"}), 401
 
     # generar token con rol
-    access_token = create_access_token(identity={
-        "id": client.id,
-        "role": "cliente"
-    })
+    access_token = create_access_token(
+        identity=str(client.id),
+        additional_claims={"role": "cliente"}
+    )
 
     return jsonify({
         "msg": "Login exitoso",
@@ -1021,3 +1021,60 @@ def delete_propuesta(propuesta_id):
     db.session.commit()
 
     return jsonify({"msg": "Propuesta eliminada"}), 200
+
+@api.route('/sucursal/<int:sucursal_id>/join', methods=['POST'])
+@jwt_required()
+def join_sucursal_queue(sucursal_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    sucursal = db.session.get(Sucursal, sucursal_id)
+    if not sucursal:
+        return jsonify({"msg": "Sucursal no encontrada"}), 404
+
+    if not sucursal.fila_activa:
+        return jsonify({"msg": "La fila de esta sucursal no está activa"}), 400
+
+    ticket_existente = db.session.execute(
+        select(Ticket).where(
+            and_(
+                Ticket.client_id == client_id,
+                Ticket.id_sucursal == sucursal_id,
+                Ticket.estado == "esperando"
+            )
+        )
+    ).scalar_one_or_none()
+
+    if ticket_existente:
+        return jsonify({"msg": "Ya tenés un ticket activo en esta sucursal"}), 400
+
+    posicion_actual = db.session.execute(
+        select(func.max(Ticket.posicion)).where(
+            and_(
+                Ticket.id_sucursal == sucursal_id,
+                Ticket.estado == "esperando"
+            )
+        )
+    ).scalar()
+
+    nueva_posicion = 1 if posicion_actual is None else posicion_actual + 1
+
+    new_ticket = Ticket(
+        client_id=client_id,
+        id_sucursal=sucursal_id,
+        estado="esperando",
+        posicion=nueva_posicion
+    )
+
+    db.session.add(new_ticket)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Te uniste a la fila con éxito",
+        "ticket": new_ticket.serialize()
+    }), 201

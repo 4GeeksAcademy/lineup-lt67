@@ -54,6 +54,8 @@ import { PropuestaForm } from "./pages/PropuestasCRUD/PropuestaForm";
 import { PropuestaDetail } from "./pages/PropuestasCRUD/PropuestaDetail";
 import { PropuestaEdit } from "./pages/PropuestasCRUD/PropuestaEdit";
 
+import { ClientHome } from "./pages/ClientHome";
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -70,7 +72,7 @@ export const router = createBrowserRouter(
         <Route path= "/" element={<Home />} />
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
-        <Route path="/clients/login" element={<ClientLogin />} />
+        <Route path="/client/login" element={<ClientLogin />} />
         <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />
         <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -107,18 +109,20 @@ export const router = createBrowserRouter(
           <Route path="/liners/:id" element={<LinerDetail />} />
           <Route path="/liners/edit/:id" element={<EditLiner />} />
 
+          <Route path="/propuestas" element={<Propuestas />} />
+          <Route path="/add_propuestas" element={<PropuestaForm />} />
+          <Route path="/propuestas/:id" element={<PropuestaDetail />} />
+          <Route path="/propuestas/edit/:id" element={<PropuestaEdit />} />
+
           
 
         </Route>
 
         <Route element={<ProtectedRouteClient />}>
-            <Route path="/client/home" element={<Home />} />
+            <Route path="/client/home" element={<ClientHome />} />
         </Route>
 
-        <Route path="/propuestas" element={<Propuestas />} />
-        <Route path="/add_propuestas" element={<PropuestaForm />} />
-        <Route path="/propuestas/:id" element={<PropuestaDetail />} />
-        <Route path="/propuestas/edit/:id" element={<PropuestaEdit />} />
+        
       </Route>
     )
 );
