@@ -437,31 +437,31 @@ def delete_establecimiento(establecimiento_id):
     db.session.commit()
     return jsonify({"msg": "Establecimiento eliminado", "id": establecimiento_id}), 200
 
-@api.route('/establecimiento/login', methods=['POST'])
+@api.route("/establecimiento/login", methods=['POST'])
 def login_establecimiento():
     body = request.get_json()
     if body is None:
         return jsonify({"msg": "Request body can't be empty"}), 400
 
-    email = (body.get("email") or "").strip()
+    nombre = (body.get("nombre") or "").strip()
     password = body.get("password")
 
-    if not email or not password:
-        return jsonify({"msg": "Email y password son requeridos"}), 400
+    if not nombre or not password:
+        return jsonify({"msg": "nombre y password son requeridos"}), 400
 
-    estab = db.session.execute(
-        select(Establecimiento).where(Establecimiento.email == email)
+    establecimiento = db.session.execute(
+        select(Establecimiento).where(Establecimiento.nombre == nombre)
     ).scalar_one_or_none()
 
-    if not estab or estab.password != password:
+    if not establecimiento or establecimiento.password != password:
         return jsonify({"msg": "Credenciales invalidas"}), 401
     
-    access_token = create_access_token(identity=estab.id)
+    access_token = create_access_token(identity=establecimiento.id)
 
     return jsonify({
         "msg": "Login exitoso",
         "access_token": access_token,
-        "estab": estab.serialize()
+        "establecimiento": establecimiento.serialize()
     }), 200
 
 @api.route('/sucursal', methods=['GET'])
