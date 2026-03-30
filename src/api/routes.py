@@ -986,3 +986,21 @@ def delete_propuesta(propuesta_id):
     db.session.commit()
 
     return jsonify({"msg": "Propuesta eliminada"}), 200
+
+
+@api.route('/liners/login', methods=['POST'])
+def login_liner():
+    body = request.get_json()
+
+    email = body.get("liner_email")
+    password = body.get("liner_password")
+
+    if not email or not password:
+        return jsonify({"msg": "Faltan campos"}), 400
+
+    liner = Liner.query.filter_by(liner_email=email).first()
+
+    if not liner or liner.liner_password != password:
+        return jsonify({"msg": "Credenciales incorrectas"}), 401
+
+    return jsonify({"msg": "Login exitoso", "liner": liner.serialize()}), 200
