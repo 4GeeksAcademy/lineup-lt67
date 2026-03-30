@@ -64,6 +64,12 @@ export default function storeReducer(store, action = {}) {
         authAdmin: action.payload
       }
 
+    case 'set_auth_establecimiento':
+      return {
+        ...store,
+        authEstablecimiento: action.payload
+      }
+
     case 'set_liners_list':
       return {
         ...store,
