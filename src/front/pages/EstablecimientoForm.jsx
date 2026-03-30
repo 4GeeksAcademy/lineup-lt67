@@ -8,7 +8,7 @@ export const EstablecimientoForm = () => {
     const [nombre, setNombre] = useState("");
     const [tipoId, setTipoId] = useState("");
     const [totalSucursales, setTotalSucursales] = useState(0);
-    const [clave, setClave] = useState("");
+    const [password, setPassword] = useState("");
     const [logo, setLogo] = useState("");
     const [tipos, setTipos] = useState([]);
 
@@ -25,7 +25,7 @@ export const EstablecimientoForm = () => {
             nombre: nombre.trim(),
             tipo_id: Number(tipoId),
             total_sucursales: Number(totalSucursales) || 0,
-            clave: clave.trim(),
+            password: password.trim(),
             logo: logo.trim() || null,
         };
         fetch(`${backendUrl}/api/establecimientos`, {
@@ -83,14 +83,8 @@ export const EstablecimientoForm = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Clave</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={clave}
-                            onChange={(e) => setClave(e.target.value)}
-                            required
-                        />
+                        <label className="form-label">Password</label>
+                        <input type="password" className="form-control" value={ password } onChange = {(e) => setPassword(e.target.value)} required />
                     </div>
 
                     <div className="mb-3">
