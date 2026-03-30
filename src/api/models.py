@@ -82,7 +82,8 @@ class Establecimiento(db.Model):
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     tipo_id: Mapped[int] = mapped_column(ForeignKey("tipo.id"), nullable=False)
     total_sucursales: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    clave: Mapped[str] = mapped_column(String(120), nullable=False)
+    #clave: Mapped[str] = mapped_column(String(120), nullable=False)
+    password: Mapped[str] = mapped_column(String(120), nullable=False)
     logo: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     tipo: Mapped["Tipo"] = relationship(back_populates="establecimientos")
@@ -94,7 +95,8 @@ class Establecimiento(db.Model):
             "tipo_id": self.tipo_id,
             "tipo_nombre": self.tipo.nombre if self.tipo else None,
             "total_sucursales": self.total_sucursales,
-            "clave": self.clave,
+            #"clave": self.clave,
+            "password": self.password,
             "logo": self.logo,
         }
 
