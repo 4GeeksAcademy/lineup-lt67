@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner
+from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select, and_, func
@@ -878,3 +878,111 @@ def delete_liner(liner_id):
     db.session.delete(liner)
     db.session.commit()
     return jsonify({"msg": "Liner eliminado", "id": liner_id}), 200
+
+@api.route('/propuestas', methods=['GET'])
+def get_propuestas():
+
+    query = select(Propuesta)
+
+    servicio_id = request.args.get("servicio_id")
+    liner_id = request.args.get("liner_id")
+    estado = request.args.get("estado")
+
+    if servicio_id:
+        query = query.where(Propuesta.servicio_id == int(servicio_id))
+
+    if liner_id:
+        query = query.where(Propuesta.liner_id == int(liner_id))
+
+    if estado:
+        query = query.where(Propuesta.estado == estado)
+
+    propuestas = db.session.execute(query).scalars().all()
+
+    return jsonify([p.serialize() for p in propuestas]), 200
+
+@api.route('/propuestas/<int:propuesta_id>', methods=['GET'])
+def get_propuesta(propuesta_id):
+
+    propuesta = db.session.get(Propuesta, propuesta_id)
+
+    if not propuesta:
+        return jsonify({"msg": "Propuesta no encontrada"}), 404
+
+    return jsonify(propuesta.serialize()), 200
+
+@api.route('/propuestas', methods=['POST'])
+def create_propuesta():
+
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    required_fields = ["servicio_id", "liner_id", "precio"]
+
+    for field in required_fields:
+        if field not in body:
+            return jsonify({"msg": f"Falta {field}"}), 400
+
+    existing = db.session.execute(
+        select(Propuesta).where(
+            Propuesta.servicio_id == body["servicio_id"],
+            Propuesta.liner_id == body["liner_id"]
+        )
+    ).scalar_one_or_none()
+
+    if existing:
+        return jsonify({"msg": "Este liner ya se postuló a este servicio"}), 400
+
+    propuesta = Propuesta(
+        servicio_id=body["servicio_id"],
+        liner_id=body["liner_id"],
+        precio=body["precio"],
+        mensaje=body.get("mensaje"),
+        estado="pendiente"
+    )
+
+    db.session.add(propuesta)
+    db.session.commit()
+
+    return jsonify(propuesta.serialize()), 201
+
+@api.route('/propuestas/<int:propuesta_id>', methods=['PUT'])
+def update_propuesta(propuesta_id):
+
+    propuesta = db.session.get(Propuesta, propuesta_id)
+
+    if not propuesta:
+        return jsonify({"msg": "Propuesta no encontrada"}), 404
+
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    if "precio" in body:
+        propuesta.precio = body["precio"]
+
+    if "mensaje" in body:
+        propuesta.mensaje = body["mensaje"]
+
+    if "estado" in body:
+        propuesta.estado = body["estado"]
+
+    db.session.commit()
+
+    return jsonify(propuesta.serialize()), 200
+
+@api.route('/propuestas/<int:propuesta_id>', methods=['DELETE'])
+def delete_propuesta(propuesta_id):
+
+    propuesta = db.session.get(Propuesta, propuesta_id)
+
+    if not propuesta:
+        return jsonify({"msg": "Propuesta no encontrada"}), 404
+
+    db.session.delete(propuesta)
+    db.session.commit()
+
+    return jsonify({"msg": "Propuesta eliminada"}), 200
