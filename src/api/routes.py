@@ -1078,3 +1078,24 @@ def join_sucursal_queue(sucursal_id):
         "msg": "Te uniste a la fila con éxito",
         "ticket": new_ticket.serialize()
     }), 201
+
+@api.route('/clients/me/tickets', methods=['GET'])
+@jwt_required()
+def get_my_tickets():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+    print('hola')
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    tickets = db.session.execute(
+        select(Ticket)
+        .where(Ticket.client_id == client_id)
+        .order_by(Ticket.created_at.desc())
+    ).scalars().all()
+    print(tickets)
+    print('hola')
+    return jsonify([ticket.serialize() for ticket in tickets]), 200

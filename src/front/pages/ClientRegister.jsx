@@ -1,38 +1,44 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer";
 
-export const ClientLogin = () => {
+export const ClientRegister = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
-    const { dispatch } = useGlobalReducer();
 
+    const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     function handleSubmit(e) {
         e.preventDefault();
         setError("");
+        setSuccess("");
 
-        fetch(`${backendUrl}/api/clients/login`, {
+        fetch(`${backendUrl}/api/clients`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email: email.trim(), password }),
+            body: JSON.stringify({
+                full_name: fullName.trim(),
+                email: email.trim(),
+                password
+            }),
         })
             .then(async (resp) => {
                 const data = await resp.json();
+
                 if (!resp.ok) {
-                    throw new Error(data.msg || "No fue posible iniciar sesión");
+                    throw new Error(data.msg || "No fue posible registrar el cliente");
                 }
-                localStorage.setItem("tokenClient", data.access_token);
-                localStorage.setItem("loggedClient", JSON.stringify(data.client));
 
-                dispatch({ type: "set_auth_client", payload: true });
+                setSuccess("Registro exitoso. Ahora podés iniciar sesión.");
 
-                navigate("/client/home");
+                setTimeout(() => {
+                    navigate("/client/login");
+                }, 1200);
             })
             .catch((err) => {
                 setError(err.message);
@@ -41,16 +47,28 @@ export const ClientLogin = () => {
 
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
-            <div className="card p-4 shadow" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4">Login Cliente</h3>
+            <div className="card p-4 shadow border-primary" style={{ width: "22rem" }}>
+                <h3 className="text-center mb-4 text-primary">Registro Cliente</h3>
 
                 <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label className="form-label">Nombre completo</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Juan Pérez"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
+                        />
+                    </div>
+
                     <div className="mb-3">
                         <label className="form-label">Email</label>
                         <input
                             type="email"
                             className="form-control"
-                            placeholder="Ingresa tu email"
+                            placeholder="cliente@ejemplo.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -62,20 +80,22 @@ export const ClientLogin = () => {
                         <input
                             type="password"
                             className="form-control"
-                            placeholder="Ingresa tu password"
+                            placeholder="Elegí una contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
 
-                    {error ? <p className="text-danger small">{error}</p> : null}
+                    {error && <p className="text-danger small">{error}</p>}
+                    {success && <p className="text-success small">{success}</p>}
 
-                    <button type="submit" className="btn btn-primary w-100">
-                        Iniciar sesión
+                    <button type="submit" className="btn btn-primary w-100 mb-2">
+                        Registrarme
                     </button>
-                    <Link to="/client/register" className="btn btn-outline-secondary w-100 mt-2">
-                        Crear cuenta
+
+                    <Link to="/client/login" className="btn btn-outline-secondary w-100">
+                        Ya tengo cuenta
                     </Link>
                 </form>
             </div>

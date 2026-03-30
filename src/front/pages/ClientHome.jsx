@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export const ClientHome = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -9,6 +10,7 @@ export const ClientHome = () => {
     const [error, setError] = useState("");
 
     const loggedClient = JSON.parse(localStorage.getItem("loggedClient"));
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadData = async () => {
@@ -81,8 +83,7 @@ export const ClientHome = () => {
                 throw new Error(data.msg || "No fue posible unirse a la fila");
             }
 
-            alert("Te uniste a la fila con éxito");
-            console.log(data.ticket);
+            navigate("/client/tickets")
         } catch (error) {
             alert(error.message);
         }
@@ -94,8 +95,12 @@ export const ClientHome = () => {
                 <span className="navbar-brand mb-0 h1">LineUp</span>
 
                 <div className="d-flex align-items-center gap-3">
+                    <Link to="/client/tickets">
+                        <button className="btn btn-outline-primary">Mis tickets</button>
+                    </Link>
+
                     <span className="fw-semibold">
-                        {loggedClient.full_name}
+                        {loggedClient?.full_name || "Cliente"}
                     </span>
                 </div>
             </nav>
