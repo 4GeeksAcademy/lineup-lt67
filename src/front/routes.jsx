@@ -48,6 +48,7 @@ import { Liners } from "./pages/Liners"
 import { AddLiner } from "./pages/AddLiner"
 import { EditLiner } from "./pages/EditLiner"
 import { LinerDetail } from "./pages/LinerDetail"
+import { LinerLogin } from "./pages/LinerLogin"
 
 import { Propuestas } from "./pages/PropuestasCRUD/Propuestas";
 import { PropuestaForm } from "./pages/PropuestasCRUD/PropuestaForm";
@@ -83,6 +84,7 @@ export const router = createBrowserRouter(
         <Route element={<ProtectedRoute />}>
           <Route path="/clients" element={<Clientes />} />
           <Route path="/add_client" element={<ClientForm />} />
+          <Route path="/liner/login" element={<LinerLogin />} />
           <Route path="/clients/:id" element={ <ClientDetail />} />
           <Route path="/clients/edit/:id" element={ <EditClient />} />
           <Route path="/tipos" element={<Tipos />} />
