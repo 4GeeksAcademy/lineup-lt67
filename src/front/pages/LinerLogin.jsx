@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export const LinerLogin = () => {
-    const navigate = useNavigate();
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const navigate = useNavigate()
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -23,10 +23,10 @@ export const LinerLogin = () => {
         .then(resp => resp.json())
         .then(data => {
             if (data.liner) {
-                localStorage.setItem("liner", JSON.stringify(data.liner));
-                navigate("/liner/dashboard"); // o a donde quieras mandarlo
+                localStorage.setItem("liner", JSON.stringify(data.liner))
+                navigate("/")
             } else {
-                setError(data.msg);
+                setError(data.msg)
             }
         });
     }
