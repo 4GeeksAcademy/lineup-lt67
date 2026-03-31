@@ -22,16 +22,21 @@ import { AdminForm } from "./pages/AdminForm";
 import { EditAdmin } from "./pages/EditAdmin";
 import { AdminDetail } from "./pages/AdminDetail"
 import { ClientDetail } from "./pages/ClientDetail";
-import { Establecimientos } from "./pages/Establecimientos";
-import { EstablecimientoForm } from "./pages/EstablecimientoForm";
-import { EditEstablecimiento } from "./pages/EditEstablecimiento";
-import { EstablecimientoDetail } from "./pages/EstablecimientoDetail";
-import { SucursalForm } from "./pages/SucursalForm";
-import { SucursalEdit } from "./pages/SucursalEdit"
 import { Favoritos } from "./pages/Favoritos";
 import { AdminLogin } from "./pages/AdminLogin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { EstablecimientoLogin } from "./pages/EstablecimientoLogin"
+
+import { Establecimientos } from "./pages/EstablecimientosCRUD/Establecimientos";
+import { EstablecimientoForm } from "./pages/EstablecimientosCRUD/EstablecimientoForm";
+import { EstablecimientoEdit } from "./pages/EstablecimientosCRUD/EstablecimientoEdit";
+import { EstablecimientoDetail } from "./pages/EstablecimientosCRUD/EstablecimientoDetail";
+import { EstablecimientoLogin } from "./pages/EstablecimientosCRUD/EstablecimientoLogin"
+import { EstablecimientoDashboard } from "./pages/EstablecimientosCRUD/EstablecimientoDashboard"
+
+import { SucursalForm } from "./pages/EstablecimientosCRUD/SucursalForm";
+import { SucursalEdit } from "./pages/EstablecimientosCRUD/SucursalEdit"
+import { SucursalDashboard } from "./pages/EstablecimientosCRUD/SucursalDashboard"
+
 import { ProtectedRouteClient } from "./components/ProtectedRouteClient";
 
 import { Tickets } from "./pages/TicketsCRUD/Tickets";
@@ -78,10 +83,22 @@ export const router = createBrowserRouter(
         <Route path="/demo" element={<Demo />} />
         <Route path="/client/register" element={<ClientRegister />} />
         <Route path="/client/login" element={<ClientLogin />} />
-        <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />
         <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/liner/login" element={<LinerLogin />} />
+
+        {/* ESTABLECIMIENTO NOT PROTECTED*/}
+        <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />
+        <Route path="/establecimientos" element={<Establecimientos />} />
+        <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
+        <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+        <Route path="/establecimientos/:id" element={<EstablecimientoEdit />} />
+        <Route path="/establecimiento/sucursal/:id" element={<SucursalEdit />} />
+        <Route path="/establecimiento/sucursal/:id" element={<SucursalDashboard />} />
+        <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
+        <Route path="/sucursal/nueva" element={<SucursalForm />} />
+        <Route path="/sucursal/dashboard" element={<SucursalDashboard />} />
+
         <Route element={<ProtectedRoute />}>
           <Route path="/clients" element={<Clientes />} />
           <Route path="/add_client" element={<ClientForm />} />
@@ -95,12 +112,6 @@ export const router = createBrowserRouter(
           <Route path="/add_admin" element={<AdminForm />} />
           <Route path="/administradores/:id" element={<AdminDetail />} />
           <Route path="/administradores/edit/:id" element={<EditAdmin />} />
-          <Route path="/establecimientos" element={<Establecimientos />} />
-          <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
-          <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
-          <Route path="/establecimientos/:id" element={<EditEstablecimiento />} />
-          <Route path="/sucursal/nueva" element={<SucursalForm />} />
-          <Route path="/sucursal/:id" element={<SucursalEdit />} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/add_tickets" element={<TicketForm />} />
           <Route path="/tickets/:id" element={<TicketDetail />} />
@@ -128,6 +139,8 @@ export const router = createBrowserRouter(
             <Route path="/client/home" element={<ClientHome />} />
             <Route path="/client/tickets" element={<ClientTickets />} />
         </Route>
+
+
 
         
       </Route>

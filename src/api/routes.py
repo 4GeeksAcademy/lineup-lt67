@@ -356,8 +356,8 @@ def create_establecimiento():
         return jsonify({"msg": "El nombre es requerido"}), 400
     if body.get("tipo_id") is None:
         return jsonify({"msg": "El tipo es requerido"}), 400
-    if not body.get("clave"):
-        return jsonify({"msg": "La clave es requerida"}), 400
+    if not body.get("password"):
+        return jsonify({"msg": "La password es requerida"}), 400
 
     tipo = db.session.get(Tipo, int(body["tipo_id"]))
     if not tipo:
@@ -375,7 +375,7 @@ def create_establecimiento():
         nombre=body["nombre"].strip(),
         tipo_id=tipo.id,
         total_sucursales=total,
-        clave=body["clave"].strip(),
+        password=body["password"].strip(),
         logo=(body.get("logo") or "").strip() or None,
     )
     db.session.add(nuevo)
@@ -420,11 +420,11 @@ def update_establecimiento(establecimiento_id):
         except (TypeError, ValueError):
             return jsonify({"msg": "total_sucursales debe ser un numero entero"}), 400
 
-    if "clave" in body:
-        clave = (body.get("clave") or "").strip()
+    if "password" in body:
+        password = (body.get("password") or "").strip()
         if not clave:
-            return jsonify({"msg": "La clave no puede estar vacia"}), 400
-        est.clave = clave
+            return jsonify({"msg": "El password no puede estar vacia"}), 400
+        est.password = password
 
     if "logo" in body:
         est.logo = (body.get("logo") or "").strip() or None

@@ -84,6 +84,12 @@ export default function storeReducer(store, action = {}) {
         ...store,
         authClient: action.payload
       }
+    
+     case 'set_auth_establecimiento':
+      return {
+        ...store,
+        authEstablecimiento: action.payload
+      } 
 
     default:
       throw Error('Unknown action.');
