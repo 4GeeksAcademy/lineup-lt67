@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-export const EditEstablecimiento = () => {
+export const EstablecimientoEdit = () => {
     const { id } = useParams();
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();

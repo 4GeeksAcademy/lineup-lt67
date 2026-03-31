@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer";
+import useGlobalReducer from "../../hooks/useGlobalReducer";
 import "./EstablecimientoDashboard.css"
 
 export const EstablecimientoLogin = () => {
@@ -31,7 +31,7 @@ export const EstablecimientoLogin = () => {
                 // Guardar el token y la sesión
                 localStorage.setItem("tokenEstablecimiento", data.access_token);
                 localStorage.setItem("loggedEstablecimiento", JSON.stringify(data.establecimiento));
-                
+
                 // Actualizar Global Store
                 dispatch({ type: "set_auth_establecimiento", payload: true });
 

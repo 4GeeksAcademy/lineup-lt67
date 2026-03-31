@@ -16,6 +16,11 @@ export const SucursalForm = () => {
     function handleSubmit(e) {
         e.preventDefault();
 
+        if (!idEstablecimiento) {
+            alert("No se especificó un establecimiento");
+            return;
+        }
+
         const data = {
             id_establecimiento: parseInt(idEstablecimiento),
             nombre: nombre,
@@ -30,7 +35,7 @@ export const SucursalForm = () => {
             body: JSON.stringify(data)
         })
         .then((resp) => {
-            if (resp.ok) navigate(`/establecimientos/${idEstablecimiento}/detalle`)
+            if (resp.ok) navigate(`/establecimiento/dashboard`)
         })
     }
     

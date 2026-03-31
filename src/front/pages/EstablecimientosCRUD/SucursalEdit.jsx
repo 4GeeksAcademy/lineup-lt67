@@ -41,14 +41,14 @@ export const SucursalEdit = () => {
             body: JSON.stringify(data)
         })
         .then((resp) => {
-            if (resp.ok) navigate(`/establecimientos/${idEstablecimiento}/detalle`)
+            if (resp.ok) navigate(`/establecimiento/dashboard`)
         })
     }
 
     function deleteSucursal() {
         fetch(`${backendUrl}/api/sucursal/${id}`, { method: 'DELETE' })
         .then((resp) => {
-            if (resp.ok) navigate(`/establecimientos/${idEstablecimiento}/detalle`)
+            if (resp.ok) navigate(`/establecimiento/dashboard`)
         })
     }
 
@@ -56,7 +56,7 @@ export const SucursalEdit = () => {
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
             <div className="card p-4 shadow position-relative" style={{ width: "22rem" }}>
                 <button
-                    onClick={() => navigate(`/establecimientos/${idEstablecimiento}/detalle`)}
+                    onClick={() => navigate(`/establecimiento/dashboard`)}
                     className="btn-close position-absolute top-0 end-0 m-2"
                 />
                 <h3 className="text-center mb-4">Editar Sucursal</h3>
