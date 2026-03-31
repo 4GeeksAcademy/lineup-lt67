@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import "./EstablecimientoDashboard.css"
 
 export const EstablecimientoLogin = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -35,7 +36,7 @@ export const EstablecimientoLogin = () => {
                 dispatch({ type: "set_auth_establecimiento", payload: true });
 
                 // Redirigir al inicio de administración
-                navigate("/");
+                navigate("/establecimiento/dashboard");
             })
             .catch((err) => {
                 setError(err.message);

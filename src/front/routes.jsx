@@ -31,7 +31,10 @@ import { SucursalEdit } from "./pages/SucursalEdit"
 import { Favoritos } from "./pages/Favoritos";
 import { AdminLogin } from "./pages/AdminLogin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+
 import { EstablecimientoLogin } from "./pages/EstablecimientoLogin"
+import { EstablecimientoDashboard } from "./pages/EstablecimientoDashboard"
+
 import { ProtectedRouteClient } from "./components/ProtectedRouteClient";
 
 import { Tickets } from "./pages/TicketsCRUD/Tickets";
@@ -82,6 +85,7 @@ export const router = createBrowserRouter(
         <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/liner/login" element={<LinerLogin />} />
+        <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/clients" element={<Clientes />} />
           <Route path="/add_client" element={<ClientForm />} />
@@ -128,6 +132,8 @@ export const router = createBrowserRouter(
             <Route path="/client/home" element={<ClientHome />} />
             <Route path="/client/tickets" element={<ClientTickets />} />
         </Route>
+
+
 
         
       </Route>
