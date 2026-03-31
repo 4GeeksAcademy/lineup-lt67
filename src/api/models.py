@@ -237,7 +237,6 @@ class Propuesta(db.Model):
         default=datetime.now(timezone.utc)
     )
 
-    #Relaciones
     servicio: Mapped["Servicio"] = relationship(back_populates="propuestas")
     liner: Mapped["Liner"] = relationship(back_populates="propuestas")
 

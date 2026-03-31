@@ -30,6 +30,10 @@ export const ClientNavbar = () => {
                     <button className="btn btn-outline-primary">Mis tickets</button>
                 </Link>
 
+                <Link to="/client/services">
+                    <button className="btn btn-outline-success">Servicios</button>
+                </Link>
+
                 <span className="fw-semibold ms-2">
                     {loggedClient?.full_name || "Cliente"}
                 </span>
