@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ClientNavbar } from "../components/ClientNavbar";
 
 export const ClientTickets = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -8,7 +9,6 @@ export const ClientTickets = () => {
     const [error, setError] = useState("");
     const [showQr, setShowQr] = useState(false);
 
-    const loggedClient = JSON.parse(localStorage.getItem("loggedClient"));
 
     const loadTickets = async () => {
         const token = localStorage.getItem("tokenClient");
@@ -46,13 +46,11 @@ export const ClientTickets = () => {
         const token = localStorage.getItem("tokenClient");
 
         try {
-            const resp = await fetch(`${backendUrl}/api/tickets/${ticketId}`, {
+            const resp = await fetch(`${backendUrl}/api/clients/me/tickets/${ticketId}/cancel`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ estado: "cancelado" })
+                }
             });
 
             const data = await resp.json();
@@ -78,15 +76,7 @@ export const ClientTickets = () => {
 
     return (
         <div className="container-fluid px-0">
-            <nav className="navbar bg-light border-bottom px-4">
-                <span className="navbar-brand mb-0 h1">LineUp</span>
-
-                <div className="d-flex align-items-center gap-3">
-                    <span className="fw-semibold">
-                        {loggedClient?.full_name || "Cliente"}
-                    </span>
-                </div>
-            </nav>
+            <ClientNavbar />
 
             <div className="container py-4">
                 <h1 className="mb-4">Mis tickets</h1>

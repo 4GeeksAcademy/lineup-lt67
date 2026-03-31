@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ClientNavbar } from "../components/ClientNavbar";
 
 export const ClientHome = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -9,7 +10,6 @@ export const ClientHome = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const loggedClient = JSON.parse(localStorage.getItem("loggedClient"));
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,8 +49,8 @@ export const ClientHome = () => {
                 (est) => est.id === sucursal.id_establecimiento
             );
 
-            const tipoNombre = establecimiento.tipo_nombre
-            const establecimientoNombre = establecimiento.nombre
+            const tipoNombre = establecimiento?.tipo_nombre || "Sin tipo";
+            const establecimientoNombre = establecimiento?.nombre || "Establecimiento sin nombre";
 
             if (!resultado[tipoNombre]) {
                 resultado[tipoNombre] = {};
@@ -91,19 +91,7 @@ export const ClientHome = () => {
 
     return (
         <div className="container-fluid px-0">
-            <nav className="navbar bg-light border-bottom px-4">
-                <span className="navbar-brand mb-0 h1">LineUp</span>
-
-                <div className="d-flex align-items-center gap-3">
-                    <Link to="/client/tickets">
-                        <button className="btn btn-outline-primary">Mis tickets</button>
-                    </Link>
-
-                    <span className="fw-semibold">
-                        {loggedClient?.full_name || "Cliente"}
-                    </span>
-                </div>
-            </nav>
+            <ClientNavbar />
 
             <div className="container py-4">
                 <h1 className="mb-4">Sucursales disponibles</h1>

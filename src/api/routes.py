@@ -154,6 +154,8 @@ def create_client():
         return jsonify({"msg": "An Email is required"}), 400
     if not body.get("password"):
         return jsonify({"msg": "A password is required"}), 400
+    if not body.get("full_name"):
+        return jsonify({"msg": "Full name is required"}), 400
 
     client = db.session.execute(select(Client).where(Client.email == body['email'])).scalar_one_or_none()
     if client:
@@ -1117,3 +1119,35 @@ def login_liner():
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
     return jsonify({"msg": "Login exitoso", "liner": liner.serialize()}), 200
+
+@api.route('/clients/me/tickets/<int:ticket_id>/cancel', methods=['PUT'])
+@jwt_required()
+def cancel_my_ticket(ticket_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    ticket = db.session.get(Ticket, ticket_id)
+
+    if not ticket:
+        return jsonify({"msg": "Ticket no encontrado"}), 404
+
+    if ticket.client_id != client_id:
+        return jsonify({"msg": "No autorizado para cancelar este ticket"}), 403
+
+    if ticket.estado in ["atendido", "cancelado"]:
+        return jsonify({"msg": "No se puede cancelar un ticket cerrado"}), 400
+
+    ticket.estado = "cancelado"
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Ticket cancelado con éxito",
+        "ticket": ticket.serialize()
+    }), 200
+
+
