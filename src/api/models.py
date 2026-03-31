@@ -202,6 +202,7 @@ class Servicio(db.Model):
             "descripcion": self.descripcion,
             "lugar": self.lugar,
             "urgencia": self.urgencia,
+            "precio_propuesto": self.precio_propuesto,
             "estado": self.estado,
             "created_at": self.created_at.isoformat()
         }
