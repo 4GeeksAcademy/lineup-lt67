@@ -39,6 +39,14 @@ export const Navbar = () => {
 					<Link to="/establecimiento/login" className="me-2">
 						<button className="btn btn-outline-success">Est. Login</button>
 					</Link>
+
+					<Link to="/liner/login" className="me-2">
+						<button className="btn btn-warning">Liner Login</button>
+					</Link>
+					<Link to="/liner/home" className="me-2">
+						<button className="btn btn-warning">Liner Panel</button>
+					</Link>
+					
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>
