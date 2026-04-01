@@ -54,6 +54,9 @@ import { AddLiner } from "./pages/AddLiner"
 import { EditLiner } from "./pages/EditLiner"
 import { LinerDetail } from "./pages/LinerDetail"
 import { LinerLogin } from "./pages/LinerLogin"
+import { LinerRegister } from "./pages/LinerRegister"
+import { LinerHome } from "./pages/LinerHome"
+import { ProtectedRouteLiner } from "./components/ProtectedRouteLiner"
 
 import { Propuestas } from "./pages/PropuestasCRUD/Propuestas";
 import { PropuestaForm } from "./pages/PropuestasCRUD/PropuestaForm";
@@ -88,6 +91,7 @@ export const router = createBrowserRouter(
         <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/liner/login" element={<LinerLogin />} />
+        <Route path="/liner/register" element={<LinerRegister />} />
 
         {/* ESTABLECIMIENTO NOT PROTECTED*/}
         <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />
@@ -144,7 +148,9 @@ export const router = createBrowserRouter(
             <Route path="/client/services/new" element={<ClientServiceForm />} />
         </Route>
 
-
+        <Route element={<ProtectedRouteLiner />}>
+            <Route path="/liner/home" element={<LinerHome />} />
+        </Route>
 
         
       </Route>

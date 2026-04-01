@@ -90,6 +90,17 @@ export default function storeReducer(store, action = {}) {
         ...store,
         authEstablecimiento: action.payload
       } 
+    case 'set_auth_liner':
+      return {
+        ...store,
+        authLiner: action.payload
+      }
+      
+    case 'set_liner_data':
+      return {
+        ...store,
+        linerData: action.payload
+      } 
 
     default:
       throw Error('Unknown action.');
