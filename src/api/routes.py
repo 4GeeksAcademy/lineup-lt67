@@ -1314,3 +1314,33 @@ def accept_propuesta(propuesta_id):
         "propuesta": propuesta.serialize(),
         "servicio": servicio.serialize()
     }), 200
+
+@api.route('/clients/me/services/<int:service_id>/finish', methods=['PUT'])
+@jwt_required()
+def finish_my_service(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicio = db.session.get(Servicio, service_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para finalizar este servicio"}), 403
+
+    if servicio.estado != "en_proceso":
+        return jsonify({"msg": "Solo se pueden finalizar servicios en proceso"}), 400
+
+    servicio.estado = "finalizado"
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Servicio finalizado con éxito",
+        "service": servicio.serialize()
+    }), 200
