@@ -822,7 +822,7 @@ def create_servicio():
         gemini_api_key = os.getenv("GEMINI_API_KEY")
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel('gemini-flash-latest')
             
             prompt = f"""
             Eres un asistente que estima servicios para proveedores.
@@ -1252,7 +1252,7 @@ def estimate_service():
         gemini_api_key = os.getenv("GEMINI_API_KEY")
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel('gemini-flash-latest')
             
             prompt = f"""
             Eres un asistente que estima servicios para proveedores.
