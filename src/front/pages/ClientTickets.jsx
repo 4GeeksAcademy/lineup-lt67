@@ -112,12 +112,14 @@ export const ClientTickets = () => {
                                         </p>
 
                                         <div className="d-flex gap-2 flex-wrap">
-                                            <button
-                                                className="btn btn-danger"
-                                                onClick={() => handleCancelTicket(ticketActual.id)}
-                                            >
-                                                Cancelar ticket
-                                            </button>
+                                            {ticketActual.estado === "esperando" && (
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={() => handleCancelTicket(ticketActual.id)}
+                                                >
+                                                    Cancelar ticket
+                                                </button>
+                                            )}
 
                                             <button
                                                 className="btn btn-outline-primary"
@@ -126,6 +128,12 @@ export const ClientTickets = () => {
                                                 {showQr ? "Ocultar QR" : "Mostrar QR"}
                                             </button>
                                         </div>
+
+                                        {ticketActual.estado === "en_atencion" && (
+                                            <p className="text-warning mt-3 mb-0">
+                                                Tu turno ya está en atención y no puede cancelarse desde esta vista.
+                                            </p>
+                                        )}
 
                                         {showQr && (
                                             <div className="mt-4 p-3 border rounded bg-light">
