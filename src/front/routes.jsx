@@ -66,6 +66,9 @@ import { PropuestaEdit } from "./pages/PropuestasCRUD/PropuestaEdit";
 import { ClientRegister } from "./pages/ClientRegister"
 import { ClientHome } from "./pages/ClientHome";
 import { ClientTickets } from "./pages/ClientTickets"
+import { ClientServices } from "./pages/ClientServices";
+import { ClientServiceForm } from "./pages/ClientServiceForm";
+import { ClientServiceDetail } from "./pages/ClientServiceDetail";
 
 
 
@@ -142,6 +145,9 @@ export const router = createBrowserRouter(
         <Route element={<ProtectedRouteClient />}>
             <Route path="/client/home" element={<ClientHome />} />
             <Route path="/client/tickets" element={<ClientTickets />} />
+            <Route path="/client/services" element={<ClientServices />} />
+            <Route path="/client/services/new" element={<ClientServiceForm />} />
+            <Route path="/client/services/:id" element={<ClientServiceDetail />} />
         </Route>
 
         <Route element={<ProtectedRouteLiner />}>

@@ -878,7 +878,6 @@ def update_servicio(servicio_id):
     if not body:
         return jsonify({"msg": "Body requerido"}), 400
 
-    # actualización parcial
     if "descripcion" in body:
         servicio.descripcion = body["descripcion"]
 
@@ -1216,4 +1215,198 @@ def cancel_my_ticket(ticket_id):
         "ticket": ticket.serialize()
     }), 200
 
+@api.route('/clients/me/services', methods=['GET'])
+@jwt_required()
+def get_my_services():
+    identity = get_jwt_identity()
+    claims = get_jwt()
 
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicios = db.session.execute(
+        select(Servicio)
+        .where(Servicio.client_id == client_id)
+        .order_by(Servicio.created_at.desc())
+    ).scalars().all()
+
+    return jsonify([servicio.serialize() for servicio in servicios]), 200
+
+@api.route('/clients/me/services', methods=['POST'])
+@jwt_required()
+def create_my_service():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    required_fields = ["descripcion", "lugar", "urgencia"]
+
+    for field in required_fields:
+        if not body.get(field):
+            return jsonify({"msg": f"Falta {field}"}), 400
+
+    precio_propuesto = body.get("precio_propuesto")
+
+    if precio_propuesto is not None:
+        try:
+            precio_propuesto = float(precio_propuesto)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "precio_propuesto debe ser numérico"}), 400
+
+    servicio = Servicio(
+        client_id=client_id,
+        descripcion=body["descripcion"],
+        lugar=body["lugar"],
+        urgencia=body["urgencia"],
+        precio_propuesto=precio_propuesto,
+        estado="abierto"
+    )
+
+    db.session.add(servicio)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Servicio creado con éxito",
+        "service": servicio.serialize()
+    }), 201
+
+@api.route('/clients/me/services/<int:service_id>', methods=['GET'])
+@jwt_required()
+def get_my_service_detail(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicio = db.session.get(Servicio, service_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para ver este servicio"}), 403
+
+    return jsonify(servicio.serialize()), 200
+
+@api.route('/clients/me/services/<int:service_id>/propuestas', methods=['GET'])
+@jwt_required()
+def get_my_service_propuestas(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicio = db.session.get(Servicio, service_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para ver las propuestas de este servicio"}), 403
+
+    propuestas = db.session.execute(
+        select(Propuesta)
+        .where(Propuesta.servicio_id == service_id)
+        .order_by(Propuesta.created_at.desc())
+    ).scalars().all()
+
+    return jsonify([propuesta.serialize() for propuesta in propuestas]), 200
+
+@api.route('/clients/me/propuestas/<int:propuesta_id>/accept', methods=['PUT'])
+@jwt_required()
+def accept_propuesta(propuesta_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    propuesta = db.session.get(Propuesta, propuesta_id)
+
+    if not propuesta:
+        return jsonify({"msg": "Propuesta no encontrada"}), 404
+
+    servicio = db.session.get(Servicio, propuesta.servicio_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para aceptar esta propuesta"}), 403
+
+    if servicio.estado != "abierto":
+        return jsonify({"msg": "Solo se pueden aceptar propuestas de servicios abiertos"}), 400
+
+    # aceptar la propuesta elegida
+    propuesta.estado = "aceptada"
+
+    # rechazar las demás
+    otras_propuestas = db.session.execute(
+        select(Propuesta).where(
+            Propuesta.servicio_id == servicio.id,
+            Propuesta.id != propuesta.id
+        )
+    ).scalars().all()
+
+    for prop in otras_propuestas:
+        prop.estado = "rechazada"
+
+    # actualizar servicio
+    servicio.estado = "en_proceso"
+
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Propuesta aceptada con éxito",
+        "propuesta": propuesta.serialize(),
+        "servicio": servicio.serialize()
+    }), 200
+
+@api.route('/clients/me/services/<int:service_id>/finish', methods=['PUT'])
+@jwt_required()
+def finish_my_service(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicio = db.session.get(Servicio, service_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para finalizar este servicio"}), 403
+
+    if servicio.estado != "en_proceso":
+        return jsonify({"msg": "Solo se pueden finalizar servicios en proceso"}), 400
+
+    servicio.estado = "finalizado"
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Servicio finalizado con éxito",
+        "service": servicio.serialize()
+    }), 200
