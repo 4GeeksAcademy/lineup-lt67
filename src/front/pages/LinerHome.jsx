@@ -178,16 +178,28 @@ export const LinerHome = () => {
                         <div className="list-group shadow-sm">
                             {misPropuestas.map(propuesta => {
                                 let badgeColor = "bg-secondary";
-                                if (propuesta.estado === "aceptada") badgeColor = "bg-success";
-                                if (propuesta.estado === "rechazada") badgeColor = "bg-danger";
-                                if (propuesta.estado === "pendiente") badgeColor = "bg-warning text-dark";
+                               let estadoMostrar = propuesta.estado.toUpperCase();
+
+                                if (propuesta.estado === "aceptada") {
+                                    if (propuesta.servicio_estado === "finalizado") {
+                                        badgeColor = "bg-dark";
+                                        estadoMostrar = "FINALIZADO";
+                                    } else {
+                                        badgeColor = "bg-success";
+                                        estadoMostrar = "ACTIVO";
+                                    }
+                                } else if (propuesta.estado === "rechazada") {
+                                    badgeColor = "bg-danger";
+                                } else if (propuesta.estado === "pendiente") {
+                                    badgeColor = "bg-warning text-dark";
+                                }
 
                                 return (
                                     <div key={propuesta.id} className="list-group-item list-group-item-action flex-column align-items-start border-0 border-bottom">
                                         <div className="d-flex w-100 justify-content-between align-items-center mb-1">
                                             <h6 className="mb-1 text-truncate" style={{maxWidth: "70%"}}>Servicio #{propuesta.servicio_id}</h6>
                                             <span className={`badge rounded-pill ${badgeColor}`}>
-                                                {propuesta.estado.toUpperCase()}
+                                               {estadoMostrar}
                                             </span>
                                         </div>
                                         <p className="mb-1 small"><strong>Mi oferta:</strong> ${propuesta.precio}</p>
