@@ -49,9 +49,37 @@ export const ClientNavbar = () => {
                     </button>
                 </Link>
 
-                <span className="fw-semibold ms-2">
-                    {loggedClient?.full_name || "Cliente"}
-                </span>
+                <div className="d-flex align-items-center ms-2">
+                    {loggedClient?.profile_image_url ? (
+                        <img
+                            src={loggedClient.profile_image_url}
+                            alt="Perfil"
+                            className="rounded-circle me-2"
+                            style={{
+                                width: "42px",
+                                height: "42px",
+                                objectFit: "cover",
+                                border: "2px solid #dee2e6"
+                            }}
+                        />
+                    ) : (
+                        <div
+                            className="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
+                            style={{
+                                width: "42px",
+                                height: "42px",
+                                fontSize: "0.9rem",
+                                fontWeight: "bold"
+                            }}
+                        >
+                            {loggedClient?.full_name?.charAt(0)?.toUpperCase() || "C"}
+                        </div>
+                    )}
+
+                    <span className="fw-semibold">
+                        {loggedClient?.full_name || "Cliente"}
+                    </span>
+                </div>
 
                 <button className="btn btn-outline-danger ms-2" onClick={handleLogout}>
                     Cerrar sesión

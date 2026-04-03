@@ -10,6 +10,9 @@ export const ClientServiceForm = () => {
     const [lugar, setLugar] = useState("");
     const [urgencia, setUrgencia] = useState("");
     const [precioPropuesto, setPrecioPropuesto] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [serviceImageUrl, setServiceImageUrl] = useState("");
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [error, setError] = useState("");
 
 
@@ -59,6 +62,35 @@ export const ClientServiceForm = () => {
         }
     };
 
+    const handleImageUpload = async () => {
+        if (!selectedFile) return;
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            setUploadingImage(true);
+            setError("");
+
+            const resp = await fetch(`${backendUrl}/api/upload/service-image`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(data.msg || "No se pudo subir la imagen");
+            }
+
+            setServiceImageUrl(data.image_url);
+        } catch (err) {
+            setError(err.message || "Ocurrió un error al subir la imagen");
+        } finally {
+            setUploadingImage(false);
+        }
+};
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
@@ -77,8 +109,9 @@ export const ClientServiceForm = () => {
                     lugar,
                     urgencia,
                     precio_propuesto: precioPropuesto ? Number(precioPropuesto) : null,
+                    image_url: serviceImageUrl || null,
                     tiempo_estimado: aiTiempo || null,
-                    precio_recomendado: aiPrecio ? Number(aiPrecio) : null
+                    precio_recomendado: aiPrecio ? Number(aiPrecio) : null,
                 })
             });
 
@@ -140,6 +173,39 @@ export const ClientServiceForm = () => {
                                     <option value="alta">Alta</option>
                                 </select>
                             </div>
+
+                            <div className="mb-3">
+                                <label className="form-label">Imagen del servicio</label>
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    accept="image/*"
+                                    onChange={(e) => setSelectedFile(e.target.files[0])}
+                                />
+                            </div>
+
+                            <div className="mb-3">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-primary w-100"
+                                    onClick={handleImageUpload}
+                                    disabled={!selectedFile || uploadingImage}
+                                >
+                                    {uploadingImage ? "Subiendo imagen..." : "Subir imagen"}
+                                </button>
+                            </div>
+
+                            {serviceImageUrl && (
+                                <div className="mb-3 text-center">
+                                    <p className="small text-success mb-2">Imagen subida correctamente</p>
+                                    <img
+                                        src={serviceImageUrl}
+                                        alt="Preview servicio"
+                                        className="img-fluid rounded"
+                                        style={{ maxHeight: "180px", objectFit: "cover" }}
+                                    />
+                                </div>
+                            )}
 
                             <div className="mb-4">
                                 <button

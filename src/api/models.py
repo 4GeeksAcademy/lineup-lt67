@@ -58,6 +58,7 @@ class Client(db.Model):
     full_name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     tickets: Mapped[List["Ticket"]] = relationship(back_populates="client")
     favoritos: Mapped[List["Favorito"]] = relationship(back_populates="client")
     servicios: Mapped[List["Servicio"]] = relationship(back_populates="client")
@@ -65,13 +66,15 @@ class Client(db.Model):
         DateTime,
         default=datetime.now(timezone.utc)
     )
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+    profile_image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    
 
     def serialize(self):
         return {
             "id": self.id,
             "full_name": self.full_name,
             "email": self.email,
+            "profile_image_url": self.profile_image_url,
             "created_at": self.created_at.isoformat()
         }
 
@@ -189,6 +192,7 @@ class Servicio(db.Model):
     tiempo_estimado: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     precio_recomendado: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     estado: Mapped[str] = mapped_column(String(50), nullable=False, default='abierto')
+    image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
@@ -211,6 +215,7 @@ class Servicio(db.Model):
             "tiempo_estimado": self.tiempo_estimado,
             "precio_recomendado": self.precio_recomendado,
             "estado": self.estado,
+            "image_url": self.image_url,
             "created_at": self.created_at.isoformat()
         }
 

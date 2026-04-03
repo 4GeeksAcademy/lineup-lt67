@@ -11,6 +11,7 @@ export const LinerHome = () => {
     const [misPropuestas, setMisPropuestas] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [imagenExpandidaId, setImagenExpandidaId] = useState(null);
     const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
     const [precioPropuesto, setPrecioPropuesto] = useState("");
     const [mensajeExtra, setMensajeExtra] = useState("");
@@ -115,6 +116,40 @@ export const LinerHome = () => {
                                 <span className="badge bg-success position-absolute top-0 end-0 m-2">Abierto</span>
                                 <div className="card-body">
                                     <h5 className="card-title text-dark">{servicio.descripcion}</h5>
+                                    {servicio.image_url && (
+                                        <div className="mb-3">
+                                            <img
+                                                src={servicio.image_url}
+                                                alt="Servicio"
+                                                className="img-fluid rounded mb-2"
+                                                style={{ maxHeight: "160px", objectFit: "cover" }}
+                                            />
+
+                                            <div>
+                                                <button
+                                                    className="btn btn-outline-secondary btn-sm"
+                                                    onClick={() =>
+                                                        setImagenExpandidaId(
+                                                            imagenExpandidaId === servicio.id ? null : servicio.id
+                                                        )
+                                                    }
+                                                >
+                                                    {imagenExpandidaId === servicio.id ? "Ocultar imagen" : "Ver imagen"}
+                                                </button>
+                                            </div>
+
+                                            {imagenExpandidaId === servicio.id && (
+                                                <div className="mt-3">
+                                                    <img
+                                                        src={servicio.image_url}
+                                                        alt="Servicio ampliado"
+                                                        className="img-fluid rounded border"
+                                                        style={{ maxHeight: "360px", objectFit: "contain" }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     <p className="card-text mb-1"><i className="fas fa-map-marker-alt text-danger"></i> <strong>Lugar:</strong> {servicio.lugar}</p>
                                     <p className="card-text mb-1"><i className="fas fa-clock text-warning"></i> <strong>Urgencia:</strong> {servicio.urgencia}</p>
                                     <p className="card-text mb-3"><i className="fas fa-money-bill-wave text-success"></i> <strong>Presupuesto del Cliente:</strong> ${servicio.precio_propuesto}</p>

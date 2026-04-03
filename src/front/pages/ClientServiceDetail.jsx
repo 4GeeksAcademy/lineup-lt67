@@ -132,6 +132,18 @@ export const ClientServiceDetail = () => {
                                 <p className="mb-1">
                                     <strong>Descripción:</strong> {service.descripcion}
                                 </p>
+
+                                {service.image_url && (
+                                    <div className="mb-3">
+                                        <img
+                                            src={service.image_url}
+                                            alt="Imagen del servicio"
+                                            className="img-fluid rounded"
+                                            style={{ maxHeight: "320px", objectFit: "cover" }}
+                                        />
+                                    </div>
+                                )}
+
                                 <p className="mb-1">
                                     <strong>Lugar:</strong> {service.lugar}
                                 </p>
