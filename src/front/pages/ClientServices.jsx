@@ -94,6 +94,16 @@ export const ClientServices = () => {
                                         <p className="card-text mb-1">
                                             <strong>Estado:</strong> {activeService.estado}
                                         </p>
+                                        {activeService.tiempo_estimado && (
+                                            <p className="mb-1 text-primary">
+                                                <strong>⏳ Tiempo estimado IA:</strong> {activeService.tiempo_estimado}
+                                            </p>
+                                        )}
+                                        {activeService.precio_recomendado && (
+                                            <p className="mb-1 text-success">
+                                                <strong>💰 Precio recomendado IA:</strong> ${activeService.precio_recomendado}
+                                            </p>
+                                        )}
                                         <p className="card-text mb-3">
                                             <strong>Creado:</strong>{" "}
                                             {new Date(activeService.created_at).toLocaleString()}
@@ -139,6 +149,16 @@ export const ClientServices = () => {
                                                     <p className="card-text mb-1">
                                                         <strong>Estado:</strong> {service.estado}
                                                     </p>
+                                                    {service.tiempo_estimado && (
+                                                        <p className="mb-1 text-primary">
+                                                            <strong>⏳ Tiempo estimado IA:</strong> {service.tiempo_estimado}
+                                                        </p>
+                                                    )}
+                                                    {service.precio_recomendado && (
+                                                        <p className="mb-1 text-success">
+                                                            <strong>💰 Precio recomendado IA:</strong> ${service.precio_recomendado}
+                                                        </p>
+                                                    )}  
                                                     <p className="card-text mb-3">
                                                         <strong>Creado:</strong>{" "}
                                                         {new Date(service.created_at).toLocaleString()}
