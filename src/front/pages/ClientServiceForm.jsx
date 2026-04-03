@@ -12,6 +12,53 @@ export const ClientServiceForm = () => {
     const [precioPropuesto, setPrecioPropuesto] = useState("");
     const [error, setError] = useState("");
 
+
+    const [aiTiempo, setAiTiempo] = useState("");
+    const [aiPrecio, setAiPrecio] = useState("");
+    const [isEstimating, setIsEstimating] = useState(false);
+    const [aiError, setAiError] = useState("");
+
+    const handleEstimate = async () => {
+        if (!descripcion || !urgencia) {
+            setAiError("Por favor llena la descripción y la urgencia para estimar.");
+            return;
+        }
+        
+        setIsEstimating(true);
+        setAiError("");
+        setAiTiempo("");
+        setAiPrecio("");
+
+        const token = localStorage.getItem("tokenClient");
+
+        try {
+            const resp = await fetch(`${backendUrl}/api/ai/estimate`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ descripcion, urgencia })
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(data.msg || "No se pudo estimar el servicio");
+            }
+
+            if (data.tiempo_estimado) setAiTiempo(data.tiempo_estimado);
+            if (data.precio_recomendado) {
+                setAiPrecio(data.precio_recomendado);
+                setPrecioPropuesto(data.precio_recomendado);
+            }
+        } catch (err) {
+            setAiError(err.message || "Ocurrió un error al estimar el servicio");
+        } finally {
+            setIsEstimating(false);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
@@ -29,7 +76,9 @@ export const ClientServiceForm = () => {
                     descripcion,
                     lugar,
                     urgencia,
-                    precio_propuesto: precioPropuesto ? Number(precioPropuesto) : null
+                    precio_propuesto: precioPropuesto ? Number(precioPropuesto) : null,
+                    tiempo_estimado: aiTiempo || null,
+                    precio_recomendado: aiPrecio ? Number(aiPrecio) : null
                 })
             });
 
@@ -92,8 +141,26 @@ export const ClientServiceForm = () => {
                                 </select>
                             </div>
 
+                            <div className="mb-4">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-info w-100 fw-bold"
+                                    onClick={handleEstimate}
+                                    disabled={isEstimating || !descripcion || !urgencia}
+                                >
+                                    {isEstimating ? "Pensando..." : "✨ Estimar precio y tiempo (IA)"}
+                                </button>
+                                {aiError && <p className="text-danger small mt-2">{aiError}</p>}
+                                {aiTiempo && (
+                                    <div className="alert alert-info mt-3 mb-0">
+                                        <p className="mb-1"><strong>⏳ Tiempo estimado IA:</strong> {aiTiempo}</p>
+                                        {aiPrecio && <p className="mb-0"><strong>💰 Precio recomendado IA:</strong> ${aiPrecio}</p>}
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="mb-3">
-                                <label className="form-label">Precio propuesto</label>
+                                <label className="form-label">Precio propuesto {!aiPrecio && "(Opcional)"}</label>
                                 <input
                                     type="number"
                                     className="form-control"

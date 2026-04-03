@@ -810,7 +810,8 @@ def create_servicio():
     for field in required_fields:
         if field not in body:
             return jsonify({"msg": f"Falta {field}"}), 400
-    
+
+
     descripcion = body["descripcion"]
     urgencia = body["urgencia"]
 
@@ -821,7 +822,7 @@ def create_servicio():
         gemini_api_key = os.getenv("GEMINI_API_KEY")
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-flash-latest')
             
             prompt = f"""
             Eres un asistente que estima servicios para proveedores.
@@ -838,12 +839,9 @@ def create_servicio():
             texto_respuesta = response.text.strip()
             
             # Limpiar posible markdown (```json ... ```)
-            if texto_respuesta.startswith("```json"):
-                texto_respuesta = texto_respuesta[7:]
-            if texto_respuesta.endswith("```"):
-                texto_respuesta = texto_respuesta[:-3]
+            texto_respuesta = texto_respuesta.replace("```json", "").replace("```", "").strip()
                 
-            data_ia = json.loads(texto_respuesta.strip())
+            data_ia = json.loads(texto_respuesta)
             tiempo_estimado = data_ia.get("tiempo_estimado")
             precio_recomendado = data_ia.get("precio_recomendado")
     except Exception as e:
@@ -1234,6 +1232,57 @@ def get_my_services():
 
     return jsonify([servicio.serialize() for servicio in servicios]), 200
 
+@api.route('/ai/estimate', methods=['POST'])
+@jwt_required()
+def estimate_service():
+    body = request.get_json()
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    descripcion = body.get("descripcion", "")
+    urgencia = body.get("urgencia", "")
+
+    if not descripcion or not urgencia:
+        return jsonify({"msg": "Falta descripcion o urgencia"}), 400
+
+    tiempo_estimado = None
+    precio_recomendado = None
+    
+    try:
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if gemini_api_key:
+            genai.configure(api_key=gemini_api_key)
+            model = genai.GenerativeModel('gemini-flash-latest')
+            
+            prompt = f"""
+            Eres un asistente que estima servicios para proveedores.
+            La descripción del problema es: "{descripcion}"
+            La urgencia es: "{urgencia}".
+            Devuelve un JSON con exactamente este formato, sin markdown extra:
+            {{
+                "tiempo_estimado": "Ej: 2 horas",
+                "precio_recomendado": 50.00
+            }}
+            """
+            
+            response = model.generate_content(prompt)
+            texto_respuesta = response.text.strip()
+            
+            # Limpiar posible markdown
+            texto_respuesta = texto_respuesta.replace("```json", "").replace("```", "").strip()
+                
+            data_ia = json.loads(texto_respuesta)
+            tiempo_estimado = data_ia.get("tiempo_estimado")
+            precio_recomendado = data_ia.get("precio_recomendado")
+    except Exception as e:
+        print("Error en Gemini AI (Estimación previa):", e)
+        return jsonify({"msg": "Error al estimar con IA", "error": str(e)}), 500
+
+    return jsonify({
+        "tiempo_estimado": tiempo_estimado,
+        "precio_recomendado": precio_recomendado
+    }), 200
+
 @api.route('/clients/me/services', methods=['POST'])
 @jwt_required()
 def create_my_service():
@@ -1263,6 +1312,9 @@ def create_my_service():
             precio_propuesto = float(precio_propuesto)
         except (TypeError, ValueError):
             return jsonify({"msg": "precio_propuesto debe ser numérico"}), 400
+    
+    tiempo_estimado = body.get("tiempo_estimado")
+    precio_recomendado = body.get("precio_recomendado")
 
     servicio = Servicio(
         client_id=client_id,
@@ -1270,7 +1322,9 @@ def create_my_service():
         lugar=body["lugar"],
         urgencia=body["urgencia"],
         precio_propuesto=precio_propuesto,
-        estado="abierto"
+        estado="abierto",
+        tiempo_estimado=tiempo_estimado,
+        precio_recomendado=precio_recomendado
     )
 
     db.session.add(servicio)
