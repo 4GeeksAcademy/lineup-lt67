@@ -12,6 +12,7 @@ export const SucursalForm = () => {
     const [capacidad, setCapacidad] = useState("");
     const [tiempoPorCliente, setTiempoPorCliente] = useState("");
     const [filaActiva, setFilaActiva] = useState(false);
+    const [imagenFile, setImagenFile] = useState(null);
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -21,18 +22,20 @@ export const SucursalForm = () => {
             return;
         }
 
-        const data = {
-            id_establecimiento: parseInt(idEstablecimiento),
-            nombre: nombre,
-            capacidad: parseInt(capacidad),
-            tiempo_por_cliente: parseInt(tiempoPorCliente),
-            fila_activa: filaActiva
+        const formData = new FormData();
+        formData.append("id_establecimiento", idEstablecimiento);
+        formData.append("nombre", nombre);
+        formData.append("capacidad", capacidad);
+        formData.append("tiempo_por_cliente", tiempoPorCliente);
+        formData.append("fila_activa", filaActiva);
+        
+        if (imagenFile) {
+            formData.append("imagen", imagenFile);
         }
 
         fetch(`${backendUrl}/api/sucursal`, {
             method: 'POST',
-            headers: { "Content-Type": 'application/json' },
-            body: JSON.stringify(data)
+            body: formData
         })
         .then((resp) => {
             if (resp.ok) navigate(`/establecimiento/dashboard`)
@@ -67,6 +70,16 @@ export const SucursalForm = () => {
                         <input type="checkbox" className="form-check-input" id="filaActiva"
                             checked={filaActiva} onChange={(e) => setFilaActiva(e.target.checked)} />
                         <label className="form-check-label" htmlFor="filaActiva">Fila activa</label>
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Imagen</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="form-control"
+                            onChange={(e) => setImagenFile(e.target.files[0])}
+                        />
                     </div>
 
                     <button type="submit" className="btn btn-primary w-100">Crear</button>

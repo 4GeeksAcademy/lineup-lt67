@@ -9,8 +9,9 @@ export const EstablecimientoForm = () => {
     const [tipoId, setTipoId] = useState("");
     const [totalSucursales, setTotalSucursales] = useState(0);
     const [password, setPassword] = useState("");
-    const [logo, setLogo] = useState("");
+    const [logoFile, setLogoFile] = useState(null);
     const [tipos, setTipos] = useState([]);
+
 
     useEffect(() => {
         fetch(`${backendUrl}/api/tipos`)
@@ -21,17 +22,20 @@ export const EstablecimientoForm = () => {
 
     function handleSubmit(e) {
         e.preventDefault();
-        const data = {
-            nombre: nombre.trim(),
-            tipo_id: Number(tipoId),
-            total_sucursales: Number(totalSucursales) || 0,
-            password: password.trim(),
-            logo: logo.trim() || null,
-        };
+
+        const formData = new FormData();
+        formData.append("nombre", nombre.trim());
+        formData.append("tipo_id", tipoId);
+        formData.append("total_sucursales", totalSucursales || 0);
+        formData.append("password", password.trim());
+        
+        if (logoFile) {
+            formData.append("logo", logoFile);
+        }
+
         fetch(`${backendUrl}/api/establecimientos`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
+            body: formData,
         }).then((resp) => {
             if (resp.ok) navigate("/establecimientos");
         });
@@ -88,13 +92,12 @@ export const EstablecimientoForm = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Logo (URL)</label>
+                        <label className="form-label">Logo (Imagen)</label>
                         <input
-                            type="url"
+                            type="file"
+                            accept="image/*"
                             className="form-control"
-                            placeholder="https://..."
-                            value={logo}
-                            onChange={(e) => setLogo(e.target.value)}
+                            onChange={(e) => setLogoFile(e.target.files[0])}
                         />
                     </div>
 

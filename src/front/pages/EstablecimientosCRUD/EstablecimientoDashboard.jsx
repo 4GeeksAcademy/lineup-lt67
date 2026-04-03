@@ -67,8 +67,13 @@ export const EstablecimientoDashboard = () => {
                         <p>No hay sucursales registradas</p>
                     ) : (
                         sucursales.map(s => (
-                            <div key={s.id} className={`suc-card ${s.fila_activa ? "activa" : "inactiva"}`} onClick={() => navigate(`/establecimiento/sucursal/${s.id}`)} style={{ cursor: "pointer" }}>
+                            <div key={s.id} className={`suc-card ${s.fila_activa ? "activa" : "inactiva"}`} onClick={() => navigate(`/establecimiento/sucursal/${s.id}`)} style={{ cursor: "pointer", display: "flex", flexDirection: "column" }}>
                                 <div>
+                                    {s.imagen && (
+                                        <div style={{ width: "100%", height: "100px", marginBottom: "10px", overflow: "hidden", borderRadius: "8px" }}>
+                                            <img src={s.imagen} alt={s.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                        </div>
+                                    )}
                                     <div className="suc-name">{s.nombre}</div>
                                     <div className="suc-meta">Cap. {s.capacidad} · {s.tiempo_por_cliente} min/cliente</div>
                                 </div>

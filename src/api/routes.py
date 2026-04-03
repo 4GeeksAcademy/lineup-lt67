@@ -1,6 +1,10 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import os
+import json
+import google.generativeai as genai
+import cloudinary.uploader
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta
@@ -349,7 +353,7 @@ def get_establecimiento(establecimiento_id):
 
 @api.route("/establecimientos", methods=["POST"])
 def create_establecimiento():
-    body = request.get_json()
+    body = request.form.to_dict() if request.form else request.get_json()
     if body is None:
         return jsonify({"msg": "Request body can't be empty"}), 400
     if not body.get("nombre"):
@@ -370,13 +374,18 @@ def create_establecimiento():
         total = int(total)
     except (TypeError, ValueError):
         return jsonify({"msg": "total_sucursales debe ser un numero entero"}), 400
+    
+    logo_url = (body.get("logo") or "").strip() or None
+    if 'logo' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['logo'])
+        logo_url = upload_result.get('secure_url')
 
     nuevo = Establecimiento(
         nombre=body["nombre"].strip(),
         tipo_id=tipo.id,
         total_sucursales=total,
         password=body["password"].strip(),
-        logo=(body.get("logo") or "").strip() or None,
+        logo=logo_url,
     )
     db.session.add(nuevo)
     db.session.commit()
@@ -428,6 +437,10 @@ def update_establecimiento(establecimiento_id):
 
     if "logo" in body:
         est.logo = (body.get("logo") or "").strip() or None
+
+    if 'logo' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['logo'])
+        est.logo = upload_result.get('secure_url')
 
     db.session.commit()
     est = db.session.execute(
@@ -495,16 +508,22 @@ def get_sucursales_por_establecimiento(id):
 
 @api.route('/sucursal', methods=['POST'])
 def crear_sucursal():
-    body = request.get_json()
+    body = request.form.to_dict() if request.form else request.get_json()
     if not body.get("nombre") or not body.get("id_establecimiento"):
         return jsonify({"message": "Faltan datos"}), 400
+
+    imagen_url = None
+    if 'imagen' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['imagen'])
+        imagen_url = upload_result.get('secure_url')
 
     nueva_sucursal = Sucursal(
         id_establecimiento=body["id_establecimiento"],
         nombre=body["nombre"],
-        fila_activa=body.get("fila_activa", False),
+        fila_activa=body.get("fila_activa", False) in ['true', 'True', True, 1, '1'],
         tiempo_por_cliente=body["tiempo_por_cliente"],
-        capacidad=body["capacidad"]
+        capacidad=body["capacidad"],
+        imagen=imagen_url
     )
     db.session.add(nueva_sucursal)
     db.session.commit()
@@ -516,11 +535,17 @@ def editar_sucursal(id):
     if not sucursal:
         return jsonify({"message": "Sucursal no encontrada"}), 404
 
-    body = request.get_json()
+    body = request.form.to_dict() if request.form else request.get_json()
+
     sucursal.nombre = body.get("nombre", sucursal.nombre)
-    sucursal.fila_activa = body.get("fila_activa", sucursal.fila_activa)
+    if "fila_activa" in body:
+        sucursal.fila_activa = body.get("fila_activa") in ['true', 'True', True, 1, '1']
     sucursal.tiempo_por_cliente = body.get("tiempo_por_cliente", sucursal.tiempo_por_cliente)
     sucursal.capacidad = body.get("capacidad", sucursal.capacidad)
+    
+    if 'imagen' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['imagen'])
+        sucursal.imagen = upload_result.get('secure_url')
 
     db.session.commit()
     return jsonify(sucursal.serialize()), 200
@@ -785,13 +810,54 @@ def create_servicio():
     for field in required_fields:
         if field not in body:
             return jsonify({"msg": f"Falta {field}"}), 400
+    
+    descripcion = body["descripcion"]
+    urgencia = body["urgencia"]
+
+    tiempo_estimado = None
+    precio_recomendado = None
+
+    try:
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if gemini_api_key:
+            genai.configure(api_key=gemini_api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            
+            prompt = f"""
+            Eres un asistente que estima servicios para proveedores.
+            La descripción del problema es: "{descripcion}"
+            La urgencia es: "{urgencia}".
+            Devuelve un JSON con exactamente este formato, sin markdown extra:
+            {{
+                "tiempo_estimado": "Ej: 2 horas",
+                "precio_recomendado": 50.00
+            }}
+            """
+            
+            response = model.generate_content(prompt)
+            texto_respuesta = response.text.strip()
+            
+            # Limpiar posible markdown (```json ... ```)
+            if texto_respuesta.startswith("```json"):
+                texto_respuesta = texto_respuesta[7:]
+            if texto_respuesta.endswith("```"):
+                texto_respuesta = texto_respuesta[:-3]
+                
+            data_ia = json.loads(texto_respuesta.strip())
+            tiempo_estimado = data_ia.get("tiempo_estimado")
+            precio_recomendado = data_ia.get("precio_recomendado")
+    except Exception as e:
+        print("Error en Gemini AI:", e)
+
 
     servicio = Servicio(
         client_id=body["client_id"],
-        descripcion=body["descripcion"],
+        descripcion=descripcion,
         lugar=body["lugar"],
-        urgencia=body["urgencia"],
-        estado="abierto"
+        urgencia=urgencia,
+        estado="abierto",
+        tiempo_estimado=tiempo_estimado,
+        precio_recomendado=precio_recomendado
     )
 
     db.session.add(servicio)

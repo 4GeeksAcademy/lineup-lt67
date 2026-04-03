@@ -107,10 +107,12 @@ class Sucursal(db.Model):
     fila_activa: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False)
     capacidad: Mapped[int] = mapped_column(nullable=False)
+    imagen: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     establecimiento = relationship('Establecimiento', backref='sucursales')
     tickets: Mapped[List["Ticket"]] = relationship(back_populates="sucursal")
     favoritos: Mapped[List["Favorito"]] = relationship(back_populates="sucursal")
+
     def serialize(self):
         return {
             "id": self.id,
@@ -118,7 +120,8 @@ class Sucursal(db.Model):
             "nombre": self.nombre,
             "fila_activa": self.fila_activa,
             "tiempo_por_cliente": self.tiempo_por_cliente,
-            "capacidad": self.capacidad
+            "capacidad": self.capacidad,
+            "imagen": self.imagen
         }
 
 
@@ -183,6 +186,8 @@ class Servicio(db.Model):
     lugar: Mapped[str] = mapped_column(String(255), nullable=False)
     urgencia: Mapped[str] = mapped_column(String(50), nullable=False)
     precio_propuesto: Mapped[float] = mapped_column(Float, nullable=True)
+    tiempo_estimado: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    precio_recomendado: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     estado: Mapped[str] = mapped_column(String(50), nullable=False, default='abierto')
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -203,6 +208,8 @@ class Servicio(db.Model):
             "lugar": self.lugar,
             "urgencia": self.urgencia,
             "precio_propuesto": self.precio_propuesto,
+            "tiempo_estimado": self.tiempo_estimado,
+            "precio_recomendado": self.precio_recomendado,
             "estado": self.estado,
             "created_at": self.created_at.isoformat()
         }
@@ -252,6 +259,7 @@ class Propuesta(db.Model):
             "precio": self.precio,
             "mensaje": self.mensaje,
             "estado": self.estado,
+            "servicio_estado": getattr(self.servicio, "estado", None),
             "created_at": self.created_at.isoformat()
         }
 
