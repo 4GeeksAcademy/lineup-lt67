@@ -27,7 +27,7 @@ export const Navbar = () => {
 					<Link to="/servicios" className="me-2">
 						<button className="btn btn-outline-success">Servicios</button>
 					</Link>
-					<Link to="/clients/login" className="me-2">
+					<Link to="/client/login" className="me-2">
 						<button className="btn btn-dark">Cliente Login</button>
 					</Link>
 					<Link to="/establecimiento/login" className="me-2">
