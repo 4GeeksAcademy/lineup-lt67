@@ -169,6 +169,7 @@ def create_client():
         full_name=body["full_name"],
         email=body["email"],
         password=body["password"],
+        profile_image_url=body.get("profile_image_url"),
         is_active=True
     )
     db.session.add(new_client)
@@ -177,6 +178,34 @@ def create_client():
         'msg': 'Cliente añadido con exito',
         'cliente': new_client.serialize() 
     }), 201
+
+@api.route('/upload/client-profile-image', methods=['POST'])
+def upload_client_profile_image():
+    if 'file' not in request.files:
+        return jsonify({"msg": "No se envió ningún archivo"}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({"msg": "Archivo vacío"}), 400
+
+    try:
+        result = cloudinary.uploader.upload(
+            file,
+            folder="lineup/client_profiles"
+        )
+
+        return jsonify({
+            "msg": "Imagen subida con éxito",
+            "image_url": result.get("secure_url"),
+            "public_id": result.get("public_id")
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "msg": "Error al subir imagen a Cloudinary",
+            "error": str(e)
+        }), 500
 
 @api.route('/clients/login', methods=['POST'])
 def login_client():
@@ -431,7 +460,7 @@ def update_establecimiento(establecimiento_id):
 
     if "password" in body:
         password = (body.get("password") or "").strip()
-        if not clave:
+        if not password:
             return jsonify({"msg": "El password no puede estar vacia"}), 400
         est.password = password
 
@@ -862,6 +891,34 @@ def create_servicio():
     db.session.commit()
 
     return jsonify(servicio.serialize()), 201
+
+@api.route('/upload/service-image', methods=['POST'])
+def upload_service_image():
+    if 'file' not in request.files:
+        return jsonify({"msg": "No se envió ningún archivo"}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({"msg": "Archivo vacío"}), 400
+
+    try:
+        result = cloudinary.uploader.upload(
+            file,
+            folder="lineup/service_images"
+        )
+
+        return jsonify({
+            "msg": "Imagen subida con éxito",
+            "image_url": result.get("secure_url"),
+            "public_id": result.get("public_id")
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "msg": "Error al subir imagen a Cloudinary",
+            "error": str(e)
+        }), 500
 
 @api.route('/servicios/<int:servicio_id>', methods=['PUT'])
 def update_servicio(servicio_id):
@@ -1322,6 +1379,7 @@ def create_my_service():
         lugar=body["lugar"],
         urgencia=body["urgencia"],
         precio_propuesto=precio_propuesto,
+        image_url=body.get("image_url"),
         estado="abierto",
         tiempo_estimado=tiempo_estimado,
         precio_recomendado=precio_recomendado

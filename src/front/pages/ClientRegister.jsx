@@ -8,8 +8,40 @@ export const ClientRegister = () => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [profileImageUrl, setProfileImageUrl] = useState("");
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+
+    const handleImageUpload = async () => {
+        if (!selectedFile) return;
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            setUploadingImage(true);
+            setError("");
+
+            const resp = await fetch(`${backendUrl}/api/upload/client-profile-image`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(data.msg || "No se pudo subir la imagen");
+            }
+
+            setProfileImageUrl(data.image_url);
+        } catch (err) {
+            setError(err.message || "Ocurrió un error al subir la imagen");
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -24,7 +56,8 @@ export const ClientRegister = () => {
             body: JSON.stringify({
                 full_name: fullName.trim(),
                 email: email.trim(),
-                password
+                password,
+                profile_image_url: profileImageUrl || null
             }),
         })
             .then(async (resp) => {
@@ -86,6 +119,39 @@ export const ClientRegister = () => {
                             required
                         />
                     </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Imagen de perfil</label>
+                        <input
+                            type="file"
+                            className="form-control"
+                            accept="image/*"
+                            onChange={(e) => setSelectedFile(e.target.files[0])}
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <button
+                            type="button"
+                            className="btn btn-outline-primary w-100"
+                            onClick={handleImageUpload}
+                            disabled={!selectedFile || uploadingImage}
+                        >
+                            {uploadingImage ? "Subiendo imagen..." : "Subir imagen"}
+                        </button>
+                    </div>
+
+                    {profileImageUrl && (
+                        <div className="mb-3 text-center">
+                            <p className="small text-success mb-2">Imagen subida correctamente</p>
+                            <img
+                                src={profileImageUrl}
+                                alt="Preview perfil"
+                                className="img-fluid rounded"
+                                style={{ maxHeight: "150px", objectFit: "cover" }}
+                            />
+                        </div>
+                    )}
 
                     {error && <p className="text-danger small">{error}</p>}
                     {success && <p className="text-success small">{success}</p>}

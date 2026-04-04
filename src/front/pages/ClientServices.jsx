@@ -78,6 +78,16 @@ export const ClientServices = () => {
                                 <div className="card shadow-sm border-primary">
                                     <div className="card-body">
                                         <h5 className="card-title">Servicio #{activeService.id}</h5>
+                                        {activeService.image_url && (
+                                            <div className="mb-3">
+                                                <img
+                                                    src={activeService.image_url}
+                                                    alt="Servicio"
+                                                    className="img-fluid rounded"
+                                                    style={{ maxHeight: "220px", objectFit: "cover" }}
+                                                />
+                                            </div>
+                                        )}
                                         <p className="card-text mb-1">
                                             <strong>Descripción:</strong> {activeService.descripcion}
                                         </p>
@@ -133,6 +143,16 @@ export const ClientServices = () => {
                                             <div className="card h-100 shadow-sm">
                                                 <div className="card-body">
                                                     <h5 className="card-title">Servicio #{service.id}</h5>
+                                                    {service.image_url && (
+                                                        <div className="mb-3">
+                                                            <img
+                                                                src={service.image_url}
+                                                                alt="Servicio"
+                                                                className="img-fluid rounded"
+                                                                style={{ maxHeight: "180px", objectFit: "cover" }}
+                                                            />
+                                                        </div>
+                                                    )}
                                                     <p className="card-text mb-1">
                                                         <strong>Descripción:</strong> {service.descripcion}
                                                     </p>
