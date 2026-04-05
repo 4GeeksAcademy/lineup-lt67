@@ -550,8 +550,8 @@ def crear_sucursal():
         id_establecimiento=body["id_establecimiento"],
         nombre=body["nombre"],
         fila_activa=body.get("fila_activa", False) in ['true', 'True', True, 1, '1'],
-        tiempo_por_cliente=body["tiempo_por_cliente"],
-        capacidad=body["capacidad"],
+        tiempo_por_cliente=body.get("tiempo_por_cliente", 15),
+        capacidad=body.get("capacidad", None),
         imagen=imagen_url
     )
     db.session.add(nueva_sucursal)
