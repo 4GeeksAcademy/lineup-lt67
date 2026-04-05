@@ -67,6 +67,8 @@ class Client(db.Model):
         default=datetime.now(timezone.utc)
     )
     profile_image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     
 
     def serialize(self):
@@ -75,6 +77,8 @@ class Client(db.Model):
             "full_name": self.full_name,
             "email": self.email,
             "profile_image_url": self.profile_image_url,
+            "lat": self.lat,
+    "lng": self.lng,
             "created_at": self.created_at.isoformat()
         }
 
@@ -110,6 +114,8 @@ class Sucursal(db.Model):
     fila_activa: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False)
     capacidad: Mapped[int] = mapped_column(nullable=False)
+    lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     imagen: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     establecimiento = relationship('Establecimiento', backref='sucursales')
@@ -124,6 +130,8 @@ class Sucursal(db.Model):
             "fila_activa": self.fila_activa,
             "tiempo_por_cliente": self.tiempo_por_cliente,
             "capacidad": self.capacidad,
+            "lat": self.lat,
+            "lng": self.lng,
             "imagen": self.imagen
         }
 
@@ -193,6 +201,8 @@ class Servicio(db.Model):
     precio_recomendado: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     estado: Mapped[str] = mapped_column(String(50), nullable=False, default='abierto')
     image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
@@ -216,6 +226,8 @@ class Servicio(db.Model):
             "precio_recomendado": self.precio_recomendado,
             "estado": self.estado,
             "image_url": self.image_url,
+            "lat": self.lat,
+            "lng": self.lng,
             "created_at": self.created_at.isoformat()
         }
 

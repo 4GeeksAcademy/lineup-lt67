@@ -70,6 +70,8 @@ import { ClientServices } from "./pages/ClientServices";
 import { ClientServiceForm } from "./pages/ClientServiceForm";
 import { ClientServiceDetail } from "./pages/ClientServiceDetail";
 
+import { SimpleMap } from "./pages/SimpleMap";
+
 
 
 export const router = createBrowserRouter(
@@ -93,6 +95,7 @@ export const router = createBrowserRouter(
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/liner/login" element={<LinerLogin />} />
         <Route path="/liner/register" element={<LinerRegister />} />
+        <Route path="/simplemap" element={<SimpleMap />} />
 
         {/* ESTABLECIMIENTO NOT PROTECTED*/}
         <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />

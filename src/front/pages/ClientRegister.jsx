@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { LocationPicker } from "../components/LocationPicker";
 
 export const ClientRegister = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -11,6 +12,10 @@ export const ClientRegister = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [profileImageUrl, setProfileImageUrl] = useState("");
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [location, setLocation] = useState({
+        lat: -31.4201,
+        lng: -64.1888
+    });
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -57,7 +62,9 @@ export const ClientRegister = () => {
                 full_name: fullName.trim(),
                 email: email.trim(),
                 password,
-                profile_image_url: profileImageUrl || null
+                profile_image_url: profileImageUrl || null,
+                lat: location.lat,
+                lng: location.lng
             }),
         })
             .then(async (resp) => {
@@ -120,6 +127,15 @@ export const ClientRegister = () => {
                         />
                     </div>
 
+                    <div className="mb-4">
+                        <label className="form-label fw-bold">Ubicación en el mapa</label>
+                        <LocationPicker
+                            value={location}
+                            onChange={setLocation}
+                            height="300px"
+                        />
+                    </div>
+
                     <div className="mb-3">
                         <label className="form-label">Imagen de perfil</label>
                         <input
@@ -129,6 +145,8 @@ export const ClientRegister = () => {
                             onChange={(e) => setSelectedFile(e.target.files[0])}
                         />
                     </div>
+
+
 
                     <div className="mb-3">
                         <button
