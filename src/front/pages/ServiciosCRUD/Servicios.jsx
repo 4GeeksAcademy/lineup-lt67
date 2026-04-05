@@ -48,22 +48,27 @@ export const Servicios = () => {
             (<h4>No hay servicios</h4>) :
             (listaServicios.map((servicio) => {
                 return(
-                    <div className="container d-flex justify-content-between align-items-center my-2 border" key={servicio.id}>
-                        <p>Id Cliente: {servicio.id_cliente}</p>
-                        <p>lugar: {servicio.lugar}</p>
-                        <p>urgencia: {servicio.urgencia}</p>
-                        <p>estado: {servicio.estado}</p>
+                    <div className="container d-flex justify-content-between align-items-center my-2 border p-3 flex-wrap" key={servicio.id}>
                         <div>
+                            <p
+                            className="mb-1"><strong>Lugar:</strong> {servicio.lugar}</p>
+                            <p className="mb-1"><strong>Urgencia:</strong> {servicio.urgencia}</p>
+                            <p className="mb-1"><strong>Estado:</strong> {servicio.estado}</p>
+                            {servicio.tiempo_estimado && (
+                                <p className="mb-1 text-primary"><strong>⏳ Tiempo estimado IA:</strong> {servicio.tiempo_estimado}</p>
+                            )}
+                            {servicio.precio_recomendado && (
+                                <p className="mb-1 text-success"><strong>💰 Precio recomendado IA:</strong> ${servicio.precio_recomendado}</p>
+                            )}
+                        </div>
+                        <div className="d-flex gap-2">
                             <Link to={`${servicio.id}`}>
-                                <button type="button" className="btn btn-primary mx-2">Ver Servicio</button>
+                                <button type="button" className="btn btn-primary btn-sm">Ver</button>
                             </Link>
                             <Link to={`edit/${servicio.id}`}>
-                                <button type="button" className="btn btn-primary">Editar Servicio</button>
+                                <button type="button" className="btn btn-warning btn-sm">Editar</button>
                             </Link>
-                            <Link to={'/servicios'}>
-                                <button onClick={() => deleteServicio(servicio.id)} className="btn btn-danger">Borrar servicio</button>
-                            </Link>
-                            
+                            <button onClick={() => deleteServicio(servicio.id)} className="btn btn-danger btn-sm">Borrar</button>
                         </div>
                     </div>
                 )

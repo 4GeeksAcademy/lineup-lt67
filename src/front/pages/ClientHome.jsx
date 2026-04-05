@@ -7,6 +7,7 @@ export const ClientHome = () => {
 
     const [sucursales, setSucursales] = useState([]);
     const [establecimientos, setEstablecimientos] = useState([]);
+    const [myTickets, setMyTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -18,19 +19,29 @@ export const ClientHome = () => {
                 setLoading(true);
                 setError("");
 
-                const [sucursalesResp, establecimientosResp] = await Promise.all([
+                const token = localStorage.getItem("tokenClient");
+
+                const [sucursalesResp, establecimientosResp, ticketsResp] = await Promise.all([
                     fetch(`${backendUrl}/api/sucursal`),
-                    fetch(`${backendUrl}/api/establecimientos`)
+                    fetch(`${backendUrl}/api/establecimientos`),
+                    fetch(`${backendUrl}/api/clients/me/tickets`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
                 ]);
 
                 if (!sucursalesResp.ok) throw new Error("No se pudieron cargar las sucursales");
                 if (!establecimientosResp.ok) throw new Error("No se pudieron cargar los establecimientos");
+                if (!ticketsResp.ok) throw new Error("No se pudieron cargar los tickets del cliente");
 
                 const sucursalesData = await sucursalesResp.json();
                 const establecimientosData = await establecimientosResp.json();
+                const ticketsData = await ticketsResp.json();
 
                 setSucursales(sucursalesData);
                 setEstablecimientos(establecimientosData);
+                setMyTickets(ticketsData);
             } catch (err) {
                 setError(err.message || "Ocurrió un error al cargar los datos");
             } finally {
@@ -64,6 +75,14 @@ export const ClientHome = () => {
         });
 
         return resultado;
+    };
+
+    const hasActiveTicketInSucursal = (sucursalId) => {
+        return myTickets.some(
+            (ticket) =>
+                ticket.id_sucursal === sucursalId &&
+                (ticket.estado === "esperando" || ticket.estado === "en_atencion")
+        );
     };
 
     const handleJoinQueue = async (sucursalId) => {
@@ -129,13 +148,22 @@ export const ClientHome = () => {
                                                                 <strong>Fila activa:</strong> {sucursal.fila_activa ? "Sí" : "No"}
                                                             </p>
 
-                                                            <button
-                                                                className="btn btn-primary"
-                                                                disabled={!sucursal.fila_activa}
-                                                                onClick={() => handleJoinQueue(sucursal.id)}
-                                                            >
-                                                                Unirme a la fila
-                                                            </button>
+                                                            {!sucursal.fila_activa ? (
+                                                                <button className="btn btn-secondary" disabled>
+                                                                    Fila inactiva
+                                                                </button>
+                                                            ) : hasActiveTicketInSucursal(sucursal.id) ? (
+                                                                <button className="btn btn-outline-secondary" disabled>
+                                                                    Ya estás en esta fila
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    className="btn btn-primary"
+                                                                    onClick={() => handleJoinQueue(sucursal.id)}
+                                                                >
+                                                                    Unirme a la fila
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>

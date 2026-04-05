@@ -54,6 +54,9 @@ import { AddLiner } from "./pages/AddLiner"
 import { EditLiner } from "./pages/EditLiner"
 import { LinerDetail } from "./pages/LinerDetail"
 import { LinerLogin } from "./pages/LinerLogin"
+import { LinerRegister } from "./pages/LinerRegister"
+import { LinerHome } from "./pages/LinerHome"
+import { ProtectedRouteLiner } from "./components/ProtectedRouteLiner"
 
 import { Propuestas } from "./pages/PropuestasCRUD/Propuestas";
 import { PropuestaForm } from "./pages/PropuestasCRUD/PropuestaForm";
@@ -63,6 +66,9 @@ import { PropuestaEdit } from "./pages/PropuestasCRUD/PropuestaEdit";
 import { ClientRegister } from "./pages/ClientRegister"
 import { ClientHome } from "./pages/ClientHome";
 import { ClientTickets } from "./pages/ClientTickets"
+import { ClientServices } from "./pages/ClientServices";
+import { ClientServiceForm } from "./pages/ClientServiceForm";
+import { ClientServiceDetail } from "./pages/ClientServiceDetail";
 
 
 
@@ -86,6 +92,7 @@ export const router = createBrowserRouter(
         <Route path="/favoritos" element={<Favoritos />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/liner/login" element={<LinerLogin />} />
+        <Route path="/liner/register" element={<LinerRegister />} />
 
         {/* ESTABLECIMIENTO NOT PROTECTED*/}
         <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />
@@ -138,9 +145,14 @@ export const router = createBrowserRouter(
         <Route element={<ProtectedRouteClient />}>
             <Route path="/client/home" element={<ClientHome />} />
             <Route path="/client/tickets" element={<ClientTickets />} />
+            <Route path="/client/services" element={<ClientServices />} />
+            <Route path="/client/services/new" element={<ClientServiceForm />} />
+            <Route path="/client/services/:id" element={<ClientServiceDetail />} />
         </Route>
 
-
+        <Route element={<ProtectedRouteLiner />}>
+            <Route path="/liner/home" element={<LinerHome />} />
+        </Route>
 
         
       </Route>

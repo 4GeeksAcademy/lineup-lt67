@@ -1,6 +1,10 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import os
+import json
+import google.generativeai as genai
+import cloudinary.uploader
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta
@@ -165,6 +169,7 @@ def create_client():
         full_name=body["full_name"],
         email=body["email"],
         password=body["password"],
+        profile_image_url=body.get("profile_image_url"),
         is_active=True
     )
     db.session.add(new_client)
@@ -173,6 +178,34 @@ def create_client():
         'msg': 'Cliente añadido con exito',
         'cliente': new_client.serialize() 
     }), 201
+
+@api.route('/upload/client-profile-image', methods=['POST'])
+def upload_client_profile_image():
+    if 'file' not in request.files:
+        return jsonify({"msg": "No se envió ningún archivo"}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({"msg": "Archivo vacío"}), 400
+
+    try:
+        result = cloudinary.uploader.upload(
+            file,
+            folder="lineup/client_profiles"
+        )
+
+        return jsonify({
+            "msg": "Imagen subida con éxito",
+            "image_url": result.get("secure_url"),
+            "public_id": result.get("public_id")
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "msg": "Error al subir imagen a Cloudinary",
+            "error": str(e)
+        }), 500
 
 @api.route('/clients/login', methods=['POST'])
 def login_client():
@@ -349,7 +382,7 @@ def get_establecimiento(establecimiento_id):
 
 @api.route("/establecimientos", methods=["POST"])
 def create_establecimiento():
-    body = request.get_json()
+    body = request.form.to_dict() if request.form else request.get_json()
     if body is None:
         return jsonify({"msg": "Request body can't be empty"}), 400
     if not body.get("nombre"):
@@ -370,13 +403,18 @@ def create_establecimiento():
         total = int(total)
     except (TypeError, ValueError):
         return jsonify({"msg": "total_sucursales debe ser un numero entero"}), 400
+    
+    logo_url = (body.get("logo") or "").strip() or None
+    if 'logo' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['logo'])
+        logo_url = upload_result.get('secure_url')
 
     nuevo = Establecimiento(
         nombre=body["nombre"].strip(),
         tipo_id=tipo.id,
         total_sucursales=total,
         password=body["password"].strip(),
-        logo=(body.get("logo") or "").strip() or None,
+        logo=logo_url,
     )
     db.session.add(nuevo)
     db.session.commit()
@@ -422,12 +460,16 @@ def update_establecimiento(establecimiento_id):
 
     if "password" in body:
         password = (body.get("password") or "").strip()
-        if not clave:
+        if not password:
             return jsonify({"msg": "El password no puede estar vacia"}), 400
         est.password = password
 
     if "logo" in body:
         est.logo = (body.get("logo") or "").strip() or None
+
+    if 'logo' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['logo'])
+        est.logo = upload_result.get('secure_url')
 
     db.session.commit()
     est = db.session.execute(
@@ -495,16 +537,22 @@ def get_sucursales_por_establecimiento(id):
 
 @api.route('/sucursal', methods=['POST'])
 def crear_sucursal():
-    body = request.get_json()
+    body = request.form.to_dict() if request.form else request.get_json()
     if not body.get("nombre") or not body.get("id_establecimiento"):
         return jsonify({"message": "Faltan datos"}), 400
+
+    imagen_url = None
+    if 'imagen' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['imagen'])
+        imagen_url = upload_result.get('secure_url')
 
     nueva_sucursal = Sucursal(
         id_establecimiento=body["id_establecimiento"],
         nombre=body["nombre"],
-        fila_activa=body.get("fila_activa", False),
+        fila_activa=body.get("fila_activa", False) in ['true', 'True', True, 1, '1'],
         tiempo_por_cliente=body["tiempo_por_cliente"],
-        capacidad=body["capacidad"]
+        capacidad=body["capacidad"],
+        imagen=imagen_url
     )
     db.session.add(nueva_sucursal)
     db.session.commit()
@@ -516,11 +564,17 @@ def editar_sucursal(id):
     if not sucursal:
         return jsonify({"message": "Sucursal no encontrada"}), 404
 
-    body = request.get_json()
+    body = request.form.to_dict() if request.form else request.get_json()
+
     sucursal.nombre = body.get("nombre", sucursal.nombre)
-    sucursal.fila_activa = body.get("fila_activa", sucursal.fila_activa)
+    if "fila_activa" in body:
+        sucursal.fila_activa = body.get("fila_activa") in ['true', 'True', True, 1, '1']
     sucursal.tiempo_por_cliente = body.get("tiempo_por_cliente", sucursal.tiempo_por_cliente)
     sucursal.capacidad = body.get("capacidad", sucursal.capacidad)
+    
+    if 'imagen' in request.files:
+        upload_result = cloudinary.uploader.upload(request.files['imagen'])
+        sucursal.imagen = upload_result.get('secure_url')
 
     db.session.commit()
     return jsonify(sucursal.serialize()), 200
@@ -800,18 +854,85 @@ def create_servicio():
         if field not in body:
             return jsonify({"msg": f"Falta {field}"}), 400
 
+
+    descripcion = body["descripcion"]
+    urgencia = body["urgencia"]
+
+    tiempo_estimado = None
+    precio_recomendado = None
+
+    try:
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if gemini_api_key:
+            genai.configure(api_key=gemini_api_key)
+            model = genai.GenerativeModel('gemini-flash-latest')
+            
+            prompt = f"""
+            Eres un asistente que estima servicios para proveedores.
+            La descripción del problema es: "{descripcion}"
+            La urgencia es: "{urgencia}".
+            Devuelve un JSON con exactamente este formato, sin markdown extra:
+            {{
+                "tiempo_estimado": "Ej: 2 horas",
+                "precio_recomendado": 50.00
+            }}
+            """
+            
+            response = model.generate_content(prompt)
+            texto_respuesta = response.text.strip()
+            
+            # Limpiar posible markdown (```json ... ```)
+            texto_respuesta = texto_respuesta.replace("```json", "").replace("```", "").strip()
+                
+            data_ia = json.loads(texto_respuesta)
+            tiempo_estimado = data_ia.get("tiempo_estimado")
+            precio_recomendado = data_ia.get("precio_recomendado")
+    except Exception as e:
+        print("Error en Gemini AI:", e)
+
+
     servicio = Servicio(
         client_id=body["client_id"],
-        descripcion=body["descripcion"],
+        descripcion=descripcion,
         lugar=body["lugar"],
-        urgencia=body["urgencia"],
-        estado="abierto"
+        urgencia=urgencia,
+        estado="abierto",
+        tiempo_estimado=tiempo_estimado,
+        precio_recomendado=precio_recomendado
     )
 
     db.session.add(servicio)
     db.session.commit()
 
     return jsonify(servicio.serialize()), 201
+
+@api.route('/upload/service-image', methods=['POST'])
+def upload_service_image():
+    if 'file' not in request.files:
+        return jsonify({"msg": "No se envió ningún archivo"}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({"msg": "Archivo vacío"}), 400
+
+    try:
+        result = cloudinary.uploader.upload(
+            file,
+            folder="lineup/service_images"
+        )
+
+        return jsonify({
+            "msg": "Imagen subida con éxito",
+            "image_url": result.get("secure_url"),
+            "public_id": result.get("public_id")
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "msg": "Error al subir imagen a Cloudinary",
+            "error": str(e)
+        }), 500
 
 @api.route('/servicios/<int:servicio_id>', methods=['PUT'])
 def update_servicio(servicio_id):
@@ -826,7 +947,6 @@ def update_servicio(servicio_id):
     if not body:
         return jsonify({"msg": "Body requerido"}), 400
 
-    # actualización parcial
     if "descripcion" in body:
         servicio.descripcion = body["descripcion"]
 
@@ -1164,4 +1284,255 @@ def cancel_my_ticket(ticket_id):
         "ticket": ticket.serialize()
     }), 200
 
+@api.route('/clients/me/services', methods=['GET'])
+@jwt_required()
+def get_my_services():
+    identity = get_jwt_identity()
+    claims = get_jwt()
 
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicios = db.session.execute(
+        select(Servicio)
+        .where(Servicio.client_id == client_id)
+        .order_by(Servicio.created_at.desc())
+    ).scalars().all()
+
+    return jsonify([servicio.serialize() for servicio in servicios]), 200
+
+@api.route('/ai/estimate', methods=['POST'])
+@jwt_required()
+def estimate_service():
+    body = request.get_json()
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    descripcion = body.get("descripcion", "")
+    urgencia = body.get("urgencia", "")
+
+    if not descripcion or not urgencia:
+        return jsonify({"msg": "Falta descripcion o urgencia"}), 400
+
+    tiempo_estimado = None
+    precio_recomendado = None
+    
+    try:
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if gemini_api_key:
+            genai.configure(api_key=gemini_api_key)
+            model = genai.GenerativeModel('gemini-flash-latest')
+            
+            prompt = f"""
+            Eres un asistente que estima servicios para proveedores.
+            La descripción del problema es: "{descripcion}"
+            La urgencia es: "{urgencia}".
+            Devuelve un JSON con exactamente este formato, sin markdown extra:
+            {{
+                "tiempo_estimado": "Ej: 2 horas",
+                "precio_recomendado": 50.00
+            }}
+            """
+            
+            response = model.generate_content(prompt)
+            texto_respuesta = response.text.strip()
+            
+            # Limpiar posible markdown
+            texto_respuesta = texto_respuesta.replace("```json", "").replace("```", "").strip()
+                
+            data_ia = json.loads(texto_respuesta)
+            tiempo_estimado = data_ia.get("tiempo_estimado")
+            precio_recomendado = data_ia.get("precio_recomendado")
+    except Exception as e:
+        print("Error en Gemini AI (Estimación previa):", e)
+        return jsonify({"msg": "Error al estimar con IA", "error": str(e)}), 500
+
+    return jsonify({
+        "tiempo_estimado": tiempo_estimado,
+        "precio_recomendado": precio_recomendado
+    }), 200
+
+@api.route('/clients/me/services', methods=['POST'])
+@jwt_required()
+def create_my_service():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"msg": "Body requerido"}), 400
+
+    required_fields = ["descripcion", "lugar", "urgencia"]
+
+    for field in required_fields:
+        if not body.get(field):
+            return jsonify({"msg": f"Falta {field}"}), 400
+
+    precio_propuesto = body.get("precio_propuesto")
+
+    if precio_propuesto is not None:
+        try:
+            precio_propuesto = float(precio_propuesto)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "precio_propuesto debe ser numérico"}), 400
+    
+    tiempo_estimado = body.get("tiempo_estimado")
+    precio_recomendado = body.get("precio_recomendado")
+
+    servicio = Servicio(
+        client_id=client_id,
+        descripcion=body["descripcion"],
+        lugar=body["lugar"],
+        urgencia=body["urgencia"],
+        precio_propuesto=precio_propuesto,
+        image_url=body.get("image_url"),
+        estado="abierto",
+        tiempo_estimado=tiempo_estimado,
+        precio_recomendado=precio_recomendado
+    )
+
+    db.session.add(servicio)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Servicio creado con éxito",
+        "service": servicio.serialize()
+    }), 201
+
+@api.route('/clients/me/services/<int:service_id>', methods=['GET'])
+@jwt_required()
+def get_my_service_detail(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicio = db.session.get(Servicio, service_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para ver este servicio"}), 403
+
+    return jsonify(servicio.serialize()), 200
+
+@api.route('/clients/me/services/<int:service_id>/propuestas', methods=['GET'])
+@jwt_required()
+def get_my_service_propuestas(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicio = db.session.get(Servicio, service_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para ver las propuestas de este servicio"}), 403
+
+    propuestas = db.session.execute(
+        select(Propuesta)
+        .where(Propuesta.servicio_id == service_id)
+        .order_by(Propuesta.created_at.desc())
+    ).scalars().all()
+
+    return jsonify([propuesta.serialize() for propuesta in propuestas]), 200
+
+@api.route('/clients/me/propuestas/<int:propuesta_id>/accept', methods=['PUT'])
+@jwt_required()
+def accept_propuesta(propuesta_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    propuesta = db.session.get(Propuesta, propuesta_id)
+
+    if not propuesta:
+        return jsonify({"msg": "Propuesta no encontrada"}), 404
+
+    servicio = db.session.get(Servicio, propuesta.servicio_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para aceptar esta propuesta"}), 403
+
+    if servicio.estado != "abierto":
+        return jsonify({"msg": "Solo se pueden aceptar propuestas de servicios abiertos"}), 400
+
+    # aceptar la propuesta elegida
+    propuesta.estado = "aceptada"
+
+    # rechazar las demás
+    otras_propuestas = db.session.execute(
+        select(Propuesta).where(
+            Propuesta.servicio_id == servicio.id,
+            Propuesta.id != propuesta.id
+        )
+    ).scalars().all()
+
+    for prop in otras_propuestas:
+        prop.estado = "rechazada"
+
+    # actualizar servicio
+    servicio.estado = "en_proceso"
+
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Propuesta aceptada con éxito",
+        "propuesta": propuesta.serialize(),
+        "servicio": servicio.serialize()
+    }), 200
+
+@api.route('/clients/me/services/<int:service_id>/finish', methods=['PUT'])
+@jwt_required()
+def finish_my_service(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if claims.get("role") != "cliente":
+        return jsonify({"msg": "No autorizado"}), 403
+
+    client_id = int(identity)
+
+    servicio = db.session.get(Servicio, service_id)
+
+    if not servicio:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+
+    if servicio.client_id != client_id:
+        return jsonify({"msg": "No autorizado para finalizar este servicio"}), 403
+
+    if servicio.estado != "en_proceso":
+        return jsonify({"msg": "Solo se pueden finalizar servicios en proceso"}), 400
+
+    servicio.estado = "finalizado"
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Servicio finalizado con éxito",
+        "service": servicio.serialize()
+    }), 200
