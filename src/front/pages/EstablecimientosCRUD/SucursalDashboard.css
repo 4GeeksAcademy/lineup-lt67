@@ -161,3 +161,34 @@
     min-width: 48px;
     text-align: right;
 }
+
+.btn-back {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    text-align: left;
+}
+
+.back-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.back-label {
+    font-size: 11px;
+    color: #888;
+    line-height: 1;
+}
+
+.back-name {
+    font-size: 24px;
+    font-weight: 500;
+    color: #111;
+    line-height: 1;
+}

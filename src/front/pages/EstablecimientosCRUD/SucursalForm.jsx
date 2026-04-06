@@ -10,6 +10,8 @@ export const SucursalForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const [nombre, setNombre] = useState("");
+    const [gerente, setGerente] = useState("")
+    const [direccion, setDireccion] = useState("")
     const [capacidad, setCapacidad] = useState("");
     const [tiempoPorCliente, setTiempoPorCliente] = useState("");
     const [filaActiva, setFilaActiva] = useState(false);
@@ -28,6 +30,13 @@ export const SucursalForm = () => {
             return;
         }
 
+        const data = {
+            id_establecimiento: parseInt(idEstablecimiento),
+            nombre: nombre,
+            nombre_gerente: gerente,
+            direccion: direccion,
+        };
+
         const formData = new FormData();
         formData.append("id_establecimiento", idEstablecimiento);
         formData.append("nombre", nombre);
@@ -38,18 +47,16 @@ export const SucursalForm = () => {
         formData.append("lng", location.lng);
         formData.append("address", location.address)
         
-        if (imagenFile) {
-            formData.append("imagen", imagenFile);
+            fetch(`${backendUrl}/api/sucursal`, {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then((resp) => {
+                if (resp.ok) navigate(`/establecimiento/dashboard`)
+                    else navigate (`/establecimiento/${idEstablecimiento}/detalle`)
+            })
         }
-
-        fetch(`${backendUrl}/api/sucursal`, {
-            method: 'POST',
-            body: formData
-        })
-        .then((resp) => {
-            if (resp.ok) navigate(`/establecimiento/dashboard`)
-        })
-    }
     
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
@@ -79,16 +86,21 @@ export const SucursalForm = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Imagen</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="form-control"
-                            onChange={(e) => setImagenFile(e.target.files[0])}
-                        />
+                        <label className="form-label">Nombre del gerente</label>
+                        <input type="text" className="form-control"
+                            value={gerente} onChange={e => setGerente(e.target.value)} />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Dirección</label>
+                        <input type="text" className="form-control"
+                            value={direccion} onChange={e => setDireccion(e.target.value)} />
                     </div>
 
                     <button type="submit" className="btn btn-primary w-100">Crear</button>
+                    <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>
+                        Volver
+                    </button>
                 </form>
             </div>
         </div>
