@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+
 export const SucursalEdit = () => {
 
     const { id } = useParams()
@@ -12,6 +13,7 @@ export const SucursalEdit = () => {
     const [tiempoPorCliente, setTiempoPorCliente] = useState("")
     const [filaActiva, setFilaActiva] = useState(false)
     const [idEstablecimiento, setIdEstablecimiento] = useState(null)
+    const [location, setLocation] = useState({});
 
     useEffect(() => {
         fetch(`${backendUrl}/api/sucursal/${id}`)
@@ -22,6 +24,10 @@ export const SucursalEdit = () => {
             setTiempoPorCliente(data.tiempo_por_cliente)
             setFilaActiva(data.fila_activa)
             setIdEstablecimiento(data.id_establecimiento)
+            setLocation({
+                lat: data.lat ?? -31.4201,
+                lng: data.lng ?? -64.1888
+            });
         })
     }, [])
 

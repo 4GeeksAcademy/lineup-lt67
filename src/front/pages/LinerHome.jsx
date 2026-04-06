@@ -150,7 +150,7 @@ export const LinerHome = () => {
                                             )}
                                         </div>
                                     )}
-                                    <p className="card-text mb-1"><i className="fas fa-map-marker-alt text-danger"></i> <strong>Lugar:</strong> {servicio.lugar}</p>
+                                    <p className="card-text mb-1"><strong>Dirección:</strong> {servicio.address || "No especificada"}</p>
                                     <p className="card-text mb-1"><i className="fas fa-clock text-warning"></i> <strong>Urgencia:</strong> {servicio.urgencia}</p>
                                     <p className="card-text mb-3"><i className="fas fa-money-bill-wave text-success"></i> <strong>Presupuesto del Cliente:</strong> ${servicio.precio_propuesto}</p>
                                     

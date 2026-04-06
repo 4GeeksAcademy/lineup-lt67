@@ -10,7 +10,7 @@ export const Layout = () => {
     const hideGenericNavbar = location.pathname.startsWith("/client");
     return (
         <ScrollToTop>
-            {!hideGenericNavbar && <Navbar />}
+            <Navbar />
                 <Outlet />
             {!hideGenericNavbar && <Footer />}
         </ScrollToTop>

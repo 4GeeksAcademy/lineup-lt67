@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClientNavbar } from "../components/ClientNavbar";
+import { LocationPicker } from "../components/LocationPicker";
 
 export const ClientServiceForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -12,6 +13,11 @@ export const ClientServiceForm = () => {
     const [precioPropuesto, setPrecioPropuesto] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const [serviceImageUrl, setServiceImageUrl] = useState("");
+    const [location, setLocation] = useState({
+        lat: -31.4201,
+        lng: -64.1888,
+        address: ""
+    });
     const [uploadingImage, setUploadingImage] = useState(false);
     const [error, setError] = useState("");
 
@@ -112,6 +118,9 @@ export const ClientServiceForm = () => {
                     image_url: serviceImageUrl || null,
                     tiempo_estimado: aiTiempo || null,
                     precio_recomendado: aiPrecio ? Number(aiPrecio) : null,
+                    lat: location.lat,
+                    lng: location.lng,
+                    address: location.address
                 })
             });
 
@@ -156,6 +165,15 @@ export const ClientServiceForm = () => {
                                     value={lugar}
                                     onChange={(e) => setLugar(e.target.value)}
                                     required
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="form-label fw-bold">Ubicación en el mapa</label>
+                                <LocationPicker
+                                    value={location}
+                                    onChange={setLocation}
+                                    height="300px"
                                 />
                             </div>
 

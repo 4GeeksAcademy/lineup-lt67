@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 349ee9974e8d
+Revision ID: d377d4a44900
 Revises: 
-Create Date: 2026-04-03 14:48:51.195301
+Create Date: 2026-04-06 20:24:34.629314
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '349ee9974e8d'
+revision = 'd377d4a44900'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,8 +32,12 @@ def upgrade():
     sa.Column('full_name', sa.String(length=120), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('profile_image_url', sa.String(length=500), nullable=True),
+    sa.Column('lat', sa.Float(), nullable=True),
+    sa.Column('lng', sa.Float(), nullable=True),
+    sa.Column('address', sa.String(length=255), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -80,6 +84,10 @@ def upgrade():
     sa.Column('tiempo_estimado', sa.String(length=50), nullable=True),
     sa.Column('precio_recomendado', sa.Float(), nullable=True),
     sa.Column('estado', sa.String(length=50), nullable=False),
+    sa.Column('image_url', sa.String(length=500), nullable=True),
+    sa.Column('lat', sa.Float(), nullable=True),
+    sa.Column('lng', sa.Float(), nullable=True),
+    sa.Column('address', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['client_id'], ['client.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -103,7 +111,10 @@ def upgrade():
     sa.Column('nombre', sa.String(length=120), nullable=False),
     sa.Column('fila_activa', sa.Boolean(), nullable=False),
     sa.Column('tiempo_por_cliente', sa.Integer(), nullable=False),
-    sa.Column('capacidad', sa.Integer(), nullable=False),
+    sa.Column('capacidad', sa.Integer(), nullable=True),
+    sa.Column('lat', sa.Float(), nullable=True),
+    sa.Column('lng', sa.Float(), nullable=True),
+    sa.Column('address', sa.String(length=255), nullable=True),
     sa.Column('imagen', sa.String(length=500), nullable=True),
     sa.ForeignKeyConstraint(['id_establecimiento'], ['establecimiento.id'], ),
     sa.PrimaryKeyConstraint('id')
