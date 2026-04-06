@@ -107,10 +107,11 @@ class Sucursal(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     id_establecimiento: Mapped[int] = mapped_column(ForeignKey('establecimiento.id'), nullable=False)
     nombre: Mapped[str] = mapped_column(String(120), nullable=False)
+    nombre_gerente: Mapped[str] = mapped_column(String(120), nullable=True)
+    direccion: Mapped[str] = mapped_column(String(250), nullable=True)
     fila_activa: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
     tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False, default=15)
-    capacidad: Mapped[Optional[int]] = mapped_column(nullable=True)
-    imagen: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+
 
     establecimiento = relationship('Establecimiento', backref='sucursales')
     tickets: Mapped[List["Ticket"]] = relationship(back_populates="sucursal")
@@ -121,10 +122,10 @@ class Sucursal(db.Model):
             "id": self.id,
             "id_establecimiento": self.id_establecimiento,
             "nombre": self.nombre,
+            "nombre_gerente": self.nombre_gerente,
+            "direccion": self.direccion,
             "fila_activa": self.fila_activa,
-            "tiempo_por_cliente": self.tiempo_por_cliente,
-            "capacidad": self.capacidad,
-            "imagen": self.imagen
+            "tiempo_por_cliente": self.tiempo_por_cliente
         }
 
 

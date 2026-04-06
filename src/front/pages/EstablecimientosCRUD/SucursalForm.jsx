@@ -9,10 +9,8 @@ export const SucursalForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const [nombre, setNombre] = useState("");
-    const [capacidad, setCapacidad] = useState("");
-    const [tiempoPorCliente, setTiempoPorCliente] = useState("");
-    const [filaActiva, setFilaActiva] = useState(false);
-    const [imagenFile, setImagenFile] = useState(null);
+    const [gerente, setGerente] = useState("")
+    const [direccion, setDireccion] = useState("")
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -22,25 +20,23 @@ export const SucursalForm = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append("id_establecimiento", idEstablecimiento);
-        formData.append("nombre", nombre);
-        formData.append("capacidad", capacidad);
-        formData.append("tiempo_por_cliente", tiempoPorCliente);
-        formData.append("fila_activa", filaActiva);
+        const data = {
+            id_establecimiento: parseInt(idEstablecimiento),
+            nombre: nombre,
+            nombre_gerente: gerente,
+            direccion: direccion,
+        };
         
-        if (imagenFile) {
-            formData.append("imagen", imagenFile);
+            fetch(`${backendUrl}/api/sucursal`, {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then((resp) => {
+                if (resp.ok) navigate(`/establecimiento/dashboard`)
+                    else navigate (`/establecimiento/${idEstablecimiento}/detalle`)
+            })
         }
-
-        fetch(`${backendUrl}/api/sucursal`, {
-            method: 'POST',
-            body: formData
-        })
-        .then((resp) => {
-            if (resp.ok) navigate(`/establecimiento/dashboard`)
-        })
-    }
     
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
@@ -50,27 +46,26 @@ export const SucursalForm = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label className="form-label">Nombre</label>
-                        <input type="text" className="form-control" placeholder="Nombre"
-                            value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-                    </div>
-
-                    <div className="mb-3 form-check">
-                        <input type="checkbox" className="form-check-input" id="filaActiva"
-                            checked={filaActiva} onChange={(e) => setFilaActiva(e.target.checked)} />
-                        <label className="form-check-label" htmlFor="filaActiva">Fila activa</label>
+                        <input type="text" className="form-control"
+                            value={nombre} onChange={e => setNombre(e.target.value)} required />
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Imagen</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="form-control"
-                            onChange={(e) => setImagenFile(e.target.files[0])}
-                        />
+                        <label className="form-label">Nombre del gerente</label>
+                        <input type="text" className="form-control"
+                            value={gerente} onChange={e => setGerente(e.target.value)} />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Dirección</label>
+                        <input type="text" className="form-control"
+                            value={direccion} onChange={e => setDireccion(e.target.value)} />
                     </div>
 
                     <button type="submit" className="btn btn-primary w-100">Crear</button>
+                    <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>
+                        Volver
+                    </button>
                 </form>
             </div>
         </div>

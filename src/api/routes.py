@@ -537,23 +537,19 @@ def get_sucursales_por_establecimiento(id):
 
 @api.route('/sucursal', methods=['POST'])
 def crear_sucursal():
-    body = request.form.to_dict() if request.form else request.get_json()
+    body = request.get_json()
     if not body.get("nombre") or not body.get("id_establecimiento"):
         return jsonify({"message": "Faltan datos"}), 400
-
-    imagen_url = None
-    if 'imagen' in request.files:
-        upload_result = cloudinary.uploader.upload(request.files['imagen'])
-        imagen_url = upload_result.get('secure_url')
 
     nueva_sucursal = Sucursal(
         id_establecimiento=body["id_establecimiento"],
         nombre=body["nombre"],
-        fila_activa=body.get("fila_activa", False) in ['true', 'True', True, 1, '1'],
-        tiempo_por_cliente=body.get("tiempo_por_cliente", 15),
-        capacidad=body.get("capacidad", None),
-        imagen=imagen_url
+        nombre_gerente=body.get("nombre_gerente"),
+        direccion=body.get("direccion"),
+        fila_activa=False,
+        tiempo_por_cliente=15
     )
+    
     db.session.add(nueva_sucursal)
     db.session.commit()
     return jsonify(nueva_sucursal.serialize()), 201

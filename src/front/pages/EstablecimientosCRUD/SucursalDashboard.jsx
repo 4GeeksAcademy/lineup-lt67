@@ -75,10 +75,15 @@ export const SucursalDashboard = () => {
         <div className="sucursal-page">
 
             <div className="sucursal-header">
-                <div>
-                    <p className="sucursal-label">Sucursal</p>
-                    <h2 className="sucursal-title">{sucursal ? sucursal.nombre : "Cargando..."}</h2>
-                </div>
+
+                <button className="btn-back" onClick={() => navigate(-1)}>
+                    <i className="bi bi-chevron-left back-chevron"></i>
+                    <div className="back-text d-flex flex-direction-column">
+                        <span className="back-label">Sucursal</span>
+                        <span className="back-name">{sucursal ? sucursal.nombre : ""}</span>
+                    </div>
+                </button>
+
                 <div className="sucursal-toggle-wrap">
                     <span className="toggle-label">{sucursal?.fila_activa ? "Fila activa" : "Fila inactiva"}</span>
                     <div className={`toggle ${sucursal?.fila_activa ? "on" : "off"}`}>
