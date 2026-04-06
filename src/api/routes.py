@@ -585,8 +585,8 @@ def crear_sucursal():
         id_establecimiento=body["id_establecimiento"],
         nombre=body["nombre"],
         fila_activa=body.get("fila_activa", False) in ['true', 'True', True, 1, '1'],
-        tiempo_por_cliente=body["tiempo_por_cliente"],
-        capacidad=body["capacidad"],
+        tiempo_por_cliente=body.get("tiempo_por_cliente", 15),
+        capacidad=body.get("capacidad", None),
         lat=lat,
         lng=lng,
         address=address,
@@ -660,6 +660,20 @@ def get_ticket(ticket_id):
         return jsonify({"msg": "ticket no encontrado"}), 404
 
     return jsonify(ticket.serialize()), 200
+
+@api.route('/sucursal/<int:sucursal_id>/tickets', methods=['GET'])
+def get_tickets_por_sucursal(sucursal_id):
+    sucursal = db.session.get(Sucursal, sucursal_id)
+    if not sucursal:
+        return jsonify({"msg": "Sucursal no encontrada"}), 404
+
+    tickets = db.session.execute(
+        select(Ticket)
+        .where(Ticket.id_sucursal == sucursal_id)
+        .order_by(Ticket.posicion)
+    ).scalars().all()
+
+    return jsonify([t.serialize() for t in tickets]), 200
 
 
 @api.route('/tickets', methods=['POST'])

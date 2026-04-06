@@ -103,7 +103,7 @@ class Establecimiento(db.Model):
             "nombre": self.nombre,
             "tipo_id": self.tipo_id,
             "tipo_nombre": self.tipo.nombre if self.tipo else None,
-            "total_sucursales": self.total_sucursales,
+            "total_sucursales": len(self.sucursales),
             #"clave": self.clave,
             "password": self.password,
             "logo": self.logo,
@@ -114,8 +114,8 @@ class Sucursal(db.Model):
     id_establecimiento: Mapped[int] = mapped_column(ForeignKey('establecimiento.id'), nullable=False)
     nombre: Mapped[str] = mapped_column(String(120), nullable=False)
     fila_activa: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False)
-    capacidad: Mapped[int] = mapped_column(nullable=False)
+    tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False, default=15)
+    capacidad: Mapped[Optional[int]] = mapped_column(nullable=True)
     lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

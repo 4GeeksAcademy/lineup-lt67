@@ -63,6 +63,7 @@ export const SucursalForm = () => {
                             value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                     </div>
 
+<<<<<<< HEAD
                     <div className="mb-4">
                         <label className="form-label fw-bold">Ubicación en el mapa</label>
                         <LocationPicker
@@ -84,6 +85,8 @@ export const SucursalForm = () => {
                             value={tiempoPorCliente} onChange={(e) => setTiempoPorCliente(e.target.value)} required />
                     </div>
 
+=======
+>>>>>>> develop
                     <div className="mb-3 form-check">
                         <input type="checkbox" className="form-check-input" id="filaActiva"
                             checked={filaActiva} onChange={(e) => setFilaActiva(e.target.checked)} />

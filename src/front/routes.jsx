@@ -103,7 +103,7 @@ export const router = createBrowserRouter(
         <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
         <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
         <Route path="/establecimientos/:id" element={<EstablecimientoEdit />} />
-        <Route path="/establecimiento/sucursal/:id" element={<SucursalEdit />} />
+        <Route path="/establecimiento/sucursal/edit/:id" element={<SucursalEdit />} />
         <Route path="/establecimiento/sucursal/:id" element={<SucursalDashboard />} />
         <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
         <Route path="/sucursal/nueva" element={<SucursalForm />} />

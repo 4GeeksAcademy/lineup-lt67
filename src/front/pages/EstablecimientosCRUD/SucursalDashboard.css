@@ -1,0 +1,163 @@
+.sucursal-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.sucursal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.sucursal-label {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+}
+
+.sucursal-title {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.sucursal-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-label {
+    font-size: 13px;
+    color: #888;
+}
+
+.toggle {
+    width: 44px;
+    height: 24px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.toggle.on { 
+    background: #1D9E75; justify-content: flex-end;
+}
+
+.toggle.off { 
+    background: #ddd; justify-content: flex-start;
+}
+
+.toggle-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.seccion {
+    margin-bottom: 2rem;
+}
+
+.seccion-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #888;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+}
+
+.lista {
+    background: #fff;
+    border: 0.5px solid #e5e5e5;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.empty-row {
+    padding: 16px;
+    font-size: 13px;
+    color: #aaa;
+    text-align: center;
+}
+
+.ticket-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid #f0f0f0;
+}
+
+.ticket-row:last-child {
+    border-bottom: none;
+}
+
+.ticket-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #E6F1FB;
+    color: #0C447C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.ticket-info {
+    flex: 1;
+}
+
+.ticket-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    color: #111;
+}
+
+.ticket-sub {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+}
+
+.ticket-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-llamar {
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #1D9E75;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btn-cancelar {
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: 0.5px solid #F7C1C1;
+    background: transparent;
+    color: #A32D2D;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.timer {
+    font-size: 18px;
+    font-weight: 500;
+    color: #BA7517;
+    min-width: 48px;
+    text-align: right;
+}
