@@ -138,6 +138,7 @@ export const ClientHome = () => {
                                                     <div className="card h-100 shadow-sm">
                                                         <div className="card-body">
                                                             <h5 className="card-title">{sucursal.nombre}</h5>
+                                                            <p><strong>Dirección:</strong> {sucursal.address || "No especificada"}</p>
                                                             <p className="card-text mb-1">
                                                                 <strong>Capacidad:</strong> {sucursal.capacidad}
                                                             </p>

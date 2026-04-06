@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { LocationPicker } from "../../components/LocationPicker";
 
 export const SucursalForm = () => {
     const navigate = useNavigate();
@@ -13,6 +14,11 @@ export const SucursalForm = () => {
     const [tiempoPorCliente, setTiempoPorCliente] = useState("");
     const [filaActiva, setFilaActiva] = useState(false);
     const [imagenFile, setImagenFile] = useState(null);
+    const [location, setLocation] = useState({
+        lat: -31.4201,
+        lng: -64.1888,
+        address: ""
+    });
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -25,9 +31,12 @@ export const SucursalForm = () => {
         const formData = new FormData();
         formData.append("id_establecimiento", idEstablecimiento);
         formData.append("nombre", nombre);
-        formData.append("capacidad", capacidad);
-        formData.append("tiempo_por_cliente", tiempoPorCliente);
+        //formData.append("capacidad", capacidad);
+        //formData.append("tiempo_por_cliente", tiempoPorCliente);
         formData.append("fila_activa", filaActiva);
+        formData.append("lat", location.lat);
+        formData.append("lng", location.lng);
+        formData.append("address", location.address)
         
         if (imagenFile) {
             formData.append("imagen", imagenFile);
@@ -52,6 +61,15 @@ export const SucursalForm = () => {
                         <label className="form-label">Nombre</label>
                         <input type="text" className="form-control" placeholder="Nombre"
                             value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="form-label fw-bold">Ubicación en el mapa</label>
+                        <LocationPicker
+                            value={location}
+                            onChange={setLocation}
+                            height="300px"
+                        />
                     </div>
 
                     <div className="mb-3 form-check">

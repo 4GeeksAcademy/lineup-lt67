@@ -165,11 +165,30 @@ def create_client():
     if client:
         return jsonify({"msg": "There is already an account with this Email"}), 400
 
+    lat = body.get("lat")
+    lng = body.get("lng")
+    address = body.get("address")
+
+    if lat is not None:
+        try:
+            lat = float(lat)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lat debe ser numérico"}), 400
+
+    if lng is not None:
+        try:
+            lng = float(lng)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lng debe ser numérico"}), 400
+
     new_client = Client(
         full_name=body["full_name"],
         email=body["email"],
         password=body["password"],
         profile_image_url=body.get("profile_image_url"),
+        lat=lat,
+        lng=lng,
+        address=address,
         is_active=True
     )
     db.session.add(new_client)
@@ -540,6 +559,22 @@ def crear_sucursal():
     body = request.form.to_dict() if request.form else request.get_json()
     if not body.get("nombre") or not body.get("id_establecimiento"):
         return jsonify({"message": "Faltan datos"}), 400
+    
+    lat = body.get("lat")
+    lng = body.get("lng")
+    address = body.get("address")
+
+    if lat is not None:
+        try:
+            lat = float(lat)
+        except (TypeError, ValueError):
+            return jsonify({"message": "lat debe ser numérico"}), 400
+
+    if lng is not None:
+        try:
+            lng = float(lng)
+        except (TypeError, ValueError):
+            return jsonify({"message": "lng debe ser numérico"}), 400
 
     imagen_url = None
     if 'imagen' in request.files:
@@ -552,6 +587,9 @@ def crear_sucursal():
         fila_activa=body.get("fila_activa", False) in ['true', 'True', True, 1, '1'],
         tiempo_por_cliente=body.get("tiempo_por_cliente", 15),
         capacidad=body.get("capacidad", None),
+        lat=lat,
+        lng=lng,
+        address=address,
         imagen=imagen_url
     )
     db.session.add(nueva_sucursal)
@@ -571,6 +609,21 @@ def editar_sucursal(id):
         sucursal.fila_activa = body.get("fila_activa") in ['true', 'True', True, 1, '1']
     sucursal.tiempo_por_cliente = body.get("tiempo_por_cliente", sucursal.tiempo_por_cliente)
     sucursal.capacidad = body.get("capacidad", sucursal.capacidad)
+
+    if "lat" in body:
+        try:
+            sucursal.lat = float(body["lat"]) if body["lat"] is not None else None
+        except (TypeError, ValueError):
+            return jsonify({"message": "lat debe ser numérico"}), 400
+
+    if "lng" in body:
+        try:
+            sucursal.lng = float(body["lng"]) if body["lng"] is not None else None
+        except (TypeError, ValueError):
+            return jsonify({"message": "lng debe ser numérico"}), 400
+
+    if "address" in body:
+        sucursal.address = body.get("address")
     
     if 'imagen' in request.files:
         upload_result = cloudinary.uploader.upload(request.files['imagen'])
@@ -1387,6 +1440,22 @@ def create_my_service():
     tiempo_estimado = body.get("tiempo_estimado")
     precio_recomendado = body.get("precio_recomendado")
 
+    lat = body.get("lat")
+    lng = body.get("lng")
+    address = body.get("address")
+
+    if lat is not None:
+        try:
+            lat = float(lat)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lat debe ser numérico"}), 400
+
+    if lng is not None:
+        try:
+            lng = float(lng)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lng debe ser numérico"}), 400
+
     servicio = Servicio(
         client_id=client_id,
         descripcion=body["descripcion"],
@@ -1396,6 +1465,9 @@ def create_my_service():
         image_url=body.get("image_url"),
         estado="abierto",
         tiempo_estimado=tiempo_estimado,
+        lat=lat,
+        lng=lng,
+        address=address,
         precio_recomendado=precio_recomendado
     )
 
