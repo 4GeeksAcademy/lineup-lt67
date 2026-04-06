@@ -137,11 +137,6 @@ class Sucursal(db.Model):
             "direccion": self.direccion,
             "fila_activa": self.fila_activa,
             "tiempo_por_cliente": self.tiempo_por_cliente,
-            "capacidad": self.capacidad,
-            "lat": self.lat,
-            "lng": self.lng,
-            "address": self.address,
-            "imagen": self.imagen
         }
 
 
