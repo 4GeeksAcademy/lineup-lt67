@@ -31,8 +31,8 @@ export const SucursalForm = () => {
         const formData = new FormData();
         formData.append("id_establecimiento", idEstablecimiento);
         formData.append("nombre", nombre);
-        formData.append("capacidad", capacidad);
-        formData.append("tiempo_por_cliente", tiempoPorCliente);
+        //formData.append("capacidad", capacidad);
+        //formData.append("tiempo_por_cliente", tiempoPorCliente);
         formData.append("fila_activa", filaActiva);
         formData.append("lat", location.lat);
         formData.append("lng", location.lng);
@@ -63,7 +63,6 @@ export const SucursalForm = () => {
                             value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                     </div>
 
-<<<<<<< HEAD
                     <div className="mb-4">
                         <label className="form-label fw-bold">Ubicación en el mapa</label>
                         <LocationPicker
@@ -73,20 +72,6 @@ export const SucursalForm = () => {
                         />
                     </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">Capacidad</label>
-                        <input type="number" className="form-control" placeholder="Capacidad"
-                            value={capacidad} onChange={(e) => setCapacidad(e.target.value)} required />
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Tiempo por cliente (min)</label>
-                        <input type="number" className="form-control" placeholder="Minutos"
-                            value={tiempoPorCliente} onChange={(e) => setTiempoPorCliente(e.target.value)} required />
-                    </div>
-
-=======
->>>>>>> develop
                     <div className="mb-3 form-check">
                         <input type="checkbox" className="form-check-input" id="filaActiva"
                             checked={filaActiva} onChange={(e) => setFilaActiva(e.target.checked)} />

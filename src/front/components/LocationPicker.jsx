@@ -12,6 +12,8 @@ export const LocationPicker = ({
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const markerRef = useRef(null);
+    const autocompleteContainerRef = useRef(null);
+    const autocompleteElementRef = useRef(null);
 
     const [lat, setLat] = useState(value?.lat ?? defaultCenter.lat);
     const [lng, setLng] = useState(value?.lng ?? defaultCenter.lng);
@@ -73,6 +75,73 @@ export const LocationPicker = ({
         mapInstanceRef.current.setCenter(nextPosition);
         markerRef.current.setPosition(nextPosition);
     }, [lat, lng]);
+
+    useEffect(() => {
+        if (!isLoaded || !autocompleteContainerRef.current || autocompleteElementRef.current) return;
+
+        let cancelled = false;
+
+        const initAutocomplete = async () => {
+            try {
+                await window.google.maps.importLibrary("places");
+                if (cancelled) return;
+
+                const placeAutocomplete = new window.google.maps.places.PlaceAutocompleteElement({
+                    placeholder: "Buscá una dirección o lugar"
+                });
+
+                autocompleteContainerRef.current.innerHTML = "";
+                autocompleteContainerRef.current.appendChild(placeAutocomplete);
+                autocompleteElementRef.current = placeAutocomplete;
+
+                placeAutocomplete.addEventListener("gmp-select", async ({ placePrediction }) => {
+                    const place = placePrediction.toPlace();
+                    await place.fetchFields({
+                        fields: ["displayName", "formattedAddress", "location", "viewport"]
+                    });
+
+                    if (!place.location) return;
+
+                    const newLat = place.location.lat();
+                    const newLng = place.location.lng();
+                    const formattedAddress = place.formattedAddress || place.displayName || "";
+
+                    setLat(newLat);
+                    setLng(newLng);
+                    setAddress(formattedAddress);
+
+                    if (mapInstanceRef.current) {
+                        if (place.viewport) {
+                            mapInstanceRef.current.fitBounds(place.viewport);
+                        } else {
+                            mapInstanceRef.current.setCenter({ lat: newLat, lng: newLng });
+                            mapInstanceRef.current.setZoom(17);
+                        }
+                    }
+
+                    if (markerRef.current) {
+                        markerRef.current.setPosition({ lat: newLat, lng: newLng });
+                    }
+
+                    if (onChange) {
+                        onChange({
+                            lat: newLat,
+                            lng: newLng,
+                            address: formattedAddress
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error("Error inicializando Places Autocomplete:", error);
+            }
+        };
+
+        initAutocomplete();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [isLoaded, onChange, address]);
 
     const handleLatChange = (e) => {
         const newLat = e.target.value;
@@ -140,9 +209,13 @@ export const LocationPicker = ({
 
     return (
         <div>
+            <div className="mb-3">
+                <label className="form-label">Buscar dirección o lugar</label>
+                <div ref={autocompleteContainerRef} />
+            </div>
 
             <div className="mb-3">
-                <label className="form-label">Dirección</label>
+                <label className="form-label">Dirección seleccionada</label>
                 <div className="d-flex gap-2">
                     <input
                         type="text"
