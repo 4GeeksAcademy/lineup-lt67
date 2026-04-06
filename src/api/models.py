@@ -205,9 +205,12 @@ class Servicio(db.Model):
     precio_recomendado: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     estado: Mapped[str] = mapped_column(String(50), nullable=False, default='abierto')
     image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    lat_start: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    lng_start: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    address_start: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    lat_finish: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    lng_finish: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    address_finish: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
