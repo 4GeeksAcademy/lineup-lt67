@@ -71,6 +71,16 @@ export const SucursalDashboard = () => {
         })
     }
 
+    function handleToggleFila() {
+        fetch(`${backendUrl}/api/sucursal/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fila_activa: !sucursal.fila_activa })
+        })
+        .then(resp => resp.json())
+        .then(data => setSucursal(data))
+    }
+
     return (
         <div className="sucursal-page">
 
@@ -86,7 +96,7 @@ export const SucursalDashboard = () => {
 
                 <div className="sucursal-toggle-wrap">
                     <span className="toggle-label">{sucursal?.fila_activa ? "Fila activa" : "Fila inactiva"}</span>
-                    <div className={`toggle ${sucursal?.fila_activa ? "on" : "off"}`}>
+                    <div className={`toggle ${sucursal?.fila_activa ? "on" : "off"}`} onClick={handleToggleFila}>
                         <div className="toggle-thumb" />
                     </div>
                 </div>
