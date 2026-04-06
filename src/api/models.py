@@ -69,6 +69,7 @@ class Client(db.Model):
     profile_image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     
 
     def serialize(self):
@@ -78,7 +79,8 @@ class Client(db.Model):
             "email": self.email,
             "profile_image_url": self.profile_image_url,
             "lat": self.lat,
-    "lng": self.lng,
+            "lng": self.lng,
+            "address": self.address,
             "created_at": self.created_at.isoformat()
         }
 
@@ -116,6 +118,7 @@ class Sucursal(db.Model):
     capacidad: Mapped[int] = mapped_column(nullable=False)
     lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     imagen: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     establecimiento = relationship('Establecimiento', backref='sucursales')
@@ -132,6 +135,7 @@ class Sucursal(db.Model):
             "capacidad": self.capacidad,
             "lat": self.lat,
             "lng": self.lng,
+            "address": self.address,
             "imagen": self.imagen
         }
 
@@ -203,6 +207,7 @@ class Servicio(db.Model):
     image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(timezone.utc)
@@ -228,6 +233,7 @@ class Servicio(db.Model):
             "image_url": self.image_url,
             "lat": self.lat,
             "lng": self.lng,
+            "address": self.address,
             "created_at": self.created_at.isoformat()
         }
 

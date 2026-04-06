@@ -167,6 +167,7 @@ def create_client():
 
     lat = body.get("lat")
     lng = body.get("lng")
+    address = body.get("address")
 
     if lat is not None:
         try:
@@ -187,6 +188,7 @@ def create_client():
         profile_image_url=body.get("profile_image_url"),
         lat=lat,
         lng=lng,
+        address=address,
         is_active=True
     )
     db.session.add(new_client)
@@ -560,6 +562,7 @@ def crear_sucursal():
     
     lat = body.get("lat")
     lng = body.get("lng")
+    address = body.get("address")
 
     if lat is not None:
         try:
@@ -586,6 +589,7 @@ def crear_sucursal():
         capacidad=body["capacidad"],
         lat=lat,
         lng=lng,
+        address=address,
         imagen=imagen_url
     )
     db.session.add(nueva_sucursal)
@@ -617,6 +621,9 @@ def editar_sucursal(id):
             sucursal.lng = float(body["lng"]) if body["lng"] is not None else None
         except (TypeError, ValueError):
             return jsonify({"message": "lng debe ser numérico"}), 400
+
+    if "address" in body:
+        sucursal.address = body.get("address")
     
     if 'imagen' in request.files:
         upload_result = cloudinary.uploader.upload(request.files['imagen'])
@@ -1421,6 +1428,7 @@ def create_my_service():
 
     lat = body.get("lat")
     lng = body.get("lng")
+    address = body.get("address")
 
     if lat is not None:
         try:
@@ -1445,6 +1453,7 @@ def create_my_service():
         tiempo_estimado=tiempo_estimado,
         lat=lat,
         lng=lng,
+        address=address,
         precio_recomendado=precio_recomendado
     )
 

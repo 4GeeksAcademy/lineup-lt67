@@ -145,7 +145,7 @@ export const ClientServiceDetail = () => {
                                 )}
 
                                 <p className="mb-1">
-                                    <strong>Lugar:</strong> {service.lugar}
+                                    <strong>Dirección:</strong> {service.address || "No especificada"}
                                 </p>
                                 <p className="mb-1">
                                     <strong>Urgencia:</strong> {service.urgencia}

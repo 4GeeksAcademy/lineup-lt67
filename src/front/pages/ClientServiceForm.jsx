@@ -15,7 +15,8 @@ export const ClientServiceForm = () => {
     const [serviceImageUrl, setServiceImageUrl] = useState("");
     const [location, setLocation] = useState({
         lat: -31.4201,
-        lng: -64.1888
+        lng: -64.1888,
+        address: ""
     });
     const [uploadingImage, setUploadingImage] = useState(false);
     const [error, setError] = useState("");
@@ -118,7 +119,8 @@ export const ClientServiceForm = () => {
                     tiempo_estimado: aiTiempo || null,
                     precio_recomendado: aiPrecio ? Number(aiPrecio) : null,
                     lat: location.lat,
-                    lng: location.lng
+                    lng: location.lng,
+                    address: location.address
                 })
             });
 

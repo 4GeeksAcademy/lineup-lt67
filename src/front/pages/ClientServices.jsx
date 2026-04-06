@@ -92,7 +92,7 @@ export const ClientServices = () => {
                                             <strong>Descripción:</strong> {activeService.descripcion}
                                         </p>
                                         <p className="card-text mb-1">
-                                            <strong>Lugar:</strong> {activeService.lugar}
+                                            <strong>Dirección:</strong> {activeService.address || "No especificada"}
                                         </p>
                                         <p className="card-text mb-1">
                                             <strong>Urgencia:</strong> {activeService.urgencia}
@@ -157,7 +157,7 @@ export const ClientServices = () => {
                                                         <strong>Descripción:</strong> {service.descripcion}
                                                     </p>
                                                     <p className="card-text mb-1">
-                                                        <strong>Lugar:</strong> {service.lugar}
+                                                        <strong>Dirección:</strong> {service.address || "No especificada"}
                                                     </p>
                                                     <p className="card-text mb-1">
                                                         <strong>Urgencia:</strong> {service.urgencia}

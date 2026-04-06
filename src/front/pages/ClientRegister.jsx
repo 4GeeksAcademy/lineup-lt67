@@ -14,7 +14,8 @@ export const ClientRegister = () => {
     const [uploadingImage, setUploadingImage] = useState(false);
     const [location, setLocation] = useState({
         lat: -31.4201,
-        lng: -64.1888
+        lng: -64.1888,
+        address: ""
     });
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -64,7 +65,8 @@ export const ClientRegister = () => {
                 password,
                 profile_image_url: profileImageUrl || null,
                 lat: location.lat,
-                lng: location.lng
+                lng: location.lng,
+                address: location.address
             }),
         })
             .then(async (resp) => {

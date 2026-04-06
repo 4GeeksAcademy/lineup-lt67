@@ -16,7 +16,8 @@ export const SucursalForm = () => {
     const [imagenFile, setImagenFile] = useState(null);
     const [location, setLocation] = useState({
         lat: -31.4201,
-        lng: -64.1888
+        lng: -64.1888,
+        address: ""
     });
 
     function handleSubmit(e) {
@@ -34,7 +35,8 @@ export const SucursalForm = () => {
         formData.append("tiempo_por_cliente", tiempoPorCliente);
         formData.append("fila_activa", filaActiva);
         formData.append("lat", location.lat);
-        formData.append("lng", location.lng)
+        formData.append("lng", location.lng);
+        formData.append("address", location.address)
         
         if (imagenFile) {
             formData.append("imagen", imagenFile);

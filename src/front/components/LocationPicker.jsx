@@ -15,11 +15,13 @@ export const LocationPicker = ({
 
     const [lat, setLat] = useState(value?.lat ?? defaultCenter.lat);
     const [lng, setLng] = useState(value?.lng ?? defaultCenter.lng);
+    const [address, setAddress] = useState(value?.address ?? "");
 
     useEffect(() => {
         if (value?.lat != null) setLat(value.lat);
         if (value?.lng != null) setLng(value.lng);
-    }, [value?.lat, value?.lng]);
+        if (value?.address != null) setAddress(value.address);
+    }, [value?.lat, value?.lng, value?.address]);
 
     useEffect(() => {
         if (!isLoaded || !mapRef.current || mapInstanceRef.current) return;
@@ -36,7 +38,24 @@ export const LocationPicker = ({
 
         const marker = new window.google.maps.Marker({
             position: center,
-            map
+            map,
+            draggable: true
+        });
+
+        marker.addListener("dragend", (event) => {
+            const newLat = event.latLng.lat();
+            const newLng = event.latLng.lng();
+
+            setLat(newLat);
+            setLng(newLng);
+
+            if (onChange) {
+                onChange({
+                    lat: newLat,
+                    lng: newLng,
+                    address
+                });
+            }
         });
 
         mapInstanceRef.current = map;
@@ -62,7 +81,8 @@ export const LocationPicker = ({
         if (onChange) {
             onChange({
                 lat: Number(newLat),
-                lng: Number(lng)
+                lng: Number(lng),
+                address
             });
         }
     };
@@ -74,8 +94,43 @@ export const LocationPicker = ({
         if (onChange) {
             onChange({
                 lat: Number(lat),
-                lng: Number(newLng)
+                lng: Number(newLng),
+                address
             });
+        }
+    };
+
+    const handleAddressSearch = async () => {
+        if (!window.google || !address.trim()) return;
+
+        try {
+            const geocoder = new window.google.maps.Geocoder();
+
+            geocoder.geocode({ address: address.trim() }, (results, status) => {
+                if (status !== "OK" || !results || !results.length) {
+                    alert("No se pudo encontrar esa dirección");
+                    return;
+                }
+
+                const location = results[0].geometry.location;
+                const newLat = location.lat();
+                const newLng = location.lng();
+                const formattedAddress = results[0].formatted_address;
+
+                setLat(newLat);
+                setLng(newLng);
+                setAddress(formattedAddress);
+
+                if (onChange) {
+                    onChange({
+                        lat: newLat,
+                        lng: newLng,
+                        address: formattedAddress
+                    });
+                }
+            });
+        } catch (error) {
+            alert("Ocurrió un error al buscar la dirección");
         }
     };
 
@@ -85,6 +140,27 @@ export const LocationPicker = ({
 
     return (
         <div>
+
+            <div className="mb-3">
+                <label className="form-label">Dirección</label>
+                <div className="d-flex gap-2">
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Escribí una dirección"
+                    />
+                    <button
+                        type="button"
+                        className="btn btn-outline-primary"
+                        onClick={handleAddressSearch}
+                    >
+                        Buscar
+                    </button>
+                </div>
+            </div>
+
             <div className="row g-3 mb-3">
                 <div className="col-md-6">
                     <label className="form-label">Latitud</label>
