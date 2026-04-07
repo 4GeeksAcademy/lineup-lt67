@@ -129,7 +129,7 @@ export const ClientServiceForm = () => {
                     address_start: startLocation.address,
                     lat_finish: finishLocation.lat,
                     lng_finish: finishLocation.lng,
-                    address: location.address
+                    address: finishLocation.address
                 })
             });
 
