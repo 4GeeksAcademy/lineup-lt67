@@ -1054,6 +1054,21 @@ def create_liner():
     name = body.get("liner_nombre")
     email = body.get("liner_email")
     password = body.get("liner_password")
+    lat = body.get("lat")
+    lng = body.get("lng")
+    address = body.get("address")
+
+    if lat is not None:
+        try:
+            lat = float(lat)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lat debe ser numérico"}), 400
+
+    if lng is not None:
+        try:
+            lng = float(lng)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lng debe ser numérico"}), 400
 
     if not name or not email or not password:
         return jsonify({"msg": "Faltan campos"}), 400
@@ -1065,7 +1080,10 @@ def create_liner():
     new_liner = Liner(
         liner_nombre=name,
         liner_email=email,
-        liner_password=password
+        liner_password=password,
+        lat=lat,
+        lng=lng,
+        address=address
     )
 
     db.session.add(new_liner)

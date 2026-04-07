@@ -299,6 +299,9 @@ class Liner(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     liner_nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     liner_email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     liner_password: Mapped[str] = mapped_column(nullable=False)
     liner_foto: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
@@ -311,7 +314,10 @@ class Liner(db.Model):
         return {
             "id": self.id,
             "nombre": self.liner_nombre,
-            "email": self.liner_email
+            "email": self.liner_email,
+            "lat": self.lat,
+            "lng": self.lng,
+            "address": self.address
         }
 
     
