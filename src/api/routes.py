@@ -1438,21 +1438,37 @@ def create_my_service():
     tiempo_estimado = body.get("tiempo_estimado")
     precio_recomendado = body.get("precio_recomendado")
 
-    lat = body.get("lat")
-    lng = body.get("lng")
-    address = body.get("address")
+    lat_start = body.get("lat_start")
+    lng_start = body.get("lng_start")
+    address_start = body.get("address_start")
 
-    if lat is not None:
-        try:
-            lat = float(lat)
-        except (TypeError, ValueError):
-            return jsonify({"msg": "lat debe ser numérico"}), 400
+    lat_finish = body.get("lat_finish")
+    lng_finish = body.get("lng_finish")
+    address_finish = body.get("address_finish")
 
-    if lng is not None:
+    if lat_start is not None:
         try:
-            lng = float(lng)
+            lat_start = float(lat_start)
         except (TypeError, ValueError):
-            return jsonify({"msg": "lng debe ser numérico"}), 400
+            return jsonify({"msg": "lat_start debe ser numérico"}), 400
+
+    if lng_start is not None:
+        try:
+            lng_start = float(lng_start)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lng_start debe ser numérico"}), 400
+
+    if lat_finish is not None:
+        try:
+            lat_finish = float(lat_finish)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lat_finish debe ser numérico"}), 400
+
+    if lng_finish is not None:
+        try:
+            lng_finish = float(lng_finish)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lng_finish debe ser numérico"}), 400
 
     servicio = Servicio(
         client_id=client_id,
@@ -1463,9 +1479,12 @@ def create_my_service():
         image_url=body.get("image_url"),
         estado="abierto",
         tiempo_estimado=tiempo_estimado,
-        lat=lat,
-        lng=lng,
-        address=address,
+        lat_start=lat_start,
+        lng_start=lng_start,
+        address_start=address_start,
+        lat_finish=lat_finish,
+        lng_finish=lng_finish,
+        address_finish=address_finish,
         precio_recomendado=precio_recomendado
     )
 

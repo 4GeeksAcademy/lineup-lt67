@@ -234,9 +234,12 @@ class Servicio(db.Model):
             "precio_recomendado": self.precio_recomendado,
             "estado": self.estado,
             "image_url": self.image_url,
-            "lat": self.lat,
-            "lng": self.lng,
-            "address": self.address,
+            "lat_start": self.lat_start,
+            "lng_start": self.lng_start,
+            "address_start": self.address_start,
+            "lat_finish": self.lat_finish,
+            "lng_finish": self.lng_finish,
+            "address_finish": self.address_finish,
             "created_at": self.created_at.isoformat()
         }
 
