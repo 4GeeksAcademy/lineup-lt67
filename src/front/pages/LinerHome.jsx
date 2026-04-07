@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
+import { calculateDistanceInKm } from "../utils/distance";
 
 export const LinerHome = () => {
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const MAX_DISTANCE_KM = 10;
 
     const [serviciosAbiertos, setServiciosAbiertos] = useState([]);
     const [misPropuestas, setMisPropuestas] = useState([]);
@@ -34,11 +36,36 @@ export const LinerHome = () => {
 
                 if (resServicios.ok && resPropuestas.ok) {
                     const misPropuestasIds = dataPropuestas.map(p => p.servicio_id);
-                    const abiertos = dataServicios.filter(
-                        s => s.estado === "abierto" && !misPropuestasIds.includes(s.id)
-                    );
+                    const abiertos = dataServicios
+                        .filter((s) => s.estado === "abierto" && !misPropuestasIds.includes(s.id))
+                        .map((servicio) => {
+                            const distanceKm = calculateDistanceInKm(
+                                liner?.lat,
+                                liner?.lng,
+                                servicio.lat_start,
+                                servicio.lng_start
+                            );
 
-                    setServiciosAbiertos(abiertos);
+                            return {
+                                ...servicio,
+                                distanceKm
+                            };
+                        });
+
+                    const serviciosFiltrados = (liner?.lat != null && liner?.lng != null)
+                        ? abiertos.filter((servicio) => {
+                            if (servicio.distanceKm == null) return false;
+                            return servicio.distanceKm <= MAX_DISTANCE_KM;
+                        })
+                        : abiertos;
+
+                    serviciosFiltrados.sort((a, b) => {
+                        if (a.distanceKm == null) return 1;
+                        if (b.distanceKm == null) return -1;
+                        return a.distanceKm - b.distanceKm;
+                    });
+
+                    setServiciosAbiertos(serviciosFiltrados);
                     setMisPropuestas(dataPropuestas);
                 }
             } catch (error) {
@@ -150,8 +177,13 @@ export const LinerHome = () => {
                                             )}
                                         </div>
                                     )}
-                                    <p className="mb-1"><strong>Origen:</strong> {service.address_start || "No especificado"}</p>
-                                    <p className="mb-1"><strong>Destino:</strong> {service.address_finish || "No especificado"}</p>
+                                    <p className="mb-1"><strong>Origen:</strong> {servicio.address_start || "No especificado"}</p>
+                                    <p className="mb-1"><strong>Destino:</strong> {servicio.address_finish || "No especificado"}</p>
+                                    {servicio.distanceKm != null && (
+                                        <p className="card-text mb-1">
+                                            <strong>Distancia al origen:</strong> {servicio.distanceKm.toFixed(1)} km
+                                        </p>
+                                    )}
                                     <p className="card-text mb-1"><i className="fas fa-clock text-warning"></i> <strong>Urgencia:</strong> {servicio.urgencia}</p>
                                     <p className="card-text mb-3"><i className="fas fa-money-bill-wave text-success"></i> <strong>Presupuesto del Cliente:</strong> ${servicio.precio_propuesto}</p>
                                     
