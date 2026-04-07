@@ -145,7 +145,10 @@ export const ClientServiceDetail = () => {
                                 )}
 
                                 <p className="mb-1">
-                                    <strong>Dirección:</strong> {service.address || "No especificada"}
+                                    <strong>Origen:</strong> {service.address_start || "No especificado"}
+                                </p>
+                                <p className="mb-1">
+                                    <strong>Destino:</strong> {service.address_finish || "No especificado"}
                                 </p>
                                 <p className="mb-1">
                                     <strong>Urgencia:</strong> {service.urgencia}

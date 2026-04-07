@@ -91,8 +91,11 @@ export const ClientServices = () => {
                                         <p className="card-text mb-1">
                                             <strong>Descripción:</strong> {activeService.descripcion}
                                         </p>
-                                        <p className="card-text mb-1">
-                                            <strong>Dirección:</strong> {activeService.address || "No especificada"}
+                                        <p className="mb-1">
+                                            <strong>Origen:</strong> {activeService.address_start || "No especificado"}
+                                        </p>
+                                        <p className="mb-1">
+                                            <strong>Destino:</strong> {activeService.address_finish || "No especificado"}
                                         </p>
                                         <p className="card-text mb-1">
                                             <strong>Urgencia:</strong> {activeService.urgencia}
@@ -156,8 +159,11 @@ export const ClientServices = () => {
                                                     <p className="card-text mb-1">
                                                         <strong>Descripción:</strong> {service.descripcion}
                                                     </p>
-                                                    <p className="card-text mb-1">
-                                                        <strong>Dirección:</strong> {service.address || "No especificada"}
+                                                    <p className="mb-1">
+                                                        <strong>Origen:</strong> {service.address_start || "No especificado"}
+                                                    </p>
+                                                    <p className="mb-1">
+                                                        <strong>Destino:</strong> {service.address_finish || "No especificado"}
                                                     </p>
                                                     <p className="card-text mb-1">
                                                         <strong>Urgencia:</strong> {service.urgencia}

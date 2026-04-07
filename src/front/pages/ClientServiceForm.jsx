@@ -13,7 +13,13 @@ export const ClientServiceForm = () => {
     const [precioPropuesto, setPrecioPropuesto] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const [serviceImageUrl, setServiceImageUrl] = useState("");
-    const [location, setLocation] = useState({
+    const [startLocation, setStartLocation] = useState({
+        lat: -31.4201,
+        lng: -64.1888,
+        address: ""
+    });
+
+    const [finishLocation, setFinishLocation] = useState({
         lat: -31.4201,
         lng: -64.1888,
         address: ""
@@ -118,8 +124,11 @@ export const ClientServiceForm = () => {
                     image_url: serviceImageUrl || null,
                     tiempo_estimado: aiTiempo || null,
                     precio_recomendado: aiPrecio ? Number(aiPrecio) : null,
-                    lat: location.lat,
-                    lng: location.lng,
+                    lat_start: startLocation.lat,
+                    lng_start: startLocation.lng,
+                    address_start: startLocation.address,
+                    lat_finish: finishLocation.lat,
+                    lng_finish: finishLocation.lng,
                     address: location.address
                 })
             });
@@ -169,10 +178,19 @@ export const ClientServiceForm = () => {
                             </div>
 
                             <div className="mb-4">
-                                <label className="form-label fw-bold">Ubicación en el mapa</label>
+                                <label className="form-label fw-bold">Ubicación inicial</label>
                                 <LocationPicker
-                                    value={location}
-                                    onChange={setLocation}
+                                    value={startLocation}
+                                    onChange={setStartLocation}
+                                    height="300px"
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="form-label fw-bold">Ubicación final</label>
+                                <LocationPicker
+                                    value={finishLocation}
+                                    onChange={setFinishLocation}
                                     height="300px"
                                 />
                             </div>
