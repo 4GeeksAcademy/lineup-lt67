@@ -8,7 +8,7 @@ import cloudinary.uploader
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta
-from api.utils import generate_sitemap, APIException
+from api.utils import generate_sitemap, APIException, calculate_distance_km
 from flask_cors import CORS
 from sqlalchemy import select, and_, func
 from sqlalchemy.orm import joinedload
@@ -1487,6 +1487,20 @@ def create_my_service():
             lng_finish = float(lng_finish)
         except (TypeError, ValueError):
             return jsonify({"msg": "lng_finish debe ser numérico"}), 400
+
+    MAX_SERVICE_DISTANCE_KM = 20
+
+    distance_km = calculate_distance_km(
+        lat_start,
+        lng_start,
+        lat_finish,
+        lng_finish
+    )
+
+    if distance_km is not None and distance_km > MAX_SERVICE_DISTANCE_KM:
+        return jsonify({
+            "msg": f"La distancia entre el origen y el destino no puede superar los {MAX_SERVICE_DISTANCE_KM} km"
+        }), 400
 
     servicio = Servicio(
         client_id=client_id,

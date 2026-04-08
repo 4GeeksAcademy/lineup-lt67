@@ -1,4 +1,5 @@
 from flask import jsonify, url_for
+from math import radians, sin, cos, sqrt, atan2
 
 class APIException(Exception):
     status_code = 400
@@ -39,3 +40,21 @@ def generate_sitemap(app):
         <p>Start working on your project by following the <a href="https://start.4geeksacademy.com/starters/full-stack" target="_blank">Quick Start</a></p>
         <p>Remember to specify a real endpoint path like: </p>
         <ul style="text-align: left;">"""+links_html+"</ul></div>"
+
+
+def calculate_distance_km(lat1, lng1, lat2, lng2):
+    if None in [lat1, lng1, lat2, lng2]:
+        return None
+
+    R = 6371  # radio de la Tierra en km
+
+    dlat = radians(lat2 - lat1)
+    dlng = radians(lng2 - lng1)
+
+    a = (
+        sin(dlat / 2) ** 2
+        + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlng / 2) ** 2
+    )
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    return R * c
