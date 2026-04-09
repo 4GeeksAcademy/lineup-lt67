@@ -7,7 +7,7 @@ import google.generativeai as genai
 import cloudinary.uploader
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
-from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta
+from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta, Chat, Mensaje
 from api.utils import generate_sitemap, APIException, calculate_distance_km
 from flask_cors import CORS
 from sqlalchemy import select, and_, func
@@ -1606,6 +1606,19 @@ def accept_propuesta(propuesta_id):
     # aceptar la propuesta elegida
     propuesta.estado = "aceptada"
 
+    # crear chat automáticamente
+    chat_existente = db.session.execute(
+        select(Chat).where(Chat.servicio_id == servicio.id)
+    ).scalar_one_or_none()
+
+    if not chat_existente:
+        nuevo_chat = Chat(
+            servicio_id=servicio.id,
+            client_id=client_id,
+            liner_id=propuesta.liner_id
+        )
+        db.session.add(nuevo_chat)
+
     # rechazar las demás
     otras_propuestas = db.session.execute(
         select(Propuesta).where(
@@ -1657,3 +1670,59 @@ def finish_my_service(service_id):
         "msg": "Servicio finalizado con éxito",
         "service": servicio.serialize()
     }), 200
+
+@api.route('/chats/service/<int:service_id>', methods=['GET'])
+@jwt_required()
+def get_chat_messages(service_id):
+    chat = db.session.execute(
+        select(Chat).where(Chat.servicio_id == service_id)
+    ).scalar_one_or_none()
+
+    if not chat:
+        return jsonify([]), 200
+
+    mensajes = db.session.execute(
+        select(Mensaje)
+        .where(Mensaje.chat_id == chat.id)
+        .order_by(Mensaje.created_at)
+    ).scalars().all()
+
+    return jsonify([m.serialize() for m in mensajes]), 200
+
+@api.route('/chats/service/<int:service_id>', methods=['POST'])
+@jwt_required()
+def send_message(service_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    body = request.get_json()
+    contenido = body.get("contenido")
+
+    if not contenido:
+        return jsonify({"msg": "Mensaje vacío"}), 400
+
+    chat = db.session.execute(
+        select(Chat).where(Chat.servicio_id == service_id)
+    ).scalar_one_or_none()
+
+    if not chat:
+        return jsonify({"msg": "Chat no encontrado"}), 404
+
+    if claims.get("role") == "cliente":
+        sender_type = "client"
+        sender_id = int(identity)
+    else:
+        sender_type = "liner"
+        sender_id = int(identity)
+
+    mensaje = Mensaje(
+        chat_id=chat.id,
+        sender_type=sender_type,
+        sender_id=sender_id,
+        contenido=contenido
+    )
+
+    db.session.add(mensaje)
+    db.session.commit()
+
+    return jsonify(mensaje.serialize()), 201

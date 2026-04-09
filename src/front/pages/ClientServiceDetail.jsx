@@ -8,6 +8,8 @@ export const ClientServiceDetail = () => {
 
     const [service, setService] = useState(null);
     const [propuestas, setPropuestas] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -18,7 +20,7 @@ export const ClientServiceDetail = () => {
             setLoading(true);
             setError("");
 
-            const [serviceResp, propuestasResp] = await Promise.all([
+            const [serviceResp, propuestasResp, chatResp] = await Promise.all([
                 fetch(`${backendUrl}/api/clients/me/services/${id}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`
@@ -28,11 +30,17 @@ export const ClientServiceDetail = () => {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
+                }),
+                fetch(`${backendUrl}/api/chats/service/${id}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 })
             ]);
 
             const serviceData = await serviceResp.json();
             const propuestasData = await propuestasResp.json();
+            const chatData = await chatResp.json()
 
             if (!serviceResp.ok) {
                 throw new Error(serviceData.msg || "No se pudo cargar el servicio");
@@ -42,8 +50,13 @@ export const ClientServiceDetail = () => {
                 throw new Error(propuestasData.msg || "No se pudieron cargar las propuestas");
             }
 
+
+
+            
+
             setService(serviceData);
             setPropuestas(propuestasData);
+            setMessages(chatData);
         } catch (err) {
             setError(err.message || "Ocurrió un error al cargar el detalle");
         } finally {
@@ -115,6 +128,28 @@ export const ClientServiceDetail = () => {
         }
     };
 
+    const handleSendMessage = async () => {
+        if (!newMessage.trim()) return;
+
+        try {
+            const resp = await fetch(`${backendUrl}/api/chats/service/${id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("tokenClient")}`
+                },
+                body: JSON.stringify({ contenido: newMessage })
+            });
+
+            if (!resp.ok) throw new Error("Error al enviar mensaje");
+
+            setNewMessage("");
+            await loadData(); // recarga mensajes
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
     return (
         <div className="container-fluid px-0">
             <ClientNavbar />
@@ -174,6 +209,44 @@ export const ClientServiceDetail = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {service.estado === "en_proceso" && (
+                            <div className="card mt-4 shadow-sm">
+                                <div className="card-body">
+                                    <h3>Chat con el liner</h3>
+
+                                    <div className="border rounded p-3 mb-3" style={{ maxHeight: "300px", overflowY: "auto" }}>
+                                        {messages.length === 0 ? (
+                                            <p className="text-muted">No hay mensajes aún</p>
+                                        ) : (
+                                            messages.map((msg) => (
+                                                <div
+                                                    key={msg.id}
+                                                    className={`mb-2 d-flex ${msg.sender_type === "client" ? "justify-content-end" : "justify-content-start"}`}
+                                                >
+                                                    <div className={`p-2 rounded ${msg.sender_type === "client" ? "bg-primary text-white" : "bg-light"}`}>
+                                                        {msg.contenido}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+
+                                    <div className="d-flex gap-2">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={newMessage}
+                                            onChange={(e) => setNewMessage(e.target.value)}
+                                            placeholder="Escribí un mensaje..."
+                                        />
+                                        <button className="btn btn-primary" onClick={handleSendMessage}>
+                                            Enviar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <div>
                             <h2 className="mb-3">Propuestas recibidas</h2>

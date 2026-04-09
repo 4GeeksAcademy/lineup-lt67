@@ -222,6 +222,11 @@ class Servicio(db.Model):
         cascade="all, delete-orphan"
     )
 
+    chat: Mapped[Optional["Chat"]] = relationship(
+        backref="servicio",
+        uselist=False
+    )
+
     def serialize(self):
         return {
             "id": self.id,
@@ -310,6 +315,8 @@ class Liner(db.Model):
         cascade="all, delete-orphan"
     )
 
+
+
     def serialize(self):
         return {
             "id": self.id,
@@ -319,5 +326,57 @@ class Liner(db.Model):
             "lng": self.lng,
             "address": self.address
         }
-
     
+class Chat(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    servicio_id: Mapped[int] = mapped_column(ForeignKey("servicio.id"), nullable=False, unique=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"), nullable=False)
+    liner_id: Mapped[int] = mapped_column(ForeignKey("liner.id"), nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(timezone.utc)
+    )
+
+    mensajes: Mapped[List["Mensaje"]] = relationship(
+        back_populates="chat",
+        cascade="all, delete-orphan"
+    )
+
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "servicio_id": self.servicio_id,
+            "client_id": self.client_id,
+            "liner_id": self.liner_id,
+            "created_at": self.created_at.isoformat()
+        }
+
+
+class Mensaje(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    chat_id: Mapped[int] = mapped_column(ForeignKey("chat.id"), nullable=False)
+
+    sender_type: Mapped[str] = mapped_column(String(20), nullable=False)  # "client" o "liner"
+    sender_id: Mapped[int] = mapped_column(nullable=False)
+
+    contenido: Mapped[str] = mapped_column(String(500), nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(timezone.utc)
+    )
+
+    chat: Mapped["Chat"] = relationship(back_populates="mensajes")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "chat_id": self.chat_id,
+            "sender_type": self.sender_type,
+            "sender_id": self.sender_id,
+            "contenido": self.contenido,
+            "created_at": self.created_at.isoformat()
+        }
