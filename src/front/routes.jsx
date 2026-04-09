@@ -71,6 +71,7 @@ import { ClientServiceForm } from "./pages/ClientServiceForm";
 import { ClientServiceDetail } from "./pages/ClientServiceDetail";
 
 import { SimpleMap } from "./pages/SimpleMap";
+import { LinerChat } from "./pages/LinerChat";
 
 
 
@@ -155,6 +156,7 @@ export const router = createBrowserRouter(
 
         <Route element={<ProtectedRouteLiner />}>
             <Route path="/liner/home" element={<LinerHome />} />
+            <Route path="/liner/services/:id/chat" element={<LinerChat />} />
         </Route>
 
         

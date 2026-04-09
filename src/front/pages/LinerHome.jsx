@@ -272,6 +272,14 @@ export const LinerHome = () => {
                                         </div>
                                         <p className="mb-1 small"><strong>Mi oferta:</strong> ${propuesta.precio}</p>
                                         <small className="text-muted d-block">Enviada: {new Date(propuesta.created_at).toLocaleDateString()}</small>
+                                        {propuesta.estado === "aceptada" && propuesta.servicio_estado !== "finalizado" && (
+                                            <button
+                                                className="btn btn-outline-warning btn-sm mt-2"
+                                                onClick={() => navigate(`/liner/services/${propuesta.servicio_id}/chat`)}
+                                            >
+                                                Abrir chat
+                                            </button>
+                                        )}
                                     </div>
                                 );
                             })}

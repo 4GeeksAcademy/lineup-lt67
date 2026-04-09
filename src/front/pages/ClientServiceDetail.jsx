@@ -13,14 +13,14 @@ export const ClientServiceDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const loadData = async () => {
+    const loadServiceData = async () => {
         const token = localStorage.getItem("tokenClient");
 
         try {
             setLoading(true);
             setError("");
 
-            const [serviceResp, propuestasResp, chatResp] = await Promise.all([
+            const [serviceResp, propuestasResp] = await Promise.all([
                 fetch(`${backendUrl}/api/clients/me/services/${id}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`
@@ -30,17 +30,11 @@ export const ClientServiceDetail = () => {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
-                }),
-                fetch(`${backendUrl}/api/chats/service/${id}`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
                 })
             ]);
 
             const serviceData = await serviceResp.json();
             const propuestasData = await propuestasResp.json();
-            const chatData = await chatResp.json()
 
             if (!serviceResp.ok) {
                 throw new Error(serviceData.msg || "No se pudo cargar el servicio");
@@ -50,13 +44,8 @@ export const ClientServiceDetail = () => {
                 throw new Error(propuestasData.msg || "No se pudieron cargar las propuestas");
             }
 
-
-
-            
-
             setService(serviceData);
             setPropuestas(propuestasData);
-            setMessages(chatData);
         } catch (err) {
             setError(err.message || "Ocurrió un error al cargar el detalle");
         } finally {
@@ -64,9 +53,42 @@ export const ClientServiceDetail = () => {
         }
     };
 
+    const loadMessages = async () => {
+        const token = localStorage.getItem("tokenClient");
+
+        try {
+            const chatResp = await fetch(`${backendUrl}/api/chats/service/${id}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const chatData = await chatResp.json();
+
+            if (!chatResp.ok) {
+                throw new Error(chatData.msg || "No se pudieron cargar los mensajes");
+            }
+
+            setMessages(chatData);
+        } catch (err) {
+            console.error("Error cargando mensajes:", err);
+        }
+    };
+
     useEffect(() => {
-        loadData();
+        loadServiceData();
+        loadMessages();
     }, [id]);
+
+    useEffect(() => {
+        if (!service || service.estado !== "en_proceso") return;
+
+        const intervalId = setInterval(() => {
+            loadMessages();
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, [service?.estado, id]);
 
     const handleAcceptProposal = async (propuestaId) => {
         const token = localStorage.getItem("tokenClient");
@@ -85,7 +107,7 @@ export const ClientServiceDetail = () => {
                 throw new Error(data.msg || "No se pudo aceptar la propuesta");
             }
 
-            await loadData();
+            await loadMessages();
         } catch (err) {
             alert(err.message || "Ocurrió un error al aceptar la propuesta");
         }
@@ -122,7 +144,7 @@ export const ClientServiceDetail = () => {
                 throw new Error(data.msg || "No se pudo finalizar el servicio");
             }
 
-            await loadData();
+            await loadServiceData();
         } catch (err) {
             alert(err.message || "Ocurrió un error al finalizar el servicio");
         }
@@ -144,7 +166,7 @@ export const ClientServiceDetail = () => {
             if (!resp.ok) throw new Error("Error al enviar mensaje");
 
             setNewMessage("");
-            await loadData(); // recarga mensajes
+            await loadMessages(); // recarga mensajes
         } catch (err) {
             alert(err.message);
         }
@@ -215,7 +237,7 @@ export const ClientServiceDetail = () => {
                                 <div className="card-body">
                                     <h3>Chat con el liner</h3>
 
-                                    <div className="border rounded p-3 mb-3" style={{ maxHeight: "300px", overflowY: "auto" }}>
+                                    <div className="border rounded p-3 mb-3" style={{ height: "300px", overflowY: "auto" }}>
                                         {messages.length === 0 ? (
                                             <p className="text-muted">No hay mensajes aún</p>
                                         ) : (
@@ -243,6 +265,14 @@ export const ClientServiceDetail = () => {
                                         <button className="btn btn-primary" onClick={handleSendMessage}>
                                             Enviar
                                         </button>
+                                        <div className="mt-3">
+                                            <button
+                                                className="btn btn-outline-primary btn-sm"
+                                                onClick={loadMessages}
+                                            >
+                                                Actualizar chat
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

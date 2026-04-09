@@ -1320,8 +1320,19 @@ def login_liner():
 
     if not liner or liner.liner_password != password:
         return jsonify({"msg": "Credenciales incorrectas"}), 401
+    
+    access_token = create_access_token(
+        identity=str(liner.id),
+        additional_claims={"role": "liner"}
+    )
 
-    return jsonify({"msg": "Login exitoso", "liner": liner.serialize()}), 200
+    return jsonify({
+        "msg": "Login exitoso",
+        "access_token": access_token,
+        "liner": liner.serialize()
+    }), 200
+
+    
 
 @api.route('/clients/me/tickets/<int:ticket_id>/cancel', methods=['PUT'])
 @jwt_required()

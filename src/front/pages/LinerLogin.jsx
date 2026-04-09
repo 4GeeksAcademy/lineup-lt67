@@ -29,8 +29,8 @@ export const LinerLogin = () => {
             if (resp.ok) {
                 // Guardar el token si se provee, o el id en localStorage
                 localStorage.setItem("linerData", JSON.stringify(data.liner));
-                if(data.token) {
-                    localStorage.setItem("linerToken", data.token);
+                if(data.access_token) {
+                    localStorage.setItem("linerToken", data.access_token);
                 }
                 
                 // Actualizar flux
