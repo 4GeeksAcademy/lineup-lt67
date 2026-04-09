@@ -72,13 +72,34 @@ export const SucursalDashboard = () => {
     }
 
     function handleToggleFila() {
-        fetch(`${backendUrl}/api/sucursal/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fila_activa: !sucursal.fila_activa })
-        })
-        .then(resp => resp.json())
-        .then(data => setSucursal(data))
+        if (sucursal.fila_activa) {
+            const confirmar = window.confirm("¿Deseas desactivar la fila? Se eliminarán todos los tickets activos.")
+            if (!confirmar) return;
+            const borrarTickets = tickets.map(t =>
+                fetch(`${backendUrl}/api/tickets/${t.id}`, { method: "DELETE" })
+            )
+
+            Promise.all(borrarTickets).then(() => {
+                fetch(`${backendUrl}/api/sucursal/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ fila_activa: false })
+                })
+                .then(resp => resp.json())
+                .then(data => {
+                    setSucursal(data)
+                    setTickets([])
+                })
+            })
+        } else {
+            fetch(`${backendUrl}/api/sucursal/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fila_activa: true })
+            })
+            .then(resp => resp.json())
+            .then(data => setSucursal(data))
+        }
     }
 
     return (
@@ -88,9 +109,13 @@ export const SucursalDashboard = () => {
 
                 <button className="btn-back" onClick={() => navigate(-1)}>
                     <i className="bi bi-chevron-left back-chevron"></i>
-                    <div className="back-text d-flex flex-direction-column">
-                        <span className="back-label">Sucursal</span>
-                        <span className="back-name">{sucursal ? sucursal.nombre : ""}</span>
+
+                    <div>
+                        <p className="sucursal-label">Sucursal</p>
+                        <h2 className="sucursal-title">{sucursal ? sucursal.nombre : "Cargando..."}</h2>
+                        {sucursal?.address && (
+                            <p className="sucursal-direccion">{sucursal.address}</p>
+                        )}
                     </div>
                 </button>
 

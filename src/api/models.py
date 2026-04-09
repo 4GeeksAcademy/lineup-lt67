@@ -113,13 +113,13 @@ class Sucursal(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     id_establecimiento: Mapped[int] = mapped_column(ForeignKey('establecimiento.id'), nullable=False)
     nombre: Mapped[str] = mapped_column(String(120), nullable=False)
-    fila_activa: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False, default=15)
-    capacidad: Mapped[Optional[int]] = mapped_column(nullable=True)
+    imagen: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    nombre_gerente: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    imagen: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    fila_activa: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    tiempo_por_cliente: Mapped[int] = mapped_column(nullable=False, default=15)
 
     establecimiento = relationship('Establecimiento', backref='sucursales')
     tickets: Mapped[List["Ticket"]] = relationship(back_populates="sucursal")
@@ -129,14 +129,14 @@ class Sucursal(db.Model):
         return {
             "id": self.id,
             "id_establecimiento": self.id_establecimiento,
+            "imagen": self.imagen,
             "nombre": self.nombre,
-            "fila_activa": self.fila_activa,
-            "tiempo_por_cliente": self.tiempo_por_cliente,
-            "capacidad": self.capacidad,
+            "nombre_gerente": self.nombre_gerente,
+            "address": self.address,
             "lat": self.lat,
             "lng": self.lng,
-            "address": self.address,
-            "imagen": self.imagen
+            "tiempo_por_cliente": self.tiempo_por_cliente,
+            "fila_activa": self.fila_activa
         }
 
 
