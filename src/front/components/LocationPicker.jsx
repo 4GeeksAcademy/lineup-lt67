@@ -18,6 +18,7 @@ export const LocationPicker = ({
     const [lat, setLat] = useState(value?.lat ?? defaultCenter.lat);
     const [lng, setLng] = useState(value?.lng ?? defaultCenter.lng);
     const [address, setAddress] = useState(value?.address ?? "");
+    const [showMap, setShowMap] = useState(false);
 
     useEffect(() => {
         if (value?.lat != null) setLat(value.lat);
@@ -51,13 +52,27 @@ export const LocationPicker = ({
             setLat(newLat);
             setLng(newLng);
 
-            if (onChange) {
-                onChange({
-                    lat: newLat,
-                    lng: newLng,
-                    address
-                });
-            }
+            const geocoder = new window.google.maps.Geocoder();
+
+            geocoder.geocode(
+                { location: { lat: newLat, lng: newLng } },
+                (results, status) => {
+                    let newAddress = "";
+
+                    if (status === "OK" && results && results.length > 0) {
+                        newAddress = results[0].formatted_address;
+                        setAddress(newAddress);
+                    }
+
+                    if (onChange) {
+                        onChange({
+                            lat: newLat,
+                            lng: newLng,
+                            address: newAddress
+                        });
+                    }
+                }
+            );
         });
 
         mapInstanceRef.current = map;
@@ -214,62 +229,42 @@ export const LocationPicker = ({
                 <div ref={autocompleteContainerRef} />
             </div>
 
-            <div className="mb-3">
-                <label className="form-label">Dirección seleccionada</label>
-                <div className="d-flex gap-2">
+            {address && (
+                <div className="mb-3">
+                    <label className="form-label">Dirección seleccionada</label>
                     <input
                         type="text"
                         className="form-control"
                         value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Escribí una dirección"
+                        readOnly
                     />
-                    <button
-                        type="button"
-                        className="btn btn-outline-primary"
-                        onClick={handleAddressSearch}
-                    >
-                        Buscar
-                    </button>
                 </div>
+            )}
+
+            <div className="mb-3">
+                <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => setShowMap(!showMap)}
+                >
+                    {showMap ? "Ocultar mapa" : "Ver mapa / ajustar ubicación"}
+                </button>
             </div>
 
-            <div className="row g-3 mb-3">
-                <div className="col-md-6">
-                    <label className="form-label">Latitud</label>
-                    <input
-                        type="number"
-                        step="any"
-                        className="form-control"
-                        value={lat}
-                        onChange={handleLatChange}
+            {showMap && (
+                !isLoaded ? (
+                    <p>Cargando mapa...</p>
+                ) : (
+                    <div
+                        ref={mapRef}
+                        style={{
+                            width: "100%",
+                            height,
+                            borderRadius: "12px",
+                            overflow: "hidden"
+                        }}
                     />
-                </div>
-
-                <div className="col-md-6">
-                    <label className="form-label">Longitud</label>
-                    <input
-                        type="number"
-                        step="any"
-                        className="form-control"
-                        value={lng}
-                        onChange={handleLngChange}
-                    />
-                </div>
-            </div>
-
-            {!isLoaded ? (
-                <p>Cargando mapa...</p>
-            ) : (
-                <div
-                    ref={mapRef}
-                    style={{
-                        width: "100%",
-                        height,
-                        borderRadius: "12px",
-                        overflow: "hidden"
-                    }}
-                />
+                )
             )}
         </div>
     );

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ClientNavbar } from "../components/ClientNavbar";
+import { calculateDistanceInKm } from "../utils/distance";
 
 export const ClientHome = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;

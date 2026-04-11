@@ -34,19 +34,11 @@ export const SucursalForm = () => {
             id_establecimiento: parseInt(idEstablecimiento),
             nombre: nombre,
             nombre_gerente: gerente,
-            direccion: direccion,
+            lat: location.lat,
+            lng: location.lng,
+            address: location.address,
         };
 
-        const formData = new FormData();
-        formData.append("id_establecimiento", idEstablecimiento);
-        formData.append("nombre", nombre);
-        //formData.append("capacidad", capacidad);
-        //formData.append("tiempo_por_cliente", tiempoPorCliente);
-        formData.append("fila_activa", filaActiva);
-        formData.append("lat", location.lat);
-        formData.append("lng", location.lng);
-        formData.append("address", location.address)
-        
             fetch(`${backendUrl}/api/sucursal`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
@@ -60,7 +52,7 @@ export const SucursalForm = () => {
     
     return (
         <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
-            <div className="card p-4 shadow" style={{ width: "22rem" }}>
+            <div className="card p-4 shadow" style={{ width: "50%" }}>
                 <h3 className="text-center mb-4">Nueva Sucursal</h3>
 
                 <form onSubmit={handleSubmit}>
@@ -68,6 +60,12 @@ export const SucursalForm = () => {
                         <label className="form-label">Nombre</label>
                         <input type="text" className="form-control" placeholder="Nombre"
                             value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                    </div>
+                   
+                    <div className="mb-3">
+                        <label className="form-label">Nombre del gerente</label>
+                        <input type="text" className="form-control"
+                            value={gerente} onChange={e => setGerente(e.target.value)} />
                     </div>
 
                     <div className="mb-4">
@@ -79,28 +77,15 @@ export const SucursalForm = () => {
                         />
                     </div>
 
-                    <div className="mb-3 form-check">
-                        <input type="checkbox" className="form-check-input" id="filaActiva"
-                            checked={filaActiva} onChange={(e) => setFilaActiva(e.target.checked)} />
-                        <label className="form-check-label" htmlFor="filaActiva">Fila activa</label>
+                    <div>
+                        <button type="submit" className="btn btn-primary w-100 mb-3">
+                            Crear
+                        </button>
+                        
+                        <button className="btn btn-outline-danger w-100" onClick={() => navigate(-1)}>
+                            Cancelar
+                        </button>
                     </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Nombre del gerente</label>
-                        <input type="text" className="form-control"
-                            value={gerente} onChange={e => setGerente(e.target.value)} />
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Dirección</label>
-                        <input type="text" className="form-control"
-                            value={direccion} onChange={e => setDireccion(e.target.value)} />
-                    </div>
-
-                    <button type="submit" className="btn btn-primary w-100">Crear</button>
-                    <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>
-                        Volver
-                    </button>
                 </form>
             </div>
         </div>
