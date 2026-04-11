@@ -192,3 +192,9 @@
     color: #111;
     line-height: 1;
 }
+
+.sucursal-direccion {
+    font-size: 13px;
+    color: #888;
+    margin: 2px 0 0;
+}
