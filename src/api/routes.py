@@ -1606,3 +1606,19 @@ def finish_my_service(service_id):
         "msg": "Servicio finalizado con éxito",
         "service": servicio.serialize()
     }), 200
+
+@api.route('/heatmap/data', methods=['GET'])
+def get_heatmap_data():
+    tickets = Ticket.query.filter_by(status='activo').all()
+    
+    points = []
+    for ticket in tickets:
+        sucursal = ticket.sucursal
+        if sucursal.lat and sucursal.lng:
+            points.append({
+                "lat": float(sucursal.lat),
+                "lng": float(sucursal.lng),
+                "weight": 1.0
+            })
+    
+    return jsonify(points), 200
