@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ClientNavbar } from "../components/ClientNavbar";
 import { LocationPicker } from "../components/LocationPicker";
 import { calculateDistanceInKm } from "../utils/distance";
+import "../components/lineup-shared.css"
 
 export const ClientServiceForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -162,139 +163,142 @@ export const ClientServiceForm = () => {
         <div className="container-fluid px-0">
             <ClientNavbar />
 
-            <div className="container py-4">
-                <h1 className="mb-4">Nuevo servicio</h1>
+            <main className="main">
 
-                <div className="card shadow-sm">
-                    <div className="card-body">
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-3">
-                                <label className="form-label">Descripción</label>
-                                <textarea
-                                    className="form-control"
-                                    rows="4"
-                                    value={descripcion}
-                                    onChange={(e) => setDescripcion(e.target.value)}
-                                    required
-                                />
-                            </div>
+                <div className="container py-4">
+                    <h1 className="mb-4">Nuevo servicio</h1>
 
-                            <div className="mb-3">
-                                <label className="form-label">Lugar</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={lugar}
-                                    onChange={(e) => setLugar(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="form-label fw-bold">Ubicación inicial</label>
-                                <LocationPicker
-                                    value={startLocation}
-                                    onChange={setStartLocation}
-                                    height="300px"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="form-label fw-bold">Ubicación final</label>
-                                <LocationPicker
-                                    value={finishLocation}
-                                    onChange={setFinishLocation}
-                                    height="300px"
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Urgencia</label>
-                                <select
-                                    className="form-select"
-                                    value={urgencia}
-                                    onChange={(e) => setUrgencia(e.target.value)}
-                                    required
-                                >
-                                    <option value="">Seleccionar urgencia</option>
-                                    <option value="baja">Baja</option>
-                                    <option value="media">Media</option>
-                                    <option value="alta">Alta</option>
-                                </select>
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Imagen del servicio</label>
-                                <input
-                                    type="file"
-                                    className="form-control"
-                                    accept="image/*"
-                                    onChange={(e) => setSelectedFile(e.target.files[0])}
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-primary w-100"
-                                    onClick={handleImageUpload}
-                                    disabled={!selectedFile || uploadingImage}
-                                >
-                                    {uploadingImage ? "Subiendo imagen..." : "Subir imagen"}
-                                </button>
-                            </div>
-
-                            {serviceImageUrl && (
-                                <div className="mb-3 text-center">
-                                    <p className="small text-success mb-2">Imagen subida correctamente</p>
-                                    <img
-                                        src={serviceImageUrl}
-                                        alt="Preview servicio"
-                                        className="img-fluid rounded"
-                                        style={{ maxHeight: "180px", objectFit: "cover" }}
+                    <div className="card shadow-sm">
+                        <div className="card-body">
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-3">
+                                    <label className="form-label">Descripción</label>
+                                    <textarea
+                                        className="form-control"
+                                        rows="4"
+                                        value={descripcion}
+                                        onChange={(e) => setDescripcion(e.target.value)}
+                                        required
                                     />
                                 </div>
-                            )}
 
-                            <div className="mb-4">
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-info w-100 fw-bold"
-                                    onClick={handleEstimate}
-                                    disabled={isEstimating || !descripcion || !urgencia}
-                                >
-                                    {isEstimating ? "Pensando..." : "✨ Estimar precio y tiempo (IA)"}
-                                </button>
-                                {aiError && <p className="text-danger small mt-2">{aiError}</p>}
-                                {aiTiempo && (
-                                    <div className="alert alert-info mt-3 mb-0">
-                                        <p className="mb-1"><strong>⏳ Tiempo estimado IA:</strong> {aiTiempo}</p>
-                                        {aiPrecio && <p className="mb-0"><strong>💰 Precio recomendado IA:</strong> ${aiPrecio}</p>}
+                                <div className="mb-3">
+                                    <label className="form-label">Lugar</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={lugar}
+                                        onChange={(e) => setLugar(e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="form-label fw-bold">Ubicación inicial</label>
+                                    <LocationPicker
+                                        value={startLocation}
+                                        onChange={setStartLocation}
+                                        height="300px"
+                                    />
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="form-label fw-bold">Ubicación final</label>
+                                    <LocationPicker
+                                        value={finishLocation}
+                                        onChange={setFinishLocation}
+                                        height="300px"
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">Urgencia</label>
+                                    <select
+                                        className="form-select"
+                                        value={urgencia}
+                                        onChange={(e) => setUrgencia(e.target.value)}
+                                        required
+                                    >
+                                        <option value="">Seleccionar urgencia</option>
+                                        <option value="baja">Baja</option>
+                                        <option value="media">Media</option>
+                                        <option value="alta">Alta</option>
+                                    </select>
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">Imagen del servicio</label>
+                                    <input
+                                        type="file"
+                                        className="form-control"
+                                        accept="image/*"
+                                        onChange={(e) => setSelectedFile(e.target.files[0])}
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-primary w-100"
+                                        onClick={handleImageUpload}
+                                        disabled={!selectedFile || uploadingImage}
+                                    >
+                                        {uploadingImage ? "Subiendo imagen..." : "Subir imagen"}
+                                    </button>
+                                </div>
+
+                                {serviceImageUrl && (
+                                    <div className="mb-3 text-center">
+                                        <p className="small text-success mb-2">Imagen subida correctamente</p>
+                                        <img
+                                            src={serviceImageUrl}
+                                            alt="Preview servicio"
+                                            className="img-fluid rounded"
+                                            style={{ maxHeight: "180px", objectFit: "cover" }}
+                                        />
                                     </div>
                                 )}
-                            </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Precio propuesto {!aiPrecio && "(Opcional)"}</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    value={precioPropuesto}
-                                    onChange={(e) => setPrecioPropuesto(e.target.value)}
-                                    min="0"
-                                    step="0.01"
-                                />
-                            </div>
+                                <div className="mb-4">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-info w-100 fw-bold"
+                                        onClick={handleEstimate}
+                                        disabled={isEstimating || !descripcion || !urgencia}
+                                    >
+                                        {isEstimating ? "Pensando..." : "✨ Estimar precio y tiempo (IA)"}
+                                    </button>
+                                    {aiError && <p className="text-danger small mt-2">{aiError}</p>}
+                                    {aiTiempo && (
+                                        <div className="alert alert-info mt-3 mb-0">
+                                            <p className="mb-1"><strong>⏳ Tiempo estimado IA:</strong> {aiTiempo}</p>
+                                            {aiPrecio && <p className="mb-0"><strong>💰 Precio recomendado IA:</strong> ${aiPrecio}</p>}
+                                        </div>
+                                    )}
+                                </div>
 
-                            {error && <p className="text-danger small">{error}</p>}
+                                <div className="mb-3">
+                                    <label className="form-label">Precio propuesto {!aiPrecio && "(Opcional)"}</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        value={precioPropuesto}
+                                        onChange={(e) => setPrecioPropuesto(e.target.value)}
+                                        min="0"
+                                        step="0.01"
+                                    />
+                                </div>
 
-                            <button type="submit" className="btn btn-primary">
-                                Crear servicio
-                            </button>
-                        </form>
+                                {error && <p className="text-danger small">{error}</p>}
+
+                                <button type="submit" className="btn btn-primary">
+                                    Crear servicio
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 };

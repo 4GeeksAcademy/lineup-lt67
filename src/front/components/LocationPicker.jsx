@@ -27,7 +27,7 @@ export const LocationPicker = ({
     }, [value?.lat, value?.lng, value?.address]);
 
     useEffect(() => {
-        if (!isLoaded || !mapRef.current || mapInstanceRef.current) return;
+        if (!isLoaded || !showMap || !mapRef.current || mapInstanceRef.current) return;
 
         const center = {
             lat: Number(lat),
@@ -77,7 +77,18 @@ export const LocationPicker = ({
 
         mapInstanceRef.current = map;
         markerRef.current = marker;
-    }, [isLoaded]);
+    }, [isLoaded, showMap, lat, lng, onChange]);
+
+    useEffect(() => {
+        if (!showMap) {
+            if (markerRef.current) {
+                markerRef.current.setMap(null);
+            }
+
+            mapInstanceRef.current = null;
+            markerRef.current = null;
+        }
+    }, [showMap]);
 
     useEffect(() => {
         if (!mapInstanceRef.current || !markerRef.current) return;
