@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { socket } from "../socket";
 import { useParams, Link } from "react-router-dom";
 
 export const LinerChat = () => {
@@ -9,6 +10,7 @@ export const LinerChat = () => {
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const chatContainerRef = useRef(null);
 
     const loadMessages = async () => {
         const token = localStorage.getItem("linerToken");
@@ -35,45 +37,62 @@ export const LinerChat = () => {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem("linerToken");
+
+        socket.auth = { token };
+        socket.connect();
+
+        const handleConnect = () => {
+            socket.emit("join_service_chat", {
+                service_id: Number(id),
+                auth: { token }
+            });
+        };
+
+        const handleNewMessage = (message) => {
+            setMessages((prev) => [...prev, message]);
+        };
+
+        socket.on("connect", handleConnect);
+        socket.on("new_message", handleNewMessage);
+
+        return () => {
+            socket.off("connect", handleConnect);
+            socket.off("new_message", handleNewMessage);
+            socket.disconnect();
+        };
+    }, [id]);
+
+    useEffect(() => {
         loadMessages();
     }, [id]);
 
     useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [messages]);
+
+    /* useEffect(() => {
         const intervalId = setInterval(() => {
             loadMessages();
         }, 5000);
 
         return () => clearInterval(intervalId);
-    }, [id]);
+    }, [id]); */
 
     const handleSendMessage = async () => {
         if (!newMessage.trim()) return;
 
         const token = localStorage.getItem("linerToken");
 
-        try {
-            const resp = await fetch(`${backendUrl}/api/chats/service/${id}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    contenido: newMessage
-                })
-            });
+        socket.emit("send_message", {
+            service_id: Number(id),
+            contenido: newMessage,
+            auth: { token }
+        });
 
-            const data = await resp.json();
-
-            if (!resp.ok) {
-                throw new Error(data.msg || "No se pudo enviar el mensaje");
-            }
-
-            setNewMessage("");
-            await loadMessages();
-        } catch (err) {
-            alert(err.message || "Error al enviar mensaje");
-        }
+        setNewMessage("");
     };
 
     return (
@@ -92,8 +111,9 @@ export const LinerChat = () => {
                 <div className="card shadow-sm">
                     <div className="card-body">
                         <div
+                            ref={chatContainerRef}
                             className="border rounded p-3 mb-3"
-                            style={{ height: "400px", overflowY: "auto" }}
+                            style={{ height: "350px", overflowY: "auto" }}
                         >
                             {messages.length === 0 ? (
                                 <p className="text-muted mb-0">No hay mensajes todavía.</p>
