@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClientNavbar } from "../components/ClientNavbar";
 import { LocationPicker } from "../components/LocationPicker";
+import { calculateDistance, estimateTravelTimeMinutes } from "../utils/mathUtils";
 import { calculateDistanceInKm } from "../utils/distance";
 
 export const ClientServiceForm = () => {
@@ -33,6 +34,8 @@ export const ClientServiceForm = () => {
     const [aiPrecio, setAiPrecio] = useState("");
     const [isEstimating, setIsEstimating] = useState(false);
     const [aiError, setAiError] = useState("");
+     const [mathDistance, setMathDistance] = useState(null);
+    const [mathTime, setMathTime] = useState(null);
 
     const handleEstimate = async () => {
         if (!descripcion || !urgencia) {
@@ -44,6 +47,16 @@ export const ClientServiceForm = () => {
         setAiError("");
         setAiTiempo("");
         setAiPrecio("");
+        setMathDistance(null);
+        setMathTime(null);
+        
+        // 1. Cálculos Matemáticos (Geometría / Plano Cartesiano)
+        const distanceKm = calculateDistance(
+            startLocation.lat, startLocation.lng, 
+            finishLocation.lat, finishLocation.lng
+        );
+        setMathDistance(distanceKm);
+        setMathTime(estimateTravelTimeMinutes(distanceKm));
 
         const token = localStorage.getItem("tokenClient");
 
@@ -54,7 +67,11 @@ export const ClientServiceForm = () => {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ descripcion, urgencia })
+                 body: JSON.stringify({ 
+                    descripcion, 
+                    urgencia,
+                    distancia_km: distanceKm 
+                })
             });
 
             const data = await resp.json();
@@ -266,8 +283,14 @@ export const ClientServiceForm = () => {
                                     {isEstimating ? "Pensando..." : "✨ Estimar precio y tiempo (IA)"}
                                 </button>
                                 {aiError && <p className="text-danger small mt-2">{aiError}</p>}
+                                {mathDistance !== null && (
+                                    <div className="alert alert-secondary mt-3 mb-2">
+                                        <p className="mb-1"><strong>📏 Distancia real:</strong> {mathDistance} km</p>
+                                        <p className="mb-0"><strong>⏱️ Tiempo de traslado base:</strong> {mathTime} min</p>
+                                    </div>
+                                )}
                                 {aiTiempo && (
-                                    <div className="alert alert-info mt-3 mb-0">
+                                    <div className="alert alert-info mt-0 mb-0">
                                         <p className="mb-1"><strong>⏳ Tiempo estimado IA:</strong> {aiTiempo}</p>
                                         {aiPrecio && <p className="mb-0"><strong>💰 Precio recomendado IA:</strong> ${aiPrecio}</p>}
                                     </div>
