@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
+import { calculateDistance, estimateTravelTimeMinutes } from "../utils/mathUtils";
 import { calculateDistanceInKm } from "../utils/distance";
 import { LinerNavbar } from "../components/LinerNavbar";
 import { LinerSidebar } from "../components/LinerSidebar";
-import "../components/lineup-shared.css"
 
 export const LinerHome = () => {
     const { store, dispatch } = useGlobalReducer();
@@ -20,8 +20,24 @@ export const LinerHome = () => {
     const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
     const [precioPropuesto, setPrecioPropuesto] = useState("");
     const [mensajeExtra, setMensajeExtra] = useState("");
+    const [linerLocation, setLinerLocation] = useState(null);
 
     const liner = store.linerData || JSON.parse(localStorage.getItem("linerData"));
+
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLinerLocation({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    });
+                },
+                (error) => console.log("Geolocalización denegada o no disponible:", error),
+                { enableHighAccuracy: true }
+            );
+        }
+    }, []);
 
     useEffect(() => {
         if (!liner) {
@@ -272,102 +288,138 @@ export const LinerHome = () => {
                                         </div>
                                     ) : (
                                         <div className="row g-3">
-                                            {serviciosAbiertos.map((servicio) => (
-                                                <div className="col-12" key={servicio.id}>
-                                                    <div
-                                                        className="stat-card h-100"
-                                                        style={{ padding: "1.1rem 1.1rem" }}
-                                                    >
-                                                        <div className="d-flex justify-content-between align-items-start mb-2">
-                                                            <h6 className="mb-0 fw-bold">
-                                                                {servicio.descripcion}
-                                                            </h6>
-                                                            <span className="badge-online">Abierto</span>
-                                                        </div>
+                                            {serviciosAbiertos.map((servicio) => {
+                                                const liveDistance =
+                                                    linerLocation && servicio.lat_start && servicio.lng_start
+                                                        ? calculateDistance(
+                                                              linerLocation.lat,
+                                                              linerLocation.lng,
+                                                              servicio.lat_start,
+                                                              servicio.lng_start
+                                                          )
+                                                        : null;
 
-                                                        {servicio.image_url && (
-                                                            <div className="mb-3">
-                                                                <img
-                                                                    src={servicio.image_url}
-                                                                    alt="Servicio"
-                                                                    className="img-fluid rounded mb-2"
+                                                const liveTime =
+                                                    liveDistance != null
+                                                        ? estimateTravelTimeMinutes(liveDistance)
+                                                        : null;
+
+                                                return (
+                                                    <div className="col-12" key={servicio.id}>
+                                                        <div
+                                                            className="stat-card h-100"
+                                                            style={{ padding: "1.1rem 1.1rem" }}
+                                                        >
+                                                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                                                <h6 className="mb-0 fw-bold">
+                                                                    {servicio.descripcion}
+                                                                </h6>
+                                                                <span className="badge-online">Abierto</span>
+                                                            </div>
+
+                                                            {servicio.image_url && (
+                                                                <div className="mb-3">
+                                                                    <img
+                                                                        src={servicio.image_url}
+                                                                        alt="Servicio"
+                                                                        className="img-fluid rounded mb-2"
+                                                                        style={{
+                                                                            maxHeight: "160px",
+                                                                            width: "100%",
+                                                                            objectFit: "cover",
+                                                                            border: "1px solid var(--border)"
+                                                                        }}
+                                                                    />
+
+                                                                    <button
+                                                                        className="btn-page"
+                                                                        onClick={() =>
+                                                                            setImagenExpandidaId(
+                                                                                imagenExpandidaId === servicio.id
+                                                                                    ? null
+                                                                                    : servicio.id
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {imagenExpandidaId === servicio.id
+                                                                            ? "Ocultar imagen"
+                                                                            : "Ver imagen"}
+                                                                    </button>
+
+                                                                    {imagenExpandidaId === servicio.id && (
+                                                                        <div className="mt-3">
+                                                                            <img
+                                                                                src={servicio.image_url}
+                                                                                alt="Servicio ampliado"
+                                                                                className="img-fluid rounded"
+                                                                                style={{
+                                                                                    maxHeight: "360px",
+                                                                                    width: "100%",
+                                                                                    objectFit: "contain",
+                                                                                    border: "1px solid var(--border)"
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            <p className="mb-2 text-muted" style={{ fontSize: ".84rem" }}>
+                                                                <strong>Origen:</strong>{" "}
+                                                                {servicio.address_start || "No especificado"}
+                                                            </p>
+
+                                                            <p className="mb-2 text-muted" style={{ fontSize: ".84rem" }}>
+                                                                <strong>Destino:</strong>{" "}
+                                                                {servicio.address_finish || "No especificado"}
+                                                            </p>
+
+                                                            {servicio.distanceKm != null && (
+                                                                <p className="mb-2" style={{ fontSize: ".84rem" }}>
+                                                                    <strong>Distancia guardada al origen:</strong>{" "}
+                                                                    {servicio.distanceKm.toFixed(1)} km
+                                                                </p>
+                                                            )}
+
+                                                            <p className="mb-2" style={{ fontSize: ".84rem" }}>
+                                                                <strong>Urgencia:</strong> {servicio.urgencia}
+                                                            </p>
+
+                                                            <p className="mb-2" style={{ fontSize: ".84rem" }}>
+                                                                <strong>Presupuesto del cliente:</strong> $
+                                                                {servicio.precio_propuesto}
+                                                            </p>
+
+                                                            {liveDistance != null && (
+                                                                <div
+                                                                    className="p-3 rounded mb-3"
                                                                     style={{
-                                                                        maxHeight: "160px",
-                                                                        width: "100%",
-                                                                        objectFit: "cover",
+                                                                        background: "#f9fafb",
                                                                         border: "1px solid var(--border)"
                                                                     }}
-                                                                />
-
-                                                                <button
-                                                                    className="btn-page"
-                                                                    onClick={() =>
-                                                                        setImagenExpandidaId(
-                                                                            imagenExpandidaId === servicio.id
-                                                                                ? null
-                                                                                : servicio.id
-                                                                        )
-                                                                    }
                                                                 >
-                                                                    {imagenExpandidaId === servicio.id
-                                                                        ? "Ocultar imagen"
-                                                                        : "Ver imagen"}
-                                                                </button>
+                                                                    <p className="mb-1 text-dark" style={{ fontSize: ".84rem" }}>
+                                                                        <strong>Distancia en tiempo real:</strong>{" "}
+                                                                        {liveDistance} km
+                                                                    </p>
+                                                                    <p className="mb-0 text-muted" style={{ fontSize: ".82rem" }}>
+                                                                        <strong>Tiempo estimado de traslado:</strong>{" "}
+                                                                        ~{liveTime} min
+                                                                    </p>
+                                                                </div>
+                                                            )}
 
-                                                                {imagenExpandidaId === servicio.id && (
-                                                                    <div className="mt-3">
-                                                                        <img
-                                                                            src={servicio.image_url}
-                                                                            alt="Servicio ampliado"
-                                                                            className="img-fluid rounded"
-                                                                            style={{
-                                                                                maxHeight: "360px",
-                                                                                width: "100%",
-                                                                                objectFit: "contain",
-                                                                                border: "1px solid var(--border)"
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )}
-
-                                                        <p className="mb-2 text-muted" style={{ fontSize: ".84rem" }}>
-                                                            <strong>Origen:</strong>{" "}
-                                                            {servicio.address_start || "No especificado"}
-                                                        </p>
-
-                                                        <p className="mb-2 text-muted" style={{ fontSize: ".84rem" }}>
-                                                            <strong>Destino:</strong>{" "}
-                                                            {servicio.address_finish || "No especificado"}
-                                                        </p>
-
-                                                        {servicio.distanceKm != null && (
-                                                            <p className="mb-2" style={{ fontSize: ".84rem" }}>
-                                                                <strong>Distancia al origen:</strong>{" "}
-                                                                {servicio.distanceKm.toFixed(1)} km
-                                                            </p>
-                                                        )}
-
-                                                        <p className="mb-2" style={{ fontSize: ".84rem" }}>
-                                                            <strong>Urgencia:</strong> {servicio.urgencia}
-                                                        </p>
-
-                                                        <p className="mb-3" style={{ fontSize: ".84rem" }}>
-                                                            <strong>Presupuesto del cliente:</strong> $
-                                                            {servicio.precio_propuesto}
-                                                        </p>
-
-                                                        <button
-                                                            className="btn-export"
-                                                            onClick={() => setServicioSeleccionado(servicio)}
-                                                        >
-                                                            <i className="bi bi-send-plus"></i>
-                                                            Ofrecer mis servicios
-                                                        </button>
+                                                            <button
+                                                                className="btn-export"
+                                                                onClick={() => setServicioSeleccionado(servicio)}
+                                                            >
+                                                                <i className="bi bi-send-plus"></i>
+                                                                Ofrecer mis servicios
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     )}
                                 </div>
@@ -465,9 +517,7 @@ export const LinerHome = () => {
 
                                                     <p className="mb-3 text-muted" style={{ fontSize: ".8rem" }}>
                                                         <strong>Enviada:</strong>{" "}
-                                                        {new Date(
-                                                            propuesta.created_at
-                                                        ).toLocaleDateString()}
+                                                        {new Date(propuesta.created_at).toLocaleDateString()}
                                                     </p>
 
                                                     {propuesta.estado === "aceptada" &&
