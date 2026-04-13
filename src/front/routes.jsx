@@ -87,6 +87,19 @@ export const router = createBrowserRouter(
         {/* Landing Page Aislada */}
         <Route path="/welcome" element={<MainLanding />} />
 
+        
+        <Route path="/establecimiento/login" element={<EstablecimientoLogin />} />
+          <Route path="/establecimiento" element={<Navigate to="/establecimiento/login" replace />} />
+          <Route element={<ProtectedRouteEstablecimiento />}>
+            <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
+            <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+            <Route path="/establecimientos/:id" element={<EstablecimientoEdit />} />
+            <Route path="/establecimiento/sucursal/edit/:id" element={<SucursalEdit />} />
+            <Route path="/establecimiento/sucursal/:id" element={<SucursalDashboard />} />
+            <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
+            <Route path="/sucursal/nueva" element={<SucursalForm />} />
+          </Route>
+          
         {/* Aplicación Actual */}
         <Route path="/" element={<Layout />} >
           {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
@@ -100,18 +113,6 @@ export const router = createBrowserRouter(
         <Route path="/liner/login" element={<LinerLogin />} />
         <Route path="/liner/register" element={<LinerRegister />} />
         <Route path="/simplemap" element={<SimpleMap />} />
-
-        <Route path="/establecimiento/login" element={<EstablecimientoLogin />} />
-          <Route path="/establecimiento" element={<Navigate to="/establecimiento/login" replace />} />
-          <Route element={<ProtectedRouteEstablecimiento />}>
-            <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
-            <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
-            <Route path="/establecimientos/:id" element={<EstablecimientoEdit />} />
-            <Route path="/establecimiento/sucursal/edit/:id" element={<SucursalEdit />} />
-            <Route path="/establecimiento/sucursal/:id" element={<SucursalDashboard />} />
-            <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
-            <Route path="/sucursal/nueva" element={<SucursalForm />} />
-          </Route>
 
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<Home />} />
