@@ -319,5 +319,4 @@ class Liner(db.Model):
             "lng": self.lng,
             "address": self.address
         }
-
     

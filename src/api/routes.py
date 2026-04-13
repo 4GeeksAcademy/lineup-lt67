@@ -1658,3 +1658,22 @@ def finish_my_service(service_id):
         "msg": "Servicio finalizado con éxito",
         "service": servicio.serialize()
     }), 200
+
+@api.route('/heatmap/data', methods=['GET'])
+def get_heatmap_data():
+    sucursales = Sucursal.query.filter(
+        Sucursal.lat != None,
+        Sucursal.lng != None,
+        Sucursal.fila_activa == True
+    ).all()
+
+    points = []
+    for sucursal in sucursales:
+        tickets_activos = len([t for t in sucursal.tickets if t.estado in ["esperando", "en_atencion"]])
+        points.append({
+            "lat": sucursal.lat,
+            "lng": sucursal.lng,
+            "weight": min(1.0, tickets_activos / 10)
+        })
+
+    return jsonify(points), 200

@@ -25,6 +25,7 @@ import { ClientDetail } from "./pages/ClientDetail";
 import { Favoritos } from "./pages/Favoritos";
 import { AdminLogin } from "./pages/AdminLogin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Navigate } from "react-router-dom";
 
 import { Establecimientos } from "./pages/EstablecimientosCRUD/Establecimientos";
 import { EstablecimientoForm } from "./pages/EstablecimientosCRUD/EstablecimientoForm";
@@ -32,6 +33,7 @@ import { EstablecimientoEdit } from "./pages/EstablecimientosCRUD/Establecimient
 import { EstablecimientoDetail } from "./pages/EstablecimientosCRUD/EstablecimientoDetail";
 import { EstablecimientoLogin } from "./pages/EstablecimientosCRUD/EstablecimientoLogin"
 import { EstablecimientoDashboard } from "./pages/EstablecimientosCRUD/EstablecimientoDashboard"
+import { ProtectedRouteEstablecimiento } from "./components/ProtectedRouteEstablecimiento";
 
 import { SucursalForm } from "./pages/EstablecimientosCRUD/SucursalForm";
 import { SucursalEdit } from "./pages/EstablecimientosCRUD/SucursalEdit"
@@ -85,6 +87,19 @@ export const router = createBrowserRouter(
         {/* Landing Page Aislada */}
         <Route path="/welcome" element={<MainLanding />} />
 
+        
+        <Route path="/establecimiento/login" element={<EstablecimientoLogin />} />
+          <Route path="/establecimiento" element={<Navigate to="/establecimiento/login" replace />} />
+          <Route element={<ProtectedRouteEstablecimiento />}>
+            <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
+            <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+            <Route path="/establecimientos/:id" element={<EstablecimientoEdit />} />
+            <Route path="/establecimiento/sucursal/edit/:id" element={<SucursalEdit />} />
+            <Route path="/establecimiento/sucursal/:id" element={<SucursalDashboard />} />
+            <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
+            <Route path="/sucursal/nueva" element={<SucursalForm />} />
+          </Route>
+          
         {/* Aplicación Actual */}
         <Route path="/" element={<Layout />} >
           {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
@@ -99,67 +114,63 @@ export const router = createBrowserRouter(
         <Route path="/liner/register" element={<LinerRegister />} />
         <Route path="/simplemap" element={<SimpleMap />} />
 
-        {/* ESTABLECIMIENTO NOT PROTECTED*/}
-        <Route path="/establecimiento/login" element={<EstablecimientoLogin/>} />
-        <Route path="/establecimientos" element={<Establecimientos />} />
-        <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
-        <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
-        <Route path="/establecimientos/:id" element={<EstablecimientoEdit />} />
-        <Route path="/establecimiento/sucursal/edit/:id" element={<SucursalEdit />} />
-        <Route path="/establecimiento/sucursal/:id" element={<SucursalDashboard />} />
-        <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
-        <Route path="/sucursal/nueva" element={<SucursalForm />} />
-        <Route path="/sucursal/dashboard" element={<SucursalDashboard />} />
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/single/:theId" element={<Single />} />
+          <Route path="/demo" element={<Demo />} />
+          <Route path="/client/register" element={<ClientRegister />} />
+          <Route path="/client/login" element={<ClientLogin />} />
+          <Route path="/favoritos" element={<Favoritos />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/liner/login" element={<LinerLogin />} />
+          <Route path="/liner/register" element={<LinerRegister />} />
+          <Route path="/simplemap" element={<SimpleMap />} />
+          <Route path="/establecimientos" element={<Establecimientos />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/clients" element={<Clientes />} />
-          <Route path="/add_client" element={<ClientForm />} />
-          <Route path="/clients/:id" element={ <ClientDetail />} />
-          <Route path="/clients/edit/:id" element={ <EditClient />} />
-          <Route path="/tipos" element={<Tipos />} />
-          <Route path="/add_tipo" element={<TipoForm />} />
-          <Route path="/tipos/:id" element={ <TipoDetail />} />
-          <Route path="/tipos/edit/:id" element={ <EditTipo />} />
-          <Route path="/administradores" element={<Administradores />} />
-          <Route path="/add_admin" element={<AdminForm />} />
-          <Route path="/administradores/:id" element={<AdminDetail />} />
-          <Route path="/administradores/edit/:id" element={<EditAdmin />} />
-          <Route path="/tickets" element={<Tickets />} />
-          <Route path="/add_tickets" element={<TicketForm />} />
-          <Route path="/tickets/:id" element={<TicketDetail />} />
-          <Route path="/tickets/edit/:id" element={<TicketEdit />} />
-          <Route path="/servicios" element={<Servicios />} />
-          <Route path="/add_servicios" element={<ServicioForm />} />
-          <Route path="/servicios/:id" element={<ServicioDetail />} />
-          <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/clients" element={<Clientes />} />
+            <Route path="/add_client" element={<ClientForm />} />
+            <Route path="/clients/:id" element={<ClientDetail />} />
+            <Route path="/clients/edit/:id" element={<EditClient />} />
+            <Route path="/tipos" element={<Tipos />} />
+            <Route path="/add_tipo" element={<TipoForm />} />
+            <Route path="/tipos/:id" element={<TipoDetail />} />
+            <Route path="/tipos/edit/:id" element={<EditTipo />} />
+            <Route path="/administradores" element={<Administradores />} />
+            <Route path="/add_admin" element={<AdminForm />} />
+            <Route path="/administradores/:id" element={<AdminDetail />} />
+            <Route path="/administradores/edit/:id" element={<EditAdmin />} />
+            <Route path="/tickets" element={<Tickets />} />
+            <Route path="/add_tickets" element={<TicketForm />} />
+            <Route path="/tickets/:id" element={<TicketDetail />} />
+            <Route path="/tickets/edit/:id" element={<TicketEdit />} />
+            <Route path="/servicios" element={<Servicios />} />
+            <Route path="/add_servicios" element={<ServicioForm />} />
+            <Route path="/servicios/:id" element={<ServicioDetail />} />
+            <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
+            <Route path="/liners" element={<Liners />} />
+            <Route path="/add_liner" element={<AddLiner />} />
+            <Route path="/liners/:id" element={<LinerDetail />} />
+            <Route path="/liners/edit/:id" element={<EditLiner />} />
+            <Route path="/propuestas" element={<Propuestas />} />
+            <Route path="/add_propuestas" element={<PropuestaForm />} />
+            <Route path="/propuestas/:id" element={<PropuestaDetail />} />
+            <Route path="/propuestas/edit/:id" element={<PropuestaEdit />} />
+          </Route>
 
-          <Route path="/liners" element={<Liners />} />
-          <Route path="/add_liner" element={<AddLiner />} />
-          <Route path="/liners/:id" element={<LinerDetail />} />
-          <Route path="/liners/edit/:id" element={<EditLiner />} />
-
-          <Route path="/propuestas" element={<Propuestas />} />
-          <Route path="/add_propuestas" element={<PropuestaForm />} />
-          <Route path="/propuestas/:id" element={<PropuestaDetail />} />
-          <Route path="/propuestas/edit/:id" element={<PropuestaEdit />} />
-
-          
-
-        </Route>
-
-        <Route element={<ProtectedRouteClient />}>
+          <Route element={<ProtectedRouteClient />}>
             <Route path="/client/home" element={<ClientHome />} />
             <Route path="/client/tickets" element={<ClientTickets />} />
             <Route path="/client/services" element={<ClientServices />} />
             <Route path="/client/services/new" element={<ClientServiceForm />} />
             <Route path="/client/services/:id" element={<ClientServiceDetail />} />
-        </Route>
+          </Route>
 
-        <Route element={<ProtectedRouteLiner />}>
+          <Route element={<ProtectedRouteLiner />}>
             <Route path="/liner/home" element={<LinerHome />} />
+          </Route>
         </Route>
 
-        
       </Route>
     </Route>
     )
