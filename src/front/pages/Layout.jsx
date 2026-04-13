@@ -7,12 +7,14 @@ import { Footer } from "../components/Footer"
 export const Layout = () => {
     const location = useLocation();
 
-    const hideGenericNavbar = location.pathname.startsWith("/client");
+    const hideGenericNavbar = location.pathname.startsWith("/client") || location.pathname.startsWith("/establecimiento");
+    const hideFooter = location.pathname.startsWith("/client") || location.pathname.startsWith("/establecimiento");
     return (
         <ScrollToTop>
             <Navbar />
+            {!hideGenericNavbar && <Navbar/>}
                 <Outlet />
-            {!hideGenericNavbar && <Footer />}
+            {!hideFooter && <Footer />}
         </ScrollToTop>
     )
 }

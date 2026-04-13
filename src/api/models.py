@@ -313,5 +313,4 @@ class Liner(db.Model):
             "nombre": self.liner_nombre,
             "email": self.liner_email
         }
-
     
