@@ -580,14 +580,12 @@ def crear_sucursal():
         id_establecimiento=body["id_establecimiento"],
         nombre=body["nombre"],
         nombre_gerente=body.get("nombre_gerente"),
-        direccion=body.get("direccion"),
         fila_activa=body.get("fila_activa", False) in ['true', 'True', True, 1, '1'],
         tiempo_por_cliente=body.get("tiempo_por_cliente", 15),
-        capacidad=body.get("capacidad", None),
         lat=lat,
         lng=lng,
         address=address,
-        imagen=imagen_url
+        imagen=None
     )
     
     db.session.add(nueva_sucursal)
@@ -606,7 +604,6 @@ def editar_sucursal(id):
     if "fila_activa" in body:
         sucursal.fila_activa = body.get("fila_activa") in ['true', 'True', True, 1, '1']
     sucursal.tiempo_por_cliente = body.get("tiempo_por_cliente", sucursal.tiempo_por_cliente)
-    sucursal.capacidad = body.get("capacidad", sucursal.capacidad)
 
     if "lat" in body:
         try:
@@ -1392,6 +1389,7 @@ def estimate_service():
 
     descripcion = body.get("descripcion", "")
     urgencia = body.get("urgencia", "")
+    distancia_km = body.get("distancia_km", None)
 
     if not descripcion or not urgencia:
         return jsonify({"msg": "Falta descripcion o urgencia"}), 400
@@ -1404,11 +1402,14 @@ def estimate_service():
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
             model = genai.GenerativeModel('gemini-flash-latest')
+
+            prompt_distancia = f"\nLa distancia matemática/física exacta confirmada de este servicio es de {distancia_km} km." if distancia_km else ""
             
             prompt = f"""
             Eres un asistente que estima servicios para proveedores.
             La descripción del problema es: "{descripcion}"
-            La urgencia es: "{urgencia}".
+            La urgencia es: "{urgencia}".{prompt_distancia}
+            Toma en cuenta la distancia exacta (si existe) para ajustar el precio al valor de mercado, considerando costos de traslado (combustible, tiempo, depreciación del vehículo como si fuera una app tipo Uber).
             Devuelve un JSON con exactamente este formato, sin markdown extra:
             {{
                 "tiempo_estimado": "Ej: 2 horas",
