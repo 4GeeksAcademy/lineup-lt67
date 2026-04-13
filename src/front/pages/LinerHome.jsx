@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
+import { calculateDistance, estimateTravelTimeMinutes } from "../utils/mathUtils";
+import { calculateDistanceInKm } from "../utils/distance";
 
 export const LinerHome = () => {
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const MAX_DISTANCE_KM = 10;
 
     const [serviciosAbiertos, setServiciosAbiertos] = useState([]);
     const [misPropuestas, setMisPropuestas] = useState([]);
@@ -15,8 +18,24 @@ export const LinerHome = () => {
     const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
     const [precioPropuesto, setPrecioPropuesto] = useState("");
     const [mensajeExtra, setMensajeExtra] = useState("");
+    const [linerLocation, setLinerLocation] = useState(null);
 
     const liner = store.linerData || JSON.parse(localStorage.getItem("linerData"));
+
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLinerLocation({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    });
+                },
+                (error) => console.log("Geolocalización denegada o no disponible:", error),
+                { enableHighAccuracy: true }
+            );
+        }
+    }, []);
 
     useEffect(() => {
         if (!liner) {
@@ -34,11 +53,36 @@ export const LinerHome = () => {
 
                 if (resServicios.ok && resPropuestas.ok) {
                     const misPropuestasIds = dataPropuestas.map(p => p.servicio_id);
-                    const abiertos = dataServicios.filter(
-                        s => s.estado === "abierto" && !misPropuestasIds.includes(s.id)
-                    );
+                    const abiertos = dataServicios
+                        .filter((s) => s.estado === "abierto" && !misPropuestasIds.includes(s.id))
+                        .map((servicio) => {
+                            const distanceKm = calculateDistanceInKm(
+                                liner?.lat,
+                                liner?.lng,
+                                servicio.lat_start,
+                                servicio.lng_start
+                            );
 
-                    setServiciosAbiertos(abiertos);
+                            return {
+                                ...servicio,
+                                distanceKm
+                            };
+                        });
+
+                    const serviciosFiltrados = (liner?.lat != null && liner?.lng != null)
+                        ? abiertos.filter((servicio) => {
+                            if (servicio.distanceKm == null) return false;
+                            return servicio.distanceKm <= MAX_DISTANCE_KM;
+                        })
+                        : abiertos;
+
+                    serviciosFiltrados.sort((a, b) => {
+                        if (a.distanceKm == null) return 1;
+                        if (b.distanceKm == null) return -1;
+                        return a.distanceKm - b.distanceKm;
+                    });
+
+                    setServiciosAbiertos(serviciosFiltrados);
                     setMisPropuestas(dataPropuestas);
                 }
             } catch (error) {
@@ -150,10 +194,29 @@ export const LinerHome = () => {
                                             )}
                                         </div>
                                     )}
-                                    <p className="mb-1"><strong>Origen:</strong> {service.address_start || "No especificado"}</p>
-                                    <p className="mb-1"><strong>Destino:</strong> {service.address_finish || "No especificado"}</p>
+                                    <p className="mb-1"><strong>Origen:</strong> {servicio.address_start || "No especificado"}</p>
+                                    <p className="mb-1"><strong>Destino:</strong> {servicio.address_finish || "No especificado"}</p>
+
+                                    {servicio.distanceKm != null && (
+                                        <p className="card-text mb-1">
+                                            <strong>Distancia al origen:</strong> {servicio.distanceKm.toFixed(1)} km
+                                        </p>
+                                    )}
+
                                     <p className="card-text mb-1"><i className="fas fa-clock text-warning"></i> <strong>Urgencia:</strong> {servicio.urgencia}</p>
-                                    <p className="card-text mb-3"><i className="fas fa-money-bill-wave text-success"></i> <strong>Presupuesto del Cliente:</strong> ${servicio.precio_propuesto}</p>
+                                    <p className="card-text mb-2"><i className="fas fa-money-bill-wave text-success"></i> <strong>Presupuesto del Cliente:</strong> ${servicio.precio_propuesto}</p>
+
+                                    {linerLocation && servicio.lat_start && (
+                                        <div className="alert alert-secondary mt-2 mb-3 p-2">
+                                            <p className="mb-0 text-dark small">
+                                                <i className="fa-solid fa-location-dot text-danger me-1"></i> 
+                                                <strong>Distancia a Origen:</strong> {calculateDistance(linerLocation.lat, linerLocation.lng, servicio.lat_start, servicio.lng_start)} km 
+                                                <span className="ms-2">
+                                                    (<i className="fa-solid fa-car-side text-secondary"></i> ~{estimateTravelTimeMinutes(calculateDistance(linerLocation.lat, linerLocation.lng, servicio.lat_start, servicio.lng_start))} min)
+                                                </span>
+                                            </p>
+                                        </div>
+                                    )}
                                     
                                     <button 
                                         className="btn btn-warning btn-sm" 

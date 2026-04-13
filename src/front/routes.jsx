@@ -73,21 +73,35 @@ import { ClientServiceForm } from "./pages/ClientServiceForm";
 import { ClientServiceDetail } from "./pages/ClientServiceDetail";
 
 import { SimpleMap } from "./pages/SimpleMap";
-
-
+import { MainLanding } from "./landingpage/MainLanding";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
-    // CreateRoutesFromElements function allows you to build route elements declaratively.
-    // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
-    // Root, on the contrary, create a sister Route, if you have doubts, try it!
-    // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
-    // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
+      // CreateRoutesFromElements function allows you to build route elements declaratively.
+      // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
+      // Root, on the contrary, create a sister Route, if you have doubts, try it!
+      // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
+      // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
 
-      // Root Route: All navigation will start from here.
-        <Route errorElement={<h1>Not found!</h1>}>
+      <Route errorElement={<h1>Not found!</h1>}>
+        {/* Landing Page Aislada */}
+        <Route path="/welcome" element={<MainLanding />} />
 
-          <Route path="/establecimiento/login" element={<EstablecimientoLogin />} />
+        {/* Aplicación Actual */}
+        <Route path="/" element={<Layout />} >
+          {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
+          <Route path= "/" element={<Home />} />
+        <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
+        <Route path="/demo" element={<Demo />} />
+        <Route path="/client/register" element={<ClientRegister />} />
+        <Route path="/client/login" element={<ClientLogin />} />
+        <Route path="/favoritos" element={<Favoritos />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/liner/login" element={<LinerLogin />} />
+        <Route path="/liner/register" element={<LinerRegister />} />
+        <Route path="/simplemap" element={<SimpleMap />} />
+
+        <Route path="/establecimiento/login" element={<EstablecimientoLogin />} />
           <Route path="/establecimiento" element={<Navigate to="/establecimiento/login" replace />} />
           <Route element={<ProtectedRouteEstablecimiento />}>
             <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
@@ -157,5 +171,6 @@ export const router = createBrowserRouter(
         </Route>
 
       </Route>
+    </Route>
     )
 );

@@ -8,7 +8,7 @@ import cloudinary.uploader
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from api.models import db, User, Client, Administrador, Tipo, Establecimiento, Sucursal, Ticket, Favorito, Servicio, Liner, Propuesta
-from api.utils import generate_sitemap, APIException
+from api.utils import generate_sitemap, APIException, calculate_distance_km
 from flask_cors import CORS
 from sqlalchemy import select, and_, func
 from sqlalchemy.orm import joinedload
@@ -1051,6 +1051,21 @@ def create_liner():
     name = body.get("liner_nombre")
     email = body.get("liner_email")
     password = body.get("liner_password")
+    lat = body.get("lat")
+    lng = body.get("lng")
+    address = body.get("address")
+
+    if lat is not None:
+        try:
+            lat = float(lat)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lat debe ser numérico"}), 400
+
+    if lng is not None:
+        try:
+            lng = float(lng)
+        except (TypeError, ValueError):
+            return jsonify({"msg": "lng debe ser numérico"}), 400
 
     if not name or not email or not password:
         return jsonify({"msg": "Faltan campos"}), 400
@@ -1062,7 +1077,10 @@ def create_liner():
     new_liner = Liner(
         liner_nombre=name,
         liner_email=email,
-        liner_password=password
+        liner_password=password,
+        lat=lat,
+        lng=lng,
+        address=address
     )
 
     db.session.add(new_liner)
@@ -1360,6 +1378,7 @@ def estimate_service():
 
     descripcion = body.get("descripcion", "")
     urgencia = body.get("urgencia", "")
+    distancia_km = body.get("distancia_km", None)
 
     if not descripcion or not urgencia:
         return jsonify({"msg": "Falta descripcion o urgencia"}), 400
@@ -1372,11 +1391,14 @@ def estimate_service():
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
             model = genai.GenerativeModel('gemini-flash-latest')
+
+            prompt_distancia = f"\nLa distancia matemática/física exacta confirmada de este servicio es de {distancia_km} km." if distancia_km else ""
             
             prompt = f"""
             Eres un asistente que estima servicios para proveedores.
             La descripción del problema es: "{descripcion}"
-            La urgencia es: "{urgencia}".
+            La urgencia es: "{urgencia}".{prompt_distancia}
+            Toma en cuenta la distancia exacta (si existe) para ajustar el precio al valor de mercado, considerando costos de traslado (combustible, tiempo, depreciación del vehículo como si fuera una app tipo Uber).
             Devuelve un JSON con exactamente este formato, sin markdown extra:
             {{
                 "tiempo_estimado": "Ej: 2 horas",
@@ -1466,6 +1488,20 @@ def create_my_service():
             lng_finish = float(lng_finish)
         except (TypeError, ValueError):
             return jsonify({"msg": "lng_finish debe ser numérico"}), 400
+
+    MAX_SERVICE_DISTANCE_KM = 20
+
+    distance_km = calculate_distance_km(
+        lat_start,
+        lng_start,
+        lat_finish,
+        lng_finish
+    )
+
+    if distance_km is not None and distance_km > MAX_SERVICE_DISTANCE_KM:
+        return jsonify({
+            "msg": f"La distancia entre el origen y el destino no puede superar los {MAX_SERVICE_DISTANCE_KM} km"
+        }), 400
 
     servicio = Servicio(
         client_id=client_id,
