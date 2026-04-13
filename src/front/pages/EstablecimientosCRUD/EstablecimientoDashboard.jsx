@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./EstablecimientoDashboard.css"
+import HeatMap from "../../components/HeatMap.jsx"
 
 export const EstablecimientoDashboard = () => {
     const navigate = useNavigate()
@@ -49,7 +50,7 @@ export const EstablecimientoDashboard = () => {
 
 
     return (
-
+        
         <div className="dashboard">
             <div className="main-col">
 
@@ -155,6 +156,10 @@ export const EstablecimientoDashboard = () => {
                         <span className="info-row-val green">{ filasActivas }</span>
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <HeatMap />
             </div>
 
         </div>

@@ -9,6 +9,7 @@ export const Layout = () => {
     return (
         <ScrollToTop>
             <Navbar />
+            {!hideGenericNavbar && <Navbar/>}
                 <Outlet />
             <Footer />
         </ScrollToTop>

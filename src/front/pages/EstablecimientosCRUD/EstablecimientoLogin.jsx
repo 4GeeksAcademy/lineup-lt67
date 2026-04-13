@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../../hooks/useGlobalReducer";
-import "./EstablecimientoDashboard.css"
+import "./EstablecimientoStyles.css";
+import logo from "../../assets/lineUP_LogoFULL.svg";
 
 export const EstablecimientoLogin = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -18,68 +19,78 @@ export const EstablecimientoLogin = () => {
 
         fetch(`${backendUrl}/api/establecimiento/login`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nombre: nombre.trim(), password }),
         })
             .then(async (resp) => {
                 const data = await resp.json();
-                if (!resp.ok) {
-                    throw new Error(data.msg || "No fue posible iniciar sesión como establecimiento");
-                }
-                // Guardar el token y la sesión
+                if (!resp.ok) throw new Error(data.msg || "No fue posible iniciar sesión");
                 localStorage.setItem("tokenEstablecimiento", data.access_token);
                 localStorage.setItem("loggedEstablecimiento", JSON.stringify(data.establecimiento));
-
-                // Actualizar Global Store
                 dispatch({ type: "set_auth_establecimiento", payload: true });
-
-                // Redirigir al inicio de administración
                 navigate("/establecimiento/dashboard");
             })
-            .catch((err) => {
-                setError(err.message);
-            });
+            .catch((err) => setError(err.message));
     }
 
     return (
-        <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
-            <div className="card p-4 shadow border-primary" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4 text-primary">Login Establecimiento</h3>
+        <div className="login-split">
 
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label className="form-label">nombre</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="nombre de establecimiento"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            required
-                        />
-                    </div>
+            <div className="login-left">
+                <div style={{ maxWidth: 420, width: "100%" }}>
 
-                    <div className="mb-3">
-                        <label className="form-label">Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Ingresa tu contraseña"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <h2 className="fw-bold mb-1" style={{ fontSize: "1.4rem", color: "#1a1f36" }}>
+                        Bienvenido de vuelta
+                    </h2>
 
-                    {error && <p className="text-danger small">{error}</p>}
+                    <p className="mb-4" style={{ fontSize: ".88rem", color: "#6b7a99" }}>
+                        Ingresa con tu establecimiento para continuar
+                    </p>
 
-                    <button type="submit" className="btn btn-primary w-100">
-                        Entrar al Panel
-                    </button>
-                </form>
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label className="form-label fw-500 mb-1" style={{ fontSize: ".84rem", color: "#6b7a99" }}>
+                                Nombre del establecimiento
+                            </label>
+                            <input
+                                type="text"
+                                className="login-form-control"
+                                placeholder="Nombre de tu establecimiento"
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="form-label mb-1" style={{ fontSize: ".84rem", color: "#6b7a99" }}>
+                                Contraseña
+                            </label>
+                            <input
+                                type="password"
+                                className="login-form-control"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        {error && (
+                            <p className="text-danger mb-3" style={{ fontSize: ".84rem" }}>{error}</p>
+                        )}
+
+                        <button type="submit" className="btn-dark-solid">
+                            Entrar
+                        </button>
+                    </form>
+                </div>
             </div>
+
+            <div className="login-right">
+                <img src={logo} alt="LineUp" height="600px" className="" />
+            </div>
+
         </div>
     );
 };
