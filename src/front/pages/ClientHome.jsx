@@ -5,6 +5,10 @@ import { calculateDistanceInKm } from "../utils/distance";
 
 export const ClientHome = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const loggedClient = JSON.parse(localStorage.getItem("loggedClient"));
+    const clientLat = loggedClient?.lat;
+    const clientLng = loggedClient?.lng;
+    const MAX_DISTANCE_KM = 10;
 
     const [sucursales, setSucursales] = useState([]);
     const [establecimientos, setEstablecimientos] = useState([]);
@@ -53,10 +57,41 @@ export const ClientHome = () => {
         loadData();
     }, []);
 
+    const getSucursalesConDistancia = () => {
+        return sucursales.map((sucursal) => {
+            const distanceKm = calculateDistanceInKm(
+                clientLat,
+                clientLng,
+                sucursal.lat,
+                sucursal.lng
+            );
+
+            return {
+                ...sucursal,
+                distanceKm
+            };
+        });
+    };
+
+    const getSucursalesFiltradas = () => {
+        const sucursalesConDistancia = getSucursalesConDistancia();
+
+        // Si el cliente no tiene ubicacion, no se filtra
+        if (clientLat == null || clientLng == null) {
+            return sucursalesConDistancia;
+        }
+
+        return sucursalesConDistancia.filter((sucursal) => {
+            if (sucursal.distanceKm == null) return false;
+            return sucursal.distanceKm <= MAX_DISTANCE_KM;
+        });
+    };
+
     const agruparSucursales = () => {
         const resultado = {};
+        const sucursalesFiltradas = getSucursalesFiltradas();
 
-        sucursales.forEach((sucursal) => {
+        sucursalesFiltradas.forEach((sucursal) => {
             const establecimiento = establecimientos.find(
                 (est) => est.id === sucursal.id_establecimiento
             );
@@ -73,6 +108,16 @@ export const ClientHome = () => {
             }
 
             resultado[tipoNombre][establecimientoNombre].push(sucursal);
+        });
+
+        Object.keys(resultado).forEach((tipo) => {
+            Object.keys(resultado[tipo]).forEach((establecimiento) => {
+                resultado[tipo][establecimiento].sort((a, b) => {
+                    if (a.distanceKm == null) return 1;
+                    if (b.distanceKm == null) return -1;
+                    return a.distanceKm - b.distanceKm;
+                });
+            });
         });
 
         return resultado;
@@ -120,7 +165,7 @@ export const ClientHome = () => {
                 {error && <p className="text-danger">{error}</p>}
 
                 {!loading && !error && Object.keys(agruparSucursales()).length === 0 && (
-                    <p>No hay sucursales disponibles.</p>
+                    <p>No hay sucursales dentro del radio seleccionado</p>
                 )}
 
                 {!loading && !error &&
@@ -140,6 +185,11 @@ export const ClientHome = () => {
                                                         <div className="card-body">
                                                             <h5 className="card-title">{sucursal.nombre}</h5>
                                                             <p><strong>Dirección:</strong> {sucursal.address || "No especificada"}</p>
+                                                            {sucursal.distanceKm != null && (
+                                                                <p className="card-text mb-1">
+                                                                    <strong>Distancia:</strong> {sucursal.distanceKm.toFixed(1)} km
+                                                                </p>
+                                                            )}
                                                             <p className="card-text mb-1">
                                                                 <strong>Capacidad:</strong> {sucursal.capacidad}
                                                             </p>

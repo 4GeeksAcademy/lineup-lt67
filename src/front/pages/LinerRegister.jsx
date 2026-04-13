@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { LocationPicker } from "../components/LocationPicker";
 
 export const LinerRegister = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -8,6 +9,11 @@ export const LinerRegister = () => {
     const [linerNombre, setLinerNombre] = useState("");
     const [linerEmail, setLinerEmail] = useState("");
     const [linerPassword, setLinerPassword] = useState("");
+    const [location, setLocation] = useState({
+        lat: -31.4201,
+        lng: -64.1888,
+        address: ""
+    });
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -24,7 +30,10 @@ export const LinerRegister = () => {
             body: JSON.stringify({
                 liner_nombre: linerNombre.trim(),
                 liner_email: linerEmail.trim(),
-                liner_password: linerPassword
+                liner_password: linerPassword,
+                lat: location.lat,
+                lng: location.lng,
+                address: location.address
             }),
         })
             .then(async (resp) => {
@@ -61,6 +70,15 @@ export const LinerRegister = () => {
                             value={linerNombre}
                             onChange={(e) => setLinerNombre(e.target.value)}
                             required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="form-label fw-bold">Ubicación en el mapa</label>
+                        <LocationPicker
+                            value={location}
+                            onChange={setLocation}
+                            height="300px"
                         />
                     </div>
 

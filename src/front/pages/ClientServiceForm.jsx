@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ClientNavbar } from "../components/ClientNavbar";
 import { LocationPicker } from "../components/LocationPicker";
 import { calculateDistance, estimateTravelTimeMinutes } from "../utils/mathUtils";
+import { calculateDistanceInKm } from "../utils/distance";
 
 export const ClientServiceForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -123,6 +124,18 @@ export const ClientServiceForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+
+        const distanceKm = calculateDistanceInKm(
+            startLocation.lat,
+            startLocation.lng,
+            finishLocation.lat,
+            finishLocation.lng
+        );
+
+        if (distanceKm != null && distanceKm > 20) {
+            setError("La distancia entre el origen y el destino no puede superar los 20 km");
+            return;
+        }
 
         const token = localStorage.getItem("tokenClient");
 
