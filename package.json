@@ -55,6 +55,7 @@
 	},
 	"dependencies": {
 		"@vis.gl/react-google-maps": "^1.8.2",
+		"bootstrap": "^5.3.8",
 		"framer-motion": "^12.38.0",
 		"leaflet": "^1.9.4",
 		"leaflet.heat": "^0.2.0",

@@ -75,6 +75,8 @@ import { ClientServiceDetail } from "./pages/ClientServiceDetail";
 import { SimpleMap } from "./pages/SimpleMap";
 import { MainLanding } from "./landingpage/MainLanding";
 
+import Welcome01 from "./landingpage/Welcome01"
+
 export const router = createBrowserRouter(
     createRoutesFromElements(
       // CreateRoutesFromElements function allows you to build route elements declaratively.
@@ -87,7 +89,8 @@ export const router = createBrowserRouter(
         {/* Landing Page Aislada */}
         <Route path="/welcome" element={<MainLanding />} />
 
-        
+        <Route path="/welcome01" element={<Welcome01 />} />
+
         <Route path="/establecimiento/login" element={<EstablecimientoLogin />} />
           <Route path="/establecimiento" element={<Navigate to="/establecimiento/login" replace />} />
           <Route element={<ProtectedRouteEstablecimiento />}>

@@ -78,7 +78,7 @@
     background: linear-gradient(to bottom, #fff 30%, var(--neon-cyan));
     -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /*-webkit-text-fill-color: transparent;*/
     filter: drop-shadow(0 0 30px rgba(0, 243, 255, 0.4));
 }
 
