@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { LocationPicker } from "../components/LocationPicker";
+import "./EstablecimientosCRUD/EstablecimientoStyles.css";
+import logo from "../assets/lineUP_LogoFULL.svg";
 
 export const LinerRegister = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -55,68 +57,128 @@ export const LinerRegister = () => {
     }
 
     return (
-        <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
-            <div className="card p-4 shadow border-warning" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4 text-warning">Registro Liner</h3>
-                <p className="text-center text-muted small">Crea tu cuenta para ofrecer y aplicar a servicios.</p>
+        <div className="login-split">
+            <div className="login-left">
+                <div style={{ maxWidth: 460, width: "100%" }}>
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{ fontSize: "1.4rem", color: "#1a1f36" }}
+                    >
+                        Crear cuenta
+                    </h2>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label className="form-label">Nombre completo</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Tu nombre y apellido"
-                            value={linerNombre}
-                            onChange={(e) => setLinerNombre(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <p
+                        className="mb-4"
+                        style={{ fontSize: ".88rem", color: "#6b7a99" }}
+                    >
+                        Registrate como liner para continuar
+                    </p>
 
-                    <div className="mb-4">
-                        <label className="form-label fw-bold">Ubicación en el mapa</label>
-                        <LocationPicker
-                            value={location}
-                            onChange={setLocation}
-                            height="300px"
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label
+                                className="form-label fw-500 mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Nombre completo
+                            </label>
+                            <input
+                                type="text"
+                                className="login-form-control"
+                                placeholder="Tu nombre y apellido"
+                                value={linerNombre}
+                                onChange={(e) => setLinerNombre(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">Email</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            placeholder="liner@ejemplo.com"
-                            value={linerEmail}
-                            onChange={(e) => setLinerEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+                        <div className="mb-3">
+                            <label
+                                className="form-label fw-500 mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                className="login-form-control"
+                                placeholder="liner@ejemplo.com"
+                                value={linerEmail}
+                                onChange={(e) => setLinerEmail(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">Contraseña</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Elige una contraseña"
-                            value={linerPassword}
-                            onChange={(e) => setLinerPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                        <div className="mb-4">
+                            <label
+                                className="form-label mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Contraseña
+                            </label>
+                            <input
+                                type="password"
+                                className="login-form-control"
+                                placeholder="••••••••"
+                                value={linerPassword}
+                                onChange={(e) => setLinerPassword(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    {error && <p className="text-danger small">{error}</p>}
-                    {success && <p className="text-success small">{success}</p>}
+                        <div className="mb-4">
+                            <label
+                                className="form-label fw-500 mb-2"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Ubicación
+                            </label>
+                            <LocationPicker
+                                value={location}
+                                onChange={setLocation}
+                                height="260px"
+                            />
+                        </div>
 
-                    <button type="submit" className="btn btn-warning w-100 mb-2">
-                        Registrarme
-                    </button>
+                        {error && (
+                            <p
+                                className="text-danger mb-3"
+                                style={{ fontSize: ".84rem" }}
+                            >
+                                {error}
+                            </p>
+                        )}
 
-                    <Link to="/liner/login" className="btn btn-outline-secondary w-100">
-                        Ya tengo cuenta
-                    </Link>
-                </form>
+                        {success && (
+                            <p
+                                className="text-success mb-3"
+                                style={{ fontSize: ".84rem" }}
+                            >
+                                {success}
+                            </p>
+                        )}
+
+                        <button type="submit" className="btn-dark-solid mb-3">
+                            Registrarme
+                        </button>
+
+                        <Link
+                            to="/liner/login"
+                            className="btn btn-outline-secondary w-100"
+                            style={{
+                                borderRadius: "14px",
+                                padding: ".78rem 1rem",
+                                fontWeight: 600
+                            }}
+                        >
+                            Ya tengo cuenta
+                        </Link>
+                    </form>
+                </div>
+            </div>
+
+            <div className="login-right">
+                <img src={logo} alt="LineUp" height="600px" />
             </div>
         </div>
     );

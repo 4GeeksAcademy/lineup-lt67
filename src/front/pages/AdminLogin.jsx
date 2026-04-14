@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import "./EstablecimientosCRUD/EstablecimientoStyles.css";
+import logo from "../assets/lineUP_LogoFULL.svg";
 
 export const AdminLogin = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -24,17 +26,16 @@ export const AdminLogin = () => {
         })
             .then(async (resp) => {
                 const data = await resp.json();
+
                 if (!resp.ok) {
                     throw new Error(data.msg || "No fue posible iniciar sesión como administrador");
                 }
-                // Guardar el token y la sesión
+
                 localStorage.setItem("tokenAdmin", data.access_token);
                 localStorage.setItem("loggedAdmin", JSON.stringify(data.admin));
-                
-                // Actualizar Global Store
+
                 dispatch({ type: "set_auth_admin", payload: true });
 
-                // Redirigir al inicio de administración
                 navigate("/administradores");
             })
             .catch((err) => {
@@ -43,41 +44,76 @@ export const AdminLogin = () => {
     }
 
     return (
-        <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
-            <div className="card p-4 shadow border-primary" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4 text-primary">Login Administrador</h3>
+        <div className="login-split">
+            <div className="login-left">
+                <div style={{ maxWidth: 420, width: "100%" }}>
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{ fontSize: "1.4rem", color: "#1a1f36" }}
+                    >
+                        Bienvenido de vuelta
+                    </h2>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label className="form-label">Email</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            placeholder="administrador@ejemplo.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <p
+                        className="mb-4"
+                        style={{ fontSize: ".88rem", color: "#6b7a99" }}
+                    >
+                        Ingresá con tu cuenta administrativa para continuar
+                    </p>
 
-                    <div className="mb-3">
-                        <label className="form-label">Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Ingresa tu contraseña"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label
+                                className="form-label fw-500 mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                className="login-form-control"
+                                placeholder="administrador@ejemplo.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    {error && <p className="text-danger small">{error}</p>}
+                        <div className="mb-4">
+                            <label
+                                className="form-label mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Contraseña
+                            </label>
+                            <input
+                                type="password"
+                                className="login-form-control"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <button type="submit" className="btn btn-primary w-100">
-                        Entrar al Panel
-                    </button>
-                </form>
+                        {error && (
+                            <p
+                                className="text-danger mb-3"
+                                style={{ fontSize: ".84rem" }}
+                            >
+                                {error}
+                            </p>
+                        )}
+
+                        <button type="submit" className="btn-dark-solid">
+                            Entrar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div className="login-right">
+                <img src={logo} alt="LineUp" height="600px" />
             </div>
         </div>
     );
