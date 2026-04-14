@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { LocationPicker } from "../components/LocationPicker";
+import "./EstablecimientosCRUD/EstablecimientoStyles.css";
+import logo from "../assets/lineUP_LogoFULL.svg";
 
 export const ClientRegister = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -88,102 +90,179 @@ export const ClientRegister = () => {
     }
 
     return (
-        <div className="container d-flex justify-content-center align-items-center vh-50 mt-4">
-            <div className="card p-4 shadow border-primary" style={{ width: "22rem" }}>
-                <h3 className="text-center mb-4 text-primary">Registro Cliente</h3>
+        <div className="login-split">
+            <div className="login-left">
+                <div style={{ maxWidth: 460, width: "100%" }}>
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{ fontSize: "1.4rem", color: "#1a1f36" }}
+                    >
+                        Crear cuenta
+                    </h2>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label className="form-label">Nombre completo</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Juan Pérez"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <p
+                        className="mb-4"
+                        style={{ fontSize: ".88rem", color: "#6b7a99" }}
+                    >
+                        Registrate como cliente para continuar
+                    </p>
 
-                    <div className="mb-3">
-                        <label className="form-label">Email</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            placeholder="cliente@ejemplo.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Elegí una contraseña"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label className="form-label fw-bold">Ubicación en el mapa</label>
-                        <LocationPicker
-                            value={location}
-                            onChange={setLocation}
-                            height="300px"
-                        />
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Imagen de perfil</label>
-                        <input
-                            type="file"
-                            className="form-control"
-                            accept="image/*"
-                            onChange={(e) => setSelectedFile(e.target.files[0])}
-                        />
-                    </div>
-
-
-
-                    <div className="mb-3">
-                        <button
-                            type="button"
-                            className="btn btn-outline-primary w-100"
-                            onClick={handleImageUpload}
-                            disabled={!selectedFile || uploadingImage}
-                        >
-                            {uploadingImage ? "Subiendo imagen..." : "Subir imagen"}
-                        </button>
-                    </div>
-
-                    {profileImageUrl && (
-                        <div className="mb-3 text-center">
-                            <p className="small text-success mb-2">Imagen subida correctamente</p>
-                            <img
-                                src={profileImageUrl}
-                                alt="Preview perfil"
-                                className="img-fluid rounded"
-                                style={{ maxHeight: "150px", objectFit: "cover" }}
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label
+                                className="form-label fw-500 mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Nombre completo
+                            </label>
+                            <input
+                                type="text"
+                                className="login-form-control"
+                                placeholder="Juan Pérez"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                required
                             />
                         </div>
-                    )}
 
-                    {error && <p className="text-danger small">{error}</p>}
-                    {success && <p className="text-success small">{success}</p>}
+                        <div className="mb-3">
+                            <label
+                                className="form-label fw-500 mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                className="login-form-control"
+                                placeholder="cliente@ejemplo.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <button type="submit" className="btn btn-primary w-100 mb-2">
-                        Registrarme
-                    </button>
+                        <div className="mb-4">
+                            <label
+                                className="form-label mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Contraseña
+                            </label>
+                            <input
+                                type="password"
+                                className="login-form-control"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <Link to="/client/login" className="btn btn-outline-secondary w-100">
-                        Ya tengo cuenta
-                    </Link>
-                </form>
+                        <div className="mb-4">
+                            <label
+                                className="form-label fw-500 mb-2"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Ubicación
+                            </label>
+                            <LocationPicker
+                                value={location}
+                                onChange={setLocation}
+                                height="260px"
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label
+                                className="form-label fw-500 mb-1"
+                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
+                            >
+                                Imagen de perfil
+                            </label>
+                            <input
+                                type="file"
+                                className="login-form-control"
+                                accept="image/*"
+                                onChange={(e) => setSelectedFile(e.target.files[0])}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <button
+                                type="button"
+                                className="btn-dark-solid"
+                                onClick={handleImageUpload}
+                                disabled={!selectedFile || uploadingImage}
+                                style={{
+                                    opacity: !selectedFile || uploadingImage ? 0.7 : 1,
+                                    cursor: !selectedFile || uploadingImage ? "not-allowed" : "pointer"
+                                }}
+                            >
+                                {uploadingImage ? "Subiendo imagen..." : "Subir imagen"}
+                            </button>
+                        </div>
+
+                        {profileImageUrl && (
+                            <div className="mb-3">
+                                <p
+                                    className="text-success mb-2"
+                                    style={{ fontSize: ".84rem" }}
+                                >
+                                    Imagen subida correctamente
+                                </p>
+                                <img
+                                    src={profileImageUrl}
+                                    alt="Preview perfil"
+                                    className="img-fluid rounded"
+                                    style={{
+                                        maxHeight: "150px",
+                                        objectFit: "cover",
+                                        border: "1px solid #d6dbe8"
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {error && (
+                            <p
+                                className="text-danger mb-3"
+                                style={{ fontSize: ".84rem" }}
+                            >
+                                {error}
+                            </p>
+                        )}
+
+                        {success && (
+                            <p
+                                className="text-success mb-3"
+                                style={{ fontSize: ".84rem" }}
+                            >
+                                {success}
+                            </p>
+                        )}
+
+                        <button type="submit" className="btn-dark-solid mb-3">
+                            Registrarme
+                        </button>
+
+                        <Link
+                            to="/client/login"
+                            className="btn btn-outline-secondary w-100"
+                            style={{
+                                borderRadius: "14px",
+                                padding: ".78rem 1rem",
+                                fontWeight: 600
+                            }}
+                        >
+                            Ya tengo cuenta
+                        </Link>
+                    </form>
+                </div>
+            </div>
+
+            <div className="login-right">
+                <img src={logo} alt="LineUp" height="600px" />
             </div>
         </div>
     );
