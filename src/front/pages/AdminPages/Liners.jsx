@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import useGlobalReducer from "../../hooks/useGlobalReducer.jsx";
 import { AdminNavbar } from "../../components/AdminNavbar";
 import { AdminSidebar } from "../../components/AdminSidebar";
 
-export const Propuestas = () => {
+export const Liners = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const [listaPropuestas, setListaPropuestas] = useState([]);
+    const { store, dispatch } = useGlobalReducer();
     const [error, setError] = useState("");
 
-    function getPropuestas() {
-        fetch(`${backendUrl}/api/propuestas`)
+    function getLiners() {
+        fetch(`${backendUrl}/api/liners`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(response.status);
@@ -17,16 +18,16 @@ export const Propuestas = () => {
                 return response.json();
             })
             .then((data) => {
-                setListaPropuestas(data);
+                dispatch({ type: "set_liners_list", payload: data });
             })
             .catch((err) => {
-                setError("No se pudieron cargar las propuestas");
+                setError("No se pudieron cargar los liners");
                 console.error(err);
             });
     }
 
-    function deletePropuesta(id) {
-        fetch(`${backendUrl}/api/propuestas/${id}`, { method: "DELETE" })
+    function deleteLiner(id) {
+        fetch(`${backendUrl}/api/liners/${id}`, { method: "DELETE" })
             .then(async (resp) => {
                 if (!resp.ok) {
                     let data = {};
@@ -35,17 +36,17 @@ export const Propuestas = () => {
                     } catch {
                         data = {};
                     }
-                    throw new Error(data.msg || "No se pudo borrar la propuesta");
+                    throw new Error(data.msg || "No se pudo borrar el liner");
                 }
-                getPropuestas();
+                getLiners();
             })
             .catch((err) => {
-                alert(err.message || "Ocurrió un error al borrar la propuesta");
+                alert(err.message || "Ocurrió un error al borrar el liner");
             });
     }
 
     useEffect(() => {
-        getPropuestas();
+        getLiners();
     }, []);
 
     return (
@@ -58,17 +59,17 @@ export const Propuestas = () => {
                     <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
                         <div>
                             <h5 className="fw-bold mb-1" style={{ fontSize: "1.35rem" }}>
-                                Propuestas
+                                Liners
                             </h5>
                             <p className="text-muted mb-0" style={{ fontSize: ".9rem" }}>
-                                Gestión completa de propuestas enviadas por los liners.
+                                Gestión completa de liners registrados en la plataforma.
                             </p>
                         </div>
 
-                        <Link to="/add_propuestas">
+                        <Link to="/add_liner">
                             <button className="btn-export">
                                 <i className="bi bi-plus-circle"></i>
-                                Nueva propuesta
+                                Nuevo liner
                             </button>
                         </Link>
                     </div>
@@ -78,13 +79,13 @@ export const Propuestas = () => {
                             <div className="stat-card">
                                 <div className="stat-label">
                                     <span className="stat-dot" style={{ background: "#0d6efd" }}></span>
-                                    Total de propuestas
+                                    Total de liners
                                 </div>
-                                <div className="stat-value">{listaPropuestas.length}</div>
+                                <div className="stat-value">{store.liners.length}</div>
                                 <div>
                                     <span className="stat-badge">
-                                        <i className="bi bi-chat-left-text"></i>
-                                        Registros activos
+                                        <i className="bi bi-person-badge"></i>
+                                        Usuarios activos
                                     </span>
                                 </div>
                             </div>
@@ -106,44 +107,40 @@ export const Propuestas = () => {
                         </div>
 
                         <div className="p-3">
-                            {listaPropuestas.length === 0 ? (
-                                <div className="text-muted p-2">No hay propuestas cargadas.</div>
+                            {store.liners.length === 0 ? (
+                                <div className="text-muted p-2">No hay liners cargados.</div>
                             ) : (
                                 <div className="table-responsive">
                                     <table className="table align-middle mb-0">
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
-                                                <th>Servicio</th>
-                                                <th>Liner</th>
-                                                <th>Precio</th>
-                                                <th>Estado</th>
-                                                <th>Mensaje</th>
+                                                <th>Nombre</th>
+                                                <th>Email</th>
+                                                <th>Foto</th>
                                                 <th className="text-end">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {listaPropuestas.map((propuesta) => (
-                                                <tr key={propuesta.id}>
-                                                    <td>{propuesta.id}</td>
-                                                    <td>{propuesta.servicio_id}</td>
-                                                    <td>{propuesta.liner_id}</td>
-                                                    <td>{propuesta.precio}</td>
-                                                    <td>{propuesta.estado}</td>
-                                                    <td>{propuesta.mensaje}</td>
+                                            {store.liners.map((liner) => (
+                                                <tr key={liner.id}>
+                                                    <td>{liner.id}</td>
+                                                    <td className="fw-semibold">{liner.nombre}</td>
+                                                    <td>{liner.email}</td>
+                                                    <td>{liner.foto ? "Sí" : "No"}</td>
                                                     <td>
                                                         <div className="d-flex justify-content-end gap-2 flex-wrap">
-                                                            <Link to={`/propuestas/${propuesta.id}`}>
+                                                            <Link to={`/liners/${liner.id}`}>
                                                                 <button className="btn-page">Ver</button>
                                                             </Link>
 
-                                                            <Link to={`/propuestas/edit/${propuesta.id}`}>
+                                                            <Link to={`/liners/edit/${liner.id}`}>
                                                                 <button className="btn-details">Editar</button>
                                                             </Link>
 
                                                             <button
                                                                 className="btn btn-sm btn-outline-danger"
-                                                                onClick={() => deletePropuesta(propuesta.id)}
+                                                                onClick={() => deleteLiner(liner.id)}
                                                             >
                                                                 Borrar
                                                             </button>

@@ -1,88 +1,113 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { LocationPicker } from "../../components/LocationPicker";
 import { AdminNavbar } from "../../components/AdminNavbar";
 import { AdminSidebar } from "../../components/AdminSidebar";
 
-export const TicketEdit = () => {
+export const SucursalEditADM = () => {
     const { id } = useParams();
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
 
-    const [idCliente, setIdCliente] = useState("");
-    const [idSucursal, setIdSucursal] = useState("");
-    const [estado, setEstado] = useState("");
-    const [posicion, setPosicion] = useState("");
-    const [date, setDate] = useState("");
+    const [nombre, setNombre] = useState("");
+    const [gerente, setGerente] = useState("");
+    const [location, setLocation] = useState({
+        lat: -31.4201,
+        lng: -64.1888,
+        address: ""
+    });
+    const [idEstablecimiento, setIdEstablecimiento] = useState(null);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        fetch(`${backendUrl}/api/sucursal/${id}`)
+            .then(async (resp) => {
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(data.msg || "No se pudo cargar la sucursal");
+                }
+
+                setNombre(data.nombre || "");
+                setGerente(data.nombre_gerente || "");
+                setIdEstablecimiento(data.id_establecimiento ?? null);
+                setLocation({
+                    lat: data.lat ?? -31.4201,
+                    lng: data.lng ?? -64.1888,
+                    address: data.address ?? ""
+                });
+            })
+            .catch((err) => {
+                setError(err.message || "Ocurrió un error al cargar la sucursal");
+            });
+    }, [backendUrl, id]);
 
     function handleSubmit(e) {
         e.preventDefault();
         setError("");
 
         const data = {
-            estado: estado
+            nombre: nombre,
+            nombre_gerente: gerente,
+            lat: location.lat,
+            lng: location.lng,
+            address: location.address
         };
 
-        fetch(`${backendUrl}/api/tickets/${id}`, {
+        fetch(`${backendUrl}/api/sucursal/${id}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
             .then(async (resp) => {
-                const responseData = await resp.json();
-
-                if (!resp.ok) {
-                    throw new Error(responseData.msg || "No se pudo editar el ticket");
+                let responseData = {};
+                try {
+                    responseData = await resp.json();
+                } catch {
+                    responseData = {};
                 }
 
-                navigate("/tickets");
+                if (!resp.ok) {
+                    throw new Error(responseData.msg || "No se pudo actualizar la sucursal");
+                }
+
+                if (idEstablecimiento) {
+                    navigate(`/establecimientos/${idEstablecimiento}/detalle`);
+                } else {
+                    navigate(-1);
+                }
             })
             .catch((err) => {
-                setError(err.message || "Ocurrió un error al editar el ticket");
+                setError(err.message || "Ocurrió un error al actualizar la sucursal");
             });
     }
 
-    function deleteTicket() {
-        fetch(`${backendUrl}/api/tickets/${id}`, { method: "DELETE" })
+    function handleDelete() {
+        fetch(`${backendUrl}/api/sucursal/${id}`, {
+            method: "DELETE"
+        })
             .then(async (resp) => {
-                if (!resp.ok) {
-                    let data = {};
-                    try {
-                        data = await resp.json();
-                    } catch {
-                        data = {};
-                    }
-                    throw new Error(data.msg || "No se pudo borrar el ticket");
+                let responseData = {};
+                try {
+                    responseData = await resp.json();
+                } catch {
+                    responseData = {};
                 }
 
-                navigate("/tickets");
+                if (!resp.ok) {
+                    throw new Error(responseData.msg || "No se pudo borrar la sucursal");
+                }
+
+                if (idEstablecimiento) {
+                    navigate(`/establecimientos/${idEstablecimiento}/detalle`);
+                } else {
+                    navigate("/establecimientos");
+                }
             })
             .catch((err) => {
-                setError(err.message || "Ocurrió un error al borrar el ticket");
+                setError(err.message || "Ocurrió un error al borrar la sucursal");
             });
     }
-
-    useEffect(() => {
-        fetch(`${backendUrl}/api/tickets/${id}`)
-            .then(async (resp) => {
-                const data = await resp.json();
-
-                if (!resp.ok) {
-                    throw new Error(data.msg || "No se pudo cargar el ticket");
-                }
-
-                setIdCliente(data.id_cliente);
-                setIdSucursal(data.id_sucursal);
-                setEstado(data.estado);
-                setPosicion(data.posicion);
-                setDate(data.created_at);
-            })
-            .catch((err) => {
-                setError(err.message || "Ocurrió un error al cargar el ticket");
-            });
-    }, [backendUrl, id]);
 
     return (
         <div className="container-fluid px-0">
@@ -94,13 +119,19 @@ export const TicketEdit = () => {
                     <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
                         <div>
                             <h5 className="fw-bold mb-1" style={{ fontSize: "1.35rem" }}>
-                                Editar ticket
+                                Editar sucursal
                             </h5>
                             <p className="text-muted mb-0" style={{ fontSize: ".9rem" }}>
-                                Modificá el estado del ticket desde el panel administrativo.
+                                Modificá los datos de la sucursal desde el flujo de establecimientos.
                             </p>
                         </div>
                     </div>
+
+                    <style>{`
+                        .location-wrapper .row.g-3 { display: none; }
+                        .location-wrapper .d-flex.gap-2 { display: none; }
+                        .location-wrapper label:nth-of-type(2) { display: none; }
+                    `}</style>
 
                     <div className="row g-4">
                         <div className="col-lg-8">
@@ -112,53 +143,32 @@ export const TicketEdit = () => {
                                 <div className="p-4">
                                     <form onSubmit={handleSubmit}>
                                         <div className="mb-3">
-                                            <label className="form-label">ID Cliente</label>
+                                            <label className="form-label">Nombre</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                value={idCliente}
-                                                disabled
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label className="form-label">ID Sucursal</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={idSucursal}
-                                                disabled
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label className="form-label">Estado</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={estado}
-                                                onChange={(e) => setEstado(e.target.value)}
+                                                value={nombre}
+                                                onChange={(e) => setNombre(e.target.value)}
                                                 required
                                             />
                                         </div>
 
                                         <div className="mb-3">
-                                            <label className="form-label">Posición</label>
+                                            <label className="form-label">Nombre del gerente</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                value={posicion}
-                                                disabled
+                                                value={gerente}
+                                                onChange={(e) => setGerente(e.target.value)}
                                             />
                                         </div>
 
-                                        <div className="mb-3">
-                                            <label className="form-label">Fecha de creación</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={date ? new Date(date).toLocaleString() : ""}
-                                                disabled
+                                        <div className="mb-4 location-wrapper">
+                                            <label className="form-label fw-bold">Ubicación en el mapa</label>
+                                            <LocationPicker
+                                                value={location}
+                                                onChange={setLocation}
+                                                height="300px"
                                             />
                                         </div>
 
@@ -173,15 +183,15 @@ export const TicketEdit = () => {
                                             <button
                                                 type="button"
                                                 className="btn btn-outline-danger"
-                                                onClick={deleteTicket}
+                                                onClick={handleDelete}
                                             >
-                                                Borrar ticket
+                                                Borrar sucursal
                                             </button>
 
                                             <button
                                                 type="button"
                                                 className="btn-page"
-                                                onClick={() => navigate("/tickets")}
+                                                onClick={() => navigate(-1)}
                                             >
                                                 Cancelar
                                             </button>
@@ -200,23 +210,18 @@ export const TicketEdit = () => {
                                 <div className="p-4">
                                     <div className="d-flex flex-column gap-3">
                                         <div className="stat-card" style={{ padding: "1rem" }}>
-                                            <div className="stat-label">Cliente</div>
-                                            <div>{idCliente || "-"}</div>
+                                            <div className="stat-label">Nombre</div>
+                                            <div>{nombre || "Sin definir"}</div>
                                         </div>
 
                                         <div className="stat-card" style={{ padding: "1rem" }}>
-                                            <div className="stat-label">Sucursal</div>
-                                            <div>{idSucursal || "-"}</div>
+                                            <div className="stat-label">Gerente</div>
+                                            <div>{gerente || "Sin definir"}</div>
                                         </div>
 
                                         <div className="stat-card" style={{ padding: "1rem" }}>
-                                            <div className="stat-label">Estado</div>
-                                            <div>{estado || "-"}</div>
-                                        </div>
-
-                                        <div className="stat-card" style={{ padding: "1rem" }}>
-                                            <div className="stat-label">Posición</div>
-                                            <div>{posicion || "-"}</div>
+                                            <div className="stat-label">Dirección</div>
+                                            <div>{location.address || "Sin definir"}</div>
                                         </div>
                                     </div>
                                 </div>

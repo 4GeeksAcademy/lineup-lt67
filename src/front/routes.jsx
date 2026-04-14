@@ -27,10 +27,10 @@ import { AdminLogin } from "./pages/AdminLogin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom";
 
-import { Establecimientos } from "./pages/EstablecimientosCRUD/Establecimientos";
-import { EstablecimientoForm } from "./pages/EstablecimientosCRUD/EstablecimientoForm";
-import { EstablecimientoEdit } from "./pages/EstablecimientosCRUD/EstablecimientoEdit";
-import { EstablecimientoDetail } from "./pages/EstablecimientosCRUD/EstablecimientoDetail";
+import { Establecimientos } from "./pages/AdminPages/Establecimientos";
+import { EstablecimientoForm } from "./pages/AdminPages/EstablecimientoForm";
+import { EstablecimientoEdit } from "./pages/AdminPages/EstablecimientoEdit";
+import { EstablecimientoDetail } from "./pages/AdminPages/EstablecimientoDetail";
 import { EstablecimientoLogin } from "./pages/EstablecimientosCRUD/EstablecimientoLogin"
 import { EstablecimientoDashboard } from "./pages/EstablecimientosCRUD/EstablecimientoDashboard"
 import { ProtectedRouteEstablecimiento } from "./components/ProtectedRouteEstablecimiento";
@@ -38,6 +38,9 @@ import { ProtectedRouteEstablecimiento } from "./components/ProtectedRouteEstabl
 import { SucursalForm } from "./pages/EstablecimientosCRUD/SucursalForm";
 import { SucursalEdit } from "./pages/EstablecimientosCRUD/SucursalEdit"
 import { SucursalDashboard } from "./pages/EstablecimientosCRUD/SucursalDashboard"
+
+import { SucursalFormADM } from "./pages/AdminPages/SucursalForm";
+import { SucursalEditADM } from "./pages/AdminPages/SucursalEdit"
 
 import { ProtectedRouteClient } from "./components/ProtectedRouteClient";
 
@@ -51,10 +54,10 @@ import { ServicioForm } from "./pages/ServiciosCRUD/ServicioForm";
 import { ServicioDetail } from "./pages/ServiciosCRUD/ServicioDetail";
 import { ServicioEdit } from "./pages/ServiciosCRUD/ServicioEdit";
 
-import { Liners } from "./pages/Liners"
-import { AddLiner } from "./pages/AddLiner"
-import { EditLiner } from "./pages/EditLiner"
-import { LinerDetail } from "./pages/LinerDetail"
+import { Liners } from "./pages/AdminPages/Liners"
+import { LinerForm } from "./pages/AdminPages/LinerForm"
+import { LinerEdit } from "./pages/AdminPages/LinerEdit"
+import { LinerDetail } from "./pages/AdminPages/LinerDetail"
 import { LinerLogin } from "./pages/LinerLogin"
 import { LinerRegister } from "./pages/LinerRegister"
 import { LinerHome } from "./pages/LinerHome"
@@ -93,18 +96,13 @@ export const router = createBrowserRouter(
           <Route path="/establecimiento" element={<Navigate to="/establecimiento/login" replace />} />
           <Route element={<ProtectedRouteEstablecimiento />}>
             <Route path="/establecimiento/dashboard" element={<EstablecimientoDashboard />} />
-            <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
-            <Route path="/establecimientos/:id" element={<EstablecimientoEdit />} />
-            <Route path="/establecimiento/sucursal/edit/:id" element={<SucursalEdit />} />
             <Route path="/establecimiento/sucursal/:id" element={<SucursalDashboard />} />
-            <Route path="/add_establecimiento" element={<EstablecimientoForm />} />
             <Route path="/sucursal/nueva" element={<SucursalForm />} />
+            <Route path="/establecimiento/sucursal/edit/:id" element={<SucursalEdit />} />
           </Route>
           
-        {/* Aplicación Actual */}
-        <Route path="/" element={<Layout />} >
-          {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-          <Route path= "/" element={<Home />} />
+        
+        <Route path= "/" element={<Home />} />
         <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
         <Route path="/demo" element={<Demo />} />
         <Route path="/client/register" element={<ClientRegister />} />
@@ -114,19 +112,6 @@ export const router = createBrowserRouter(
         <Route path="/liner/login" element={<LinerLogin />} />
         <Route path="/liner/register" element={<LinerRegister />} />
         <Route path="/simplemap" element={<SimpleMap />} />
-
-        <Route path="/" element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/single/:theId" element={<Single />} />
-          <Route path="/demo" element={<Demo />} />
-          <Route path="/client/register" element={<ClientRegister />} />
-          <Route path="/client/login" element={<ClientLogin />} />
-          <Route path="/favoritos" element={<Favoritos />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/liner/login" element={<LinerLogin />} />
-          <Route path="/liner/register" element={<LinerRegister />} />
-          <Route path="/simplemap" element={<SimpleMap />} />
-          <Route path="/establecimientos" element={<Establecimientos />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/clients" element={<Clientes />} />
@@ -150,13 +135,19 @@ export const router = createBrowserRouter(
             <Route path="/servicios/:id" element={<ServicioDetail />} />
             <Route path="/servicios/edit/:id" element={<ServicioEdit />} />
             <Route path="/liners" element={<Liners />} />
-            <Route path="/add_liner" element={<AddLiner />} />
+            <Route path="/add_liner" element={<LinerForm />} />
             <Route path="/liners/:id" element={<LinerDetail />} />
-            <Route path="/liners/edit/:id" element={<EditLiner />} />
+            <Route path="/liners/edit/:id" element={<LinerEdit />} />
             <Route path="/propuestas" element={<Propuestas />} />
             <Route path="/add_propuestas" element={<PropuestaForm />} />
             <Route path="/propuestas/:id" element={<PropuestaDetail />} />
             <Route path="/propuestas/edit/:id" element={<PropuestaEdit />} />
+            <Route path="/establecimientos" element={<Establecimientos />} />
+            <Route path="/add_establecimientos" element={<EstablecimientoForm />} />
+            <Route path="/establecimientos/:id/detalle" element={<EstablecimientoDetail />} />
+            <Route path="/establecimiento/edit/:id" element={<EstablecimientoEdit />} />
+            <Route path="/sucursal/adm/nueva" element={<SucursalFormADM />} />
+            <Route path="/sucursal/adm/edit/:id" element={<SucursalEditADM />} />
           </Route>
 
           <Route element={<ProtectedRouteClient />}>
@@ -173,7 +164,5 @@ export const router = createBrowserRouter(
           </Route>
         </Route>
 
-      </Route>
-    </Route>
     )
 );
