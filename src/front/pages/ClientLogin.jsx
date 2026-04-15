@@ -11,7 +11,8 @@ export const ClientLogin = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [error, setError] = useState("")
+    const [activeTab, setActiveTab] = useState("usuario")
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -47,26 +48,24 @@ export const ClientLogin = () => {
         <div className="login-split">
             <div className="login-left">
                 <div style={{ maxWidth: 420, width: "100%" }}>
-                    <h2
-                        className="fw-bold mb-1"
-                        style={{ fontSize: "1.4rem", color: "#1a1f36" }}
-                    >
-                        Bienvenido de vuelta
-                    </h2>
 
-                    <p
-                        className="mb-4"
-                        style={{ fontSize: ".88rem", color: "#6b7a99" }}
-                    >
-                        Ingresá con tu cuenta de cliente para continuar
-                    </p>
+                    {/* Toggle */}
+                    <div className="login-toggle">
+                        <button type="button" className={`toggle-btn ${activeTab === "usuario" ? "active" : ""}`} onClick={() => setActiveTab("usuario")} >
+                            Usuarios
+                        </button>
+                        <button type="button" className={`toggle-btn ${activeTab === "negocio" ? "active" : ""}`} onClick={() => { setActiveTab("negocio"); navigate("/establecimiento/login"); }} >
+                            Establecimientos
+                        </button>
+                    </div>
+
+                    <h2 className="fw-bold mb-1" style={{ fontSize: "1.4rem", color: "#1a1f36" }} >
+                        Bienvenido
+                    </h2>
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
-                            <label
-                                className="form-label fw-500 mb-1"
-                                style={{ fontSize: ".84rem", color: "#6b7a99" }}
-                            >
+                            <label className="form-label fw-500 mb-1" style={{ fontSize: ".84rem", color: "#6b7a99" }} >
                                 Email
                             </label>
                             <input
@@ -97,10 +96,7 @@ export const ClientLogin = () => {
                         </div>
 
                         {error && (
-                            <p
-                                className="text-danger mb-3"
-                                style={{ fontSize: ".84rem" }}
-                            >
+                            <p className="text-danger mb-3" style={{ fontSize: ".84rem" }} >
                                 {error}
                             </p>
                         )}
@@ -109,15 +105,7 @@ export const ClientLogin = () => {
                             Entrar
                         </button>
 
-                        <Link
-                            to="/client/register"
-                            className="btn btn-outline-secondary w-100"
-                            style={{
-                                borderRadius: "14px",
-                                padding: ".78rem 1rem",
-                                fontWeight: 600
-                            }}
-                        >
+                        <Link to="/client/register" className="btn btn-outline-secondary w-100" style={{ borderRadius: "14px", padding: ".6rem", fontWeight: 600 }}>
                             Crear cuenta
                         </Link>
                     </form>

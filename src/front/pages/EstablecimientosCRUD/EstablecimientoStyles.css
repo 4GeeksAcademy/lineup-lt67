@@ -135,3 +135,31 @@
   font-weight: 700;
   flex-shrink: 0;
 }
+
+.login-toggle {
+  display: flex;
+  background: #f0f2f8;
+  border-radius: 100px;
+  padding: 4px;
+  margin-bottom: 28px;
+  width: 100%;
+}
+
+.toggle-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  border-radius: 100px;
+  padding: 10px 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7a99;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active {
+  background: #172447;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(23,36,71,0.2);
+}

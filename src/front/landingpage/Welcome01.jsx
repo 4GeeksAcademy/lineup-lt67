@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./Welcome01.css";
+import { useNavigate } from "react-router-dom";
 
 // Assets
 import logoMenu from "./assets/logo-menu.svg";
@@ -10,7 +11,7 @@ import ctaImg from "./assets/LINEUP_CTA-img.svg";
 
 export default function Welcome01() {
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const nav = document.getElementById("navbar");
@@ -63,12 +64,11 @@ export default function Welcome01() {
           </a>
           <ul className="nav-menu">
             <li><a href="#" className="active">Inicio</a></li>
-
             <li><a href="#nosotros">Nosotros</a></li>
-
             <li><a href="#testimonios">Testimonios</a></li>
+            <li style={{ marginRight: "-10px" }}><a href="#" className="btn-nav01" onClick={ (e) => { e.preventDefault(); navigate("/client/login") }}>Acceder</a></li>
+            <li><a href="#" className="btn-nav-outline">Registrarme</a></li>
           </ul>
-          <a href="#cta" className="btn-nav">Prueba la app</a>
         </nav>
       </header>
 
