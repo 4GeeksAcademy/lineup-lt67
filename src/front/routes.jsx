@@ -80,7 +80,7 @@ import { MainLanding } from "./landingpage/MainLanding";
 import { LinerChat } from "./pages/LinerChat";
 
 import Welcome01 from "./landingpage/Welcome01"
-
+import NewLandingMain from "./landingpage/NewLandingMain";
 export const router = createBrowserRouter(
     createRoutesFromElements(
       // CreateRoutesFromElements function allows you to build route elements declaratively.
@@ -92,6 +92,8 @@ export const router = createBrowserRouter(
       <Route errorElement={<h1>Not found!</h1>}>
         {/* Landing Page Aislada */}
         <Route path="/welcome" element={<MainLanding />} />
+
+        <Route path="/welcome2" element={<NewLandingMain />} />
 
         <Route path="/welcome01" element={<Welcome01 />} />
 
