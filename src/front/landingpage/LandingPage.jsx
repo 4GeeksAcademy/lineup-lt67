@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import "./Welcome01.css";
 import { useNavigate } from "react-router-dom";
+
+import ChatDemo from "./components/ChatDemo";
+import Developer from "./components/Developer";
+import "./LandingStyles.css";
 
 // Assets
 import logoMenu from "./assets/logo-menu.svg";
@@ -65,10 +68,14 @@ export default function Welcome01() {
           <ul className="nav-menu">
             <li><a href="#" className="active">Inicio</a></li>
             <li><a href="#nosotros">Nosotros</a></li>
+            <li><a href="#demo">Demo AI</a></li>
+            <li><a href="#equipo">Equipo</a></li>
             <li><a href="#testimonios">Testimonios</a></li>
-            <li style={{ marginRight: "-10px" }}><a href="#" className="btn-nav01" onClick={ (e) => { e.preventDefault(); navigate("/client/login") }}>Acceder</a></li>
-            <li><a href="#" className="btn-nav-outline">Registrarme</a></li>
           </ul>
+          <div className="nav-right">
+            <a href="#" className="btn-nav01" onClick={(e) => { e.preventDefault(); navigate("/client/login"); }}>Acceder</a>
+            <a href="#" className="btn-nav-outline">Registrarme</a>
+          </div>
         </nav>
       </header>
 
@@ -137,39 +144,12 @@ export default function Welcome01() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="features-sec">
-        <div className="container">
-          <div className="row align-items-start g-5">
-            <div className="col-lg-5">
-              <h2 className="feat-title-italic">El poder de</h2>
-              <span className="feat-title-caps">LINE UP</span>
-              <div className="row g-3 mt-3">
-                {[
-                  { name: "AI PREDICTIVA", desc: "Con nuestra infraestructura basada en la nube y algoritmos de IA." },
-                  { name: "ULTRA VELOCIDAD", desc: "Con nuestra infraestructura basada en la nube y algoritmos de IA." },
-                  { name: "SEGURIDAD TOTAL", desc: "Con nuestra infraestructura basada en la nube y algoritmos de IA." },
-                  { name: "TIEMPO REAL", desc: "Con nuestra infraestructura basada en la nube y algoritmos de IA." },
-                ].map((feat) => (
-                  <div className="col-6" key={feat.name}>
-                    <div className="feat-card">
-                      <div className="feat-thumb"></div>
-                      <h5 className="feat-name">{feat.name}</h5>
-                      <p className="feat-desc">{feat.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="col-lg-7 d-flex justify-content-center align-items-start">
-              <div className="chat-widget">
-                <span className="chat-label">LINEUP AI ASSISTANT</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* CHAT DEMO */}
+      <ChatDemo />
 
+      {/*EQUIPO*/}
+      <Developer />
+      
       {/* TESTIMONIALS + CTA */}
       <section className="testi-sec" id="testimonios">
         <div className="container">

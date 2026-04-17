@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import logoMenu from "../assets/logo-menu.svg"
+import "../LandingStyles.css";
 // Uses neon cyan directly or through inline style for fusion
 
 export default function Navbar() {
@@ -15,24 +17,23 @@ export default function Navbar() {
 
   return (
     <header>
-      <nav className={`navbar-glass ${scrolled ? 'scrolled' : ''}`} id="navbar">
-        <a href="#" className="nav-logo" style={{textDecoration: "none"}}>
-          {/* Fusion: Logo look from LandingNavbar */}
-          <span className="fw-bold text-white h4 mb-0" style={{ letterSpacing: "1px", margin: "0", color: "var(--white)", textShadow: "0 0 10px rgba(255,255,255,0.7)" }}>
-              LineUp
-          </span>
-        </a>
-        <ul className="nav-menu d-none d-md-flex">
-          <li><a href="#inicio" className="active">Inicio</a></li>
-          <li><a href="#nosotros">Nosotros</a></li>
-          <li><a href="#mision">Misión</a></li>
-          <li><a href="#demo">Demo AI</a></li>
-          <li><a href="#equipo">Equipo</a></li>
-        </ul>
-        {/* Usamos el enlace tipo app del LandingNavbar combinado con el btn-nav del Welcome */}
-        <Link to="/" className="btn-nav" style={{textDecoration: "none"}}>
-           Ir a la App <span style={{marginLeft: "6px"}}>→</span>
-        </Link>
+      <nav className="navbar-glass" id="navbar">
+        <div className="nav-left">
+          <a href="#" className="nav-logo">
+            <img src={logoMenu} alt="LINE UP" />
+          </a>
+          <ul className="nav-menu">
+            <li><a href="#" className="active">Inicio</a></li>
+            <li><a href="#nosotros">Nosotros</a></li>
+            <li><a href="#demo">Demo AI</a></li>
+            <li><a href="#equipo">Equipo</a></li>
+            <li><a href="#testimonios">Testimonios</a></li>
+          </ul>
+        </div>
+        <div className="nav-right">
+          <a href="#" className="btn-nav01" onClick={(e) => { e.preventDefault(); navigate("/client/login"); }}>Acceder</a>
+          <a href="#" className="btn-nav-outline">Registrarme</a>
+        </div>
       </nav>
     </header>
   );
