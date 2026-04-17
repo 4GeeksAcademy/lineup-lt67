@@ -13,15 +13,15 @@ export default function Footer() {
           
           {/* Columna 1: Brand & Bio */}
           <div>
-            <img src={logoFooter} alt="LINE UP" style={{ height: "45px", marginBottom: "25px", opacity: 0.9 }} />
-            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.95rem", lineHeight: "1.8", maxWidth: "300px", margin: 0 }}>
+            <img src={logoFooter} alt="LINE UP" style={{ height: "115px", marginBottom: "25px", opacity: 0.9 }} />
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", lineHeight: "1.4", maxWidth: "300px", margin: 0 }}>
               Hecho con amor y pasión por Abraham, Juan y Humberto. Transformando la gestión del tiempo global con Inteligencia Artificial de última generación.
             </p>
           </div>
 
           {/* Columna 2: Navegación Rápida */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-             <h4 style={{ color: "var(--white)", fontFamily: "var(--font-caps)", fontSize: "1.4rem", letterSpacing: "1px", marginBottom: "15px", marginTop: "0" }}>Explorar</h4>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+             <h4 style={{ color: "var(--white)", fontFamily: "var(--font-caps)", fontSize: "2rem", letterSpacing: "1px", marginBottom: "15px", marginTop: "0" }}>Explorar</h4>
              <motion.a whileHover={{ x: 5, color: "var(--white)" }} href="#" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.3s" }}>Ir a la App</motion.a>
              <motion.a whileHover={{ x: 5, color: "var(--white)" }} href="#" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.3s" }}>Portal Liners</motion.a>
              <motion.a whileHover={{ x: 5, color: "var(--white)" }} href="#" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: "0.95rem", transition: "color 0.3s" }}>Términos de Servicio</motion.a>
@@ -29,8 +29,8 @@ export default function Footer() {
           </div>
 
           {/* Columna 3: Contacto & Redes Sociales */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-             <h4 style={{ color: "var(--white)", fontFamily: "var(--font-caps)", fontSize: "1.4rem", letterSpacing: "1px", marginBottom: "15px", marginTop: "0" }}>Contacto</h4>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+             <h4 style={{ color: "var(--white)", fontFamily: "var(--font-caps)", fontSize: "2rem", letterSpacing: "1px", marginBottom: "15px", marginTop: "0" }}>Contacto</h4>
              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.95rem", margin: 0, display: "flex", alignItems: "center" }}>
                <i className="fa-solid fa-envelope" style={{ color: "var(--blue)", marginRight: '12px', fontSize: '1.2rem' }}></i>
                hello@lineup.com
