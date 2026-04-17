@@ -9,6 +9,7 @@ import { calculateDistanceInKm } from "../utils/distance";
 export const ClientServiceForm = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
+    const loggedClient = JSON.parse(localStorage.getItem("loggedClient"));
 
     const [descripcion, setDescripcion] = useState("");
     const [lugar, setLugar] = useState("");
@@ -183,13 +184,15 @@ export const ClientServiceForm = () => {
 
     return (
         <div className="container-fluid px-0">
-            <ClientNavbar />
             <ClientSidebar />
 
             <main className="main">
                 <div className="page-body">
                     <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
                         <div>
+                            <h3 className="fw-bold mb-5" style={{ marginBottom: "2rem" }}>
+                                Bienvenido, {loggedClient?.full_name || "Cliente"} 👋
+                            </h3>
                             <h5 className="fw-bold mb-1" style={{ fontSize: "1.35rem" }}>
                                 Nuevo servicio
                             </h5>

@@ -1,10 +1,23 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../components/lineup-shared.css"
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import logoMenu from "../assets/logo-footer.svg";
 
 export const ClientSidebar = () => {
-    const location = useLocation();
 
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { dispatch } = useGlobalReducer();
+    const loggedClient = JSON.parse(localStorage.getItem("loggedClient"));
+
+    const handleLogout = () => {
+        localStorage.removeItem("tokenClient");
+        localStorage.removeItem("loggedClient");
+        dispatch({ type: "set_auth_client", payload: false });
+        navigate("/client/login");
+    };
+    
     const navItems = [
         {
             to: "/client/home",
@@ -39,6 +52,10 @@ export const ClientSidebar = () => {
 
     return (
         <aside className="sidebar">
+
+            <img className="nav-logo" src={logoMenu} alt="LINE UP" />
+
+            <div className="sidebar-section-label">Navigation</div>
             {navItems.map((item) => (
                 <Link
                     key={item.to}
@@ -49,6 +66,29 @@ export const ClientSidebar = () => {
                     <span>{item.label}</span>
                 </Link>
             ))}
+
+            <div style={{ flex: 1 }} />
+
+            <hr />
+
+            <div className="sidebar-section-label">User Account</div>
+            <div className="sidebar-footer">
+                <div className="sidebar-user">
+                    <div className="sidebar-avatar">
+                        {loggedClient?.profile_image_url
+                            ? <img src={loggedClient.profile_image_url} alt="avatar" />
+                            : loggedClient?.full_name?.charAt(0)?.toUpperCase() || "C"
+                        }
+                    </div>
+                    <div>
+                        <div className="sidebar-user-name">{loggedClient?.full_name || "Cliente"}</div>
+                        <div className="sidebar-user-role">Cliente</div>
+                    </div>
+                </div>
+                <button className="sidebar-logout" onClick={handleLogout}>
+                    Cerrar sesión
+                </button>
+            </div>
         </aside>
     );
 };

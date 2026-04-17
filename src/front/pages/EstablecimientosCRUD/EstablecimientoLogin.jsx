@@ -89,6 +89,14 @@ export const EstablecimientoLogin = () => {
                         <button type="submit" className="btn-dark-solid">
                             Entrar
                         </button>
+
+                        <p style={{ fontSize: "0.84rem", color: "#6b7a99", textAlign: "center", marginTop: "16px" }}>
+                            ¿Tu negocio aún no está en LineUp?{" "}
+                            <a href="mailto:contacto@lineup.app" style={{ color: "#1a36ff", fontWeight: 600 }}>
+                                Contáctanos
+                            </a>{" "}
+                            y un ejecutivo te ayudará a integrarte.
+                        </p>
                     </form>
                 </div>
             </div>

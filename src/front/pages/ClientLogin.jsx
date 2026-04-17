@@ -105,9 +105,13 @@ export const ClientLogin = () => {
                             Entrar
                         </button>
 
-                        <Link to="/client/register" className="btn btn-outline-secondary w-100" style={{ borderRadius: "14px", padding: ".6rem", fontWeight: 600 }}>
-                            Crear cuenta
-                        </Link>
+                        <p style={{ fontSize: "0.84rem", color: "#6b7a99", textAlign: "center", marginTop: "16px" }}>
+                            ¿Aún no tienes cuenta?{" "}
+                            <Link to="/client/register" style={{ color: "#1a36ff", fontWeight: 600 }}>
+                                Regístrate gratis
+                            </Link>{" "}
+                            y empieza a usar LINE UP desde el dia de hoy.
+                        </p>
                     </form>
                 </div>
             </div>

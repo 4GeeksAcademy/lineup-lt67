@@ -10,6 +10,7 @@ export const ClientTickets = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [showQrId, setShowQrId] = useState(null);
+    const loggedClient = JSON.parse(localStorage.getItem("loggedClient"));
 
     const loadTickets = async () => {
         const token = localStorage.getItem("tokenClient");
@@ -174,13 +175,16 @@ export const ClientTickets = () => {
 
     return (
         <div className="container-fluid px-0">
-            <ClientNavbar />
             <ClientSidebar />
 
             <main className="main">
                 <div className="page-body">
+                    {/* Bienvenido */}
                     <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
                         <div>
+                            <h3 className="fw-bold mb-5" style={{ marginBottom: "2rem" }}>
+                                Bienvenido, {loggedClient?.full_name || "Cliente"} 👋
+                            </h3>
                             <h5 className="fw-bold mb-1" style={{ fontSize: "1.35rem" }}>
                                 Mis tickets
                             </h5>
@@ -189,6 +193,7 @@ export const ClientTickets = () => {
                             </p>
                         </div>
                     </div>
+                        
 
                     <div className="row g-3 mb-4">
                         <div className="col-lg-4">
