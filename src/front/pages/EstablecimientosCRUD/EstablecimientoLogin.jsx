@@ -12,6 +12,7 @@ export const EstablecimientoLogin = () => {
     const [nombre, setNombre] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [activeTab, setActiveTab] = useState("negocio")
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -39,13 +40,18 @@ export const EstablecimientoLogin = () => {
             <div className="login-left">
                 <div style={{ maxWidth: 420, width: "100%" }}>
 
-                    <h2 className="fw-bold mb-1" style={{ fontSize: "1.4rem", color: "#1a1f36" }}>
-                        Bienvenido de vuelta
-                    </h2>
+                    <div className="login-toggle">
+                        <button type="button" className={`toggle-btn ${activeTab === "usuario" ? "active" : ""}`} onClick={() => { setActiveTab("usuario"); navigate("/client/login");}} >
+                            Usuarios
+                        </button>
+                        <button type="button" className={`toggle-btn ${activeTab === "negocio" ? "active" : ""}`} onClick={() => setActiveTab("negocio")} >
+                            Establecimientos
+                        </button>
+                    </div>
 
-                    <p className="mb-4" style={{ fontSize: ".88rem", color: "#6b7a99" }}>
-                        Ingresa con tu establecimiento para continuar
-                    </p>
+                    <h2 className="fw-bold mb-1" style={{ fontSize: "1.4rem", color: "#1a1f36" }}>
+                        Bienvenido
+                    </h2>
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
@@ -83,6 +89,14 @@ export const EstablecimientoLogin = () => {
                         <button type="submit" className="btn-dark-solid">
                             Entrar
                         </button>
+
+                        <p style={{ fontSize: "0.84rem", color: "#6b7a99", textAlign: "center", marginTop: "16px" }}>
+                            ¿Tu negocio aún no está en LineUp?{" "}
+                            <a href="mailto:contacto@lineup.app" style={{ color: "#1a36ff", fontWeight: 600 }}>
+                                Contáctanos
+                            </a>{" "}
+                            y un ejecutivo te ayudará a integrarte.
+                        </p>
                     </form>
                 </div>
             </div>
