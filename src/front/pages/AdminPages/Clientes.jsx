@@ -44,7 +44,7 @@ export const Clientes = () => {
 
     return (
         <div className="container-fluid px-0">
-            <AdminNavbar />
+             
             <AdminSidebar />
 
             <main className="main">

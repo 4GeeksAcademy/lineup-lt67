@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import ChatDemo from "./components/ChatDemo";
 import Developer from "./components/Developer";
+import Footer from "./components/Footer";
 import "./LandingStyles.css";
 
 // Assets
@@ -74,7 +75,7 @@ export default function Welcome01() {
           </ul>
           <div className="nav-right">
             <a href="#" className="btn-nav01" onClick={(e) => { e.preventDefault(); navigate("/client/login"); }}>Acceder</a>
-            <a href="#" className="btn-nav-outline">Registrarme</a>
+            <a href="#" className="btn-nav-outline" onClick={(e) => { e.preventDefault(); navigate("/client/register")}}>Registrarme</a>
           </div>
         </nav>
       </header>
@@ -189,31 +190,8 @@ export default function Welcome01() {
       </section>
 
       {/* FOOTER */}
-      <footer className="site-footer">
-        <div className="container">
-          <div className="footer-row">
-            <div>
-              <img src={logoFooter} alt="LINE UP" className="footer-logo" />
-              <p className="footer-copy">
-                Hecho con amor y pasión por Abraham, Juan y Humberto<br />
-                © 2026 LineUp Systems. Todos los derechos reservados.
-              </p>
-            </div>
-            <div className="d-flex flex-column align-items-end">
-              <div className="footer-socials">
-                <a href="#" aria-label="Twitter"><i className="bi bi-twitter-x"></i></a>
-                <a href="#" aria-label="LinkedIn"><i className="bi bi-linkedin"></i></a>
-                <a href="#" aria-label="GitHub"><i className="bi bi-github"></i></a>
-              </div>
-              <ul className="footer-links">
-                <li><a href="#">Liners</a></li>
-                <li><a href="#">Términos</a></li>
-                <li><a href="#">Privacidad</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
+
     </>
   );
 }
