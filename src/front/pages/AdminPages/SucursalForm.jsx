@@ -63,7 +63,7 @@ export const SucursalFormADM = () => {
 
     return (
         <div className="container-fluid px-0">
-            <AdminNavbar />
+             
             <AdminSidebar />
 
             <main className="main">
