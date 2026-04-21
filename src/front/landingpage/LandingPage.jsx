@@ -17,6 +17,30 @@ export default function Welcome01() {
 
   const navigate = useNavigate();
 
+  const testimonials = [
+    {
+        name: "Carlos Mendoza",
+        role: "Dueño de Restaurante",
+        text: "LineUp cambió radicalmente cómo manejamos la hora del almuerzo. Mis clientes ya no se van por ver una fila larga.",
+        img: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=200",
+        stars: 5
+    },
+    {
+        name: "Elena Rossi",
+        role: "Gerente de Clínica",
+        text: "La IA predictiva es increíble. Sabemos exactamente cuánto tiempo tomará cada servicio antes de que empiece.",
+        img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
+        stars: 5
+    },
+    {
+        name: "Miguel Ángel",
+        role: "Freelancer Servicios IT",
+        text: "Como Liner, la app me permite encontrar trabajos cerca de mí y gestionar mi agenda de forma súper eficiente.",
+        img: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?auto=format&fit=crop&q=80&w=200",
+        stars: 4
+    }
+  ];
+
   useEffect(() => {
     const nav = document.getElementById("navbar");
     const handleScroll = () => {
@@ -159,14 +183,16 @@ export default function Welcome01() {
             <span className="testi-italic">de nosotros</span>
           </div>
           <div className="testi-cards-row">
-            {[1, 2, 3].map((i) => (
+            {testimonials.map((t, i) => (
               <div className="testi-col" key={i}>
-                <div className="testi-avatar"></div>
+                <div className="testi-avatar">
+                  <img src={t.img} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+                </div>
                 <div className="testi-card">
-                  <p>Nemo enim ipsam voluptatem quia asperiatur aut odit fugit sed quia consequuntur magni dolores eos ratione.</p>
-                  <strong className="testi-name">MARCUS WHITFIELD</strong>
-                  <span className="testi-role">DUEÑO DE RESTAURANTE</span>
-                  <div className="testi-stars">★★★★★</div>
+                  <p>{t.text}</p>
+                  <strong className="testi-name">{t.name.toUpperCase()}</strong>
+                  <span className="testi-role">{t.role.toUpperCase()}</span>
+                  <div className="testi-stars">{"★".repeat(t.stars)}{"☆".repeat(5 - t.stars)}</div>
                 </div>
               </div>
             ))}
