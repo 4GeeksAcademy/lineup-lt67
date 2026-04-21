@@ -187,7 +187,6 @@ export const LinerHome = () => {
     if (loading) {
         return (
             <div className="container-fluid px-0">
-                <LinerNavbar liner={liner} onLogout={handleLogout} />
                 <LinerSidebar />
 
                 <main className="main">
@@ -208,7 +207,6 @@ export const LinerHome = () => {
 
     return (
         <div className="container-fluid px-0">
-            <LinerNavbar liner={liner} onLogout={handleLogout} />
             <LinerSidebar />
 
             <main className="main">
