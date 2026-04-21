@@ -64,14 +64,14 @@ export const LinerRegister = () => {
                         className="fw-bold mb-1"
                         style={{ fontSize: "1.4rem", color: "#1a1f36" }}
                     >
-                        Crear cuenta
+                        Crear cuenta de Liner
                     </h2>
 
                     <p
                         className="mb-4"
                         style={{ fontSize: ".88rem", color: "#6b7a99" }}
                     >
-                        Registrate como liner para continuar
+                        Registrate como liner para comenzar a generar ingresos extras
                     </p>
 
                     <form onSubmit={handleSubmit}>

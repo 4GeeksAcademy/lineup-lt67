@@ -56,7 +56,7 @@ export const LinerLogin = () => {
                         className="fw-bold mb-1"
                         style={{ fontSize: "1.4rem", color: "#1a1f36" }}
                     >
-                        Bienvenido de vuelta
+                        Bienvenido Liner
                     </h2>
 
                     <p

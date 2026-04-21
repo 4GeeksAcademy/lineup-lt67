@@ -177,12 +177,12 @@ export default function Welcome01() {
           <div className="cta-sec">
             <img src={ctaImg} alt="Pato CTA" className="cta-duck" />
             <div className="cta-content">
-              <h2 className="cta-title">¿LISTO PARA ELIMINAR LAS FILAS?</h2>
+              <h2 className="cta-title">GENERA DINERO EXTRA COMO LINER</h2>
               <p className="cta-body">
-                Únete a miles de negocios que ya están optimizando su tiempo y aumentando sus ingresos con LINE UP.
+                Utiliza tu tiempo libre para generar ganancias como liner, suscribete ahora a LINE UP.
               </p>
               <div className="cta-btns">
-                <a href="#" className="btn-blue">PROBAR AHORA</a>
+                <a href="#" className="btn-blue" onClick={(e) => { e.preventDefault(); navigate("/liner/register")}}>REGISTRARSE</a>
               </div>
             </div>
           </div>
