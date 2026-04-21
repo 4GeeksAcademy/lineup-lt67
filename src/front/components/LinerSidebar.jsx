@@ -29,15 +29,28 @@ export const LinerSidebar = () => {
 
             <Link
                 to="/liner/home"
-                className={
-                    location.pathname === "/liner/home" ||
-                    location.pathname.startsWith("/liner/services/")
-                        ? "active"
-                        : ""
-                }
+                className={location.pathname === "/liner/home" ? "active" : ""}
             >
                 <i className="bi bi-grid-1x2-fill"></i>
                 <span>Inicio</span>
+            </Link>
+
+            <Link
+                to="/liner/home#servicios"
+                className={location.hash === "#servicios" ? "active" : ""}
+                onClick={() => document.getElementById("servicios")?.scrollIntoView({ behavior: "smooth" })}
+            >
+                <i className="bi bi-briefcase"></i>
+                <span>Servicios</span>
+            </Link>
+
+            <Link
+                to="/liner/home#postulaciones"
+                className={location.hash === "#postulaciones" ? "active" : ""}
+                onClick={() => document.getElementById("postulaciones")?.scrollIntoView({ behavior: "smooth" })}
+            >
+                <i className="bi bi-send"></i>
+                <span>Mis postulaciones</span>
             </Link>
 
             <div style={{ flex: 1 }} />
